@@ -1,0 +1,34 @@
+dist: xenial
+sudo: false
+language: python
+cache: pip
+
+install:
+  - pip install -r requirements.txt
+  - pip install pytest
+  - pip install pytest-cov codecov
+  - pip install flake8
+  - pip install .
+python:
+  - '3.6'
+  - '3.7'
+
+before_script: flake8
+
+script: py.test --cov=./medvision ./tests
+
+after_success: codecov
+
+deploy:
+  provider: pypi
+  user: kyle0x54
+  password:
+    secure: NYMNOUVXANXYqkAwTKLZXSW7HlFoeMbSIBVik/ImJuccXb0/2GlXKGspzWe2B7NFEB27R1xQHBj+LBjYeKqv/g89PLV6OPO/uiY6DgxWaLsOr7lrJIhk1ycHeCrJRQL8yL7cLNjlLjE/BKC3A8kKen4cLrvTe+Jb34CDkGYMck+UZpVfBIpyqagPvsPUigEW9Rp2JZqSVnJXvu063HkENw0JjertYK57sglW34iW0LiSMbYylfyOXcSDiU/oBpDZHNG7oLT202BS6iWNdaWtGMDxKXdb2YPxi1ze2HEvWWCqUnzpmkwZZGd7Ru04YcX4uMgxNeQ93Sj6c0JKRf3rvTAjTm56/uQpndhXAJQlmrw/mrGE+Hez1W5czuIi5uss8GiEs2FRn2/b1Y/Tl7QL81rlPyescKey5y1cJeidDKsY5DCPC/KpvUPoX0OjhUKqnh9P/mj5daidZfA5AnzoC+5dFNIHI0JoQGU49QlfOuNSJwTtD9iTCFu1SBLOKm7fq+n3SpQL+BfoQMl9ZMcxC91LJN1PF2jspoYI+B95bdq9R6IOo502wLGfxqxw35rfXsfMBWovKgcdHhjMsYeF4WT2m9ZmGuf5/VX92VibN9Za7d8HVUrg2z9Qxsv9UaDuYBaCtL20WEeykxzAqPXYbNkToBIyMslYN8zpzgUIblk=
+  on:
+    branch: master
+    tags: true
+    python: '3.6'
+    distributions: sdist bdist_wheel
+    skip_existing: true
+    skip_cleanup: true
+    skip_upload_docs: true
