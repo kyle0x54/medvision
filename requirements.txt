@@ -1,0 +1,9 @@
+natsort
+numpy
+opencv-python
+SimpleITK
+
+pytest
+pytest-cov
+codecov
+flake8
