@@ -19,4 +19,4 @@ Medvision is a foundational python library for medical computer vision.
 
     $ git clone git@github.com:kyle0x54/medvision.git
     $ cd medvision
-    $ pip install . # (add '-e' if you want to develop or modify the code)
+    $ pip install .
