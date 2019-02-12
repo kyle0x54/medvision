@@ -2,6 +2,7 @@ natsort
 numpy
 opencv-python
 SimpleITK
+tqdm
 
 pytest
 pytest-cov
