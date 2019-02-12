@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-import hashlib
 import os
 import medvision as mv
 import pytest
@@ -24,7 +23,7 @@ def test_mkdirs():
     mv.mkdirs(path)
     assert mv.isdir(path)
     mv.rmtree(path)
-    
+
 
 def test_copyfiles():
     dst_dir = mv.joinpath(DATA_DIR, 'temporary_subdir')
