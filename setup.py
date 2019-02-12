@@ -18,7 +18,8 @@ VERSION = None
 
 
 REQUIRED = [
-    'natsort', 'numpy', 'opencv-python', 'SimpleITK', 'tqdm', 'visdom'
+    'matplotlib', 'natsort', 'numpy', 'opencv-python',
+    'SimpleITK', 'tqdm', 'visdom'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))

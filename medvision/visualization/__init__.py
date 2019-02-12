@@ -1,6 +1,7 @@
+from .image import imshow
 from .visdom_visualizer import VisdomVisualizer
 
 
 __all__ = [
-    'VisdomVisualizer'
+    'imshow', 'VisdomVisualizer'
 ]
