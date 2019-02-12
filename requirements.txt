@@ -3,8 +3,4 @@ numpy
 opencv-python
 SimpleITK
 tqdm
-
-pytest
-pytest-cov
-codecov
-flake8
+visdom
