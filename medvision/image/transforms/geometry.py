@@ -1,0 +1,233 @@
+import cv2
+import numpy as np
+
+
+def vflip(img):
+    """ Flip an image vertically.
+
+    Args:
+        img (ndarray): image to be flipped.
+
+    Returns:
+        (ndarray): the vertically flipped image.
+    """
+    return np.ascontiguousarray(img[::-1, ...])
+
+
+def hflip(img):
+    """ Flip an image horizontally.
+
+    Args:
+        img (ndarray): image to be flipped.
+
+    Returns:
+        (ndarray): the horizontally flipped image.
+    """
+    return np.ascontiguousarray(img[:, ::-1, ...])
+
+
+def rot90(img, k):
+    """ Rotate 90 degrees.
+
+    Rotate an array by 90 degrees for k times. Rotation direction is
+    anticlockwise.
+
+    Args:
+        img (ndarray): image to be rotated.
+        k.(integer): number of times the array is rotated by 90 degrees.
+
+    Returns:
+        (ndarray): the rotated image.
+    """
+    return np.ascontiguousarray(np.rot90(img, k))
+
+
+def rotate(img, angle, interpolation=cv2.INTER_LINEAR,
+           border_mode=cv2.BORDER_REFLECT_101):
+    """ Rotate an image arbitrarily.
+
+    Perform arbitrary rotations on an image.The rotation center is the
+    center of the image.
+
+    Args:
+        img (ndarray): image to be rotated.
+        angle (float): rotation angle in degrees, positive values mean
+            clockwise rotation.
+        interpolation (int): interpolation method (opencv).
+        border_mode (int): border interpolation mode (opencv).
+    Returns:
+        (ndarray): the rotated image.
+    """
+    height, width = img.shape[:2]
+    matrix = cv2.getRotationMatrix2D((width / 2, height / 2), angle, 1.0)
+    img = cv2.warpAffine(img, matrix, (width, height),
+                         flags=interpolation, borderMode=border_mode)
+    return img
+
+
+def resize(img, height, width, interpolation=cv2.INTER_LINEAR):
+    """ Resize image to a given size.
+
+    Args:
+        img (ndarray): the input image.
+        height (int): target image height in pixel.
+        width (int): target image width in pixel.
+        interpolation (int): interpolation method (opencv).
+
+    Returns:
+        (ndarray): the resized image.
+    """
+    return cv2.resize(img, (width, height), interpolation=interpolation)
+
+
+def rescale(src, scale, return_scale=False, interpolation='bilinear'):
+    """ Resize image while keeping the aspect ratio.
+
+    Args:
+        src (ndarray): the input image.
+        scale (float or tuple[int]): the scaling factor or maximum size.
+            If it is a float number, then the image will be rescaled by this
+            factor, else if it is a tuple of 2 integers, then the image will
+            be rescaled as large as possible within the scale.
+        return_scale (bool): whether to return the scaling factor besides the
+            rescaled image.
+        interpolation (int): interpolation method (opencv).
+
+    Returns:
+        (ndarray): the rescaled image
+        (float, optional): the scaling factor
+    """
+    assert isinstance(scale, (float, int, tuple))
+
+    height, width = src.shape[:2]
+
+    # compute scale factor
+    if isinstance(scale, (float, int)):
+        assert scale > 0
+    else:  # isinstance(scale, tuple):
+        assert len(scale) == 2
+        assert scale[0] > 0 and scale[1] > 0
+        max_long_edge, max_short_edge = max(scale), min(scale)
+        scale = min(max_long_edge / max(height, width),
+                    max_short_edge / min(height, width))
+
+    # rescale the image
+    dst_height, dst_width = round(height * scale), round(width * scale)
+    dst = resize(src, dst_height, dst_width, interpolation)
+
+    return (dst, scale) if return_scale else dst
+
+
+def crop(img, i, j, h, w):
+    """ Crop an image.
+
+    Args:
+        img (numpy.ndarray): image to be cropped.
+        i: upper pixel coordinate.
+        j: left pixel coordinate.
+        h: height of the cropped image.
+        w: width of the cropped image.
+
+    Returns:
+        (ndarray): the cropped image.
+    """
+    return img[i:i+h, j:j+w, ...]
+
+
+def center_crop(img, crop_height, crop_width):
+    """ Crop the central part of an image.
+
+    Args:
+        img (ndarray): image to be cropped.
+        crop_height (int): height of the crop.
+        crop_width (int): width of the crop.
+
+    Return:
+        (ndarray): the cropped image.
+    """
+    def get_center_crop_coords(height, width, crop_height, crop_width):
+        y1 = (height - crop_height) // 2
+        y2 = y1 + crop_height
+        x1 = (width - crop_width) // 2
+        x2 = x1 + crop_width
+        return x1, y1, x2, y2
+
+    height, width = img.shape[:2]
+    x1, y1, x2, y2 = get_center_crop_coords(
+        height, width, crop_height, crop_width)
+    img = img[y1:y2, x1:x2]
+    return img
+
+
+# def scaling_crop_pad(src, scale_factor, shift_factor,
+#                      interpolation=cv2.INTER_LINEAR,
+#                      border_mode=cv2.BORDER_REFLECT_101,
+#                      pad_value=0):
+#     """ Rescale an image and do cropping or padding.
+
+#     Rescale an image according ot given scale factor. If scale factor > 1.0,
+#     the rescaled image is cropped with the same size as the input image.
+#     Otherwise, the rescaled image is padded to the size of the input image.
+
+#     Args:
+#         src (ndarray): input image.
+#         scale_factor (float): scaling factor.
+#         shift_factor (float): shift factor. It determines the
+#         interpolation (int): interpolation method (opencv).
+#         border_mode: border interpolation mode (opencv).
+#         pad_value: values to be padded if
+#             border_mode==cv2.BORDER_CONSTANT
+#     """
+#     dst = cv2.resize(src, None, fx=scale_factor, fy=scale_factor,
+#                      interpolation=interpolation)
+
+#     # resize image to original size with crop or pad
+#     diff_y = abs(dst.shape[0] - src.shape[0])
+#     diff_x = abs(dst.shape[1] - src.shape[1])
+
+#     top = int(diff_y * shift_factor)
+#     left = int(diff_x * shift_factor)
+#     bottom = diff_y - top
+#     right = diff_x - left
+
+#     if scale_factor >= 1.0:
+#         dst = dst[top:top+src.shape[0], left:left+src.shape[1], ...]
+#     else:
+#         if border_mode == cv2.BORDER_CONSTANT:
+#             dst = cv2.copyMakeBorder(src, top, bottom, left,
+#                                      right, border_mode, value=pad_value)
+#         else:
+#             dst = cv2.copyMakeBorder(src, top, bottom, left,
+#                                      right, border_mode)
+
+#     return dst
+
+
+def pad_to_square(src, border_mode=cv2.BORDER_REFLECT_101, pad_value=0):
+    """ Pad an image to a image with equal height and width.
+
+    Args:
+        src (ndarray): image to be padded.
+        border_mode (int): border interpolation mode (opencv).
+        pad_value(int): values to be padded if
+            border_mode==cv2.BORDER_CONSTANT
+    """
+    height, width = src.shape[:2]
+
+    if height == width:
+        return src
+
+    sz = max(height, width)
+
+    top = abs(sz - height) // 2
+    bottom = abs(sz - height) - top
+    left = abs(sz - width) // 2
+    right = abs(sz - width) - left
+
+    if border_mode == cv2.BORDER_CONSTANT:
+        dst = cv2.copyMakeBorder(src, top, bottom, left,
+                                 right, border_mode, value=pad_value)
+    else:
+        dst = cv2.copyMakeBorder(src, top, bottom, left, right, border_mode)
+
+    return dst
