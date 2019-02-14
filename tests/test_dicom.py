@@ -1,6 +1,6 @@
 import os
-import medvision as mv
 import pytest
+import medvision as mv
 
 
 def gen_path(*paths):

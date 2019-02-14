@@ -1,6 +1,6 @@
+from enum import Enum, unique
+import os
 import cv2
-from enum import Enum, unique, auto
-from medvision.transforms import bgr2rgb
 from medvision.util import mkdirs
 
 
@@ -20,11 +20,14 @@ def imread(file_path, flag=ImreadMode.COLOR):
               refer to ImreadMode for more details.
     Returns:
         (ndarray): loaded image array.
+
+    Note:
+        If read color image, the returned image format is RGB.
     """
     img = cv2.imread(file_path, flag.value)
 
     if flag == ImreadMode.COLOR:
-        img = bgr2rgb(img)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     return img
 
@@ -40,7 +43,14 @@ def imwrite(img, file_path, auto_mkdirs=True):
 
     Returns:
         (bool): Successful or not.
+
+    Note:
+        If the input image is a color image.The format should be RGB.
     """
-    if auto_mkdir:
+    if auto_mkdirs:
         mkdirs(os.path.basename(file_path))
+
+    if img.ndim == 3:
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
     return cv2.imwrite(file_path, img)

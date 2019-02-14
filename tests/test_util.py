@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 import os
-import medvision as mv
 import pytest
+import medvision as mv
 
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')

@@ -42,7 +42,7 @@ def rot90(img, k):
     return np.ascontiguousarray(np.rot90(img, k))
 
 
-def rotate(img, angle, interpolation=cv2.INTER_LINEAR,
+def rotate(src, angle, interpolation=cv2.INTER_LINEAR,
            border_mode=cv2.BORDER_REFLECT_101):
     """ Rotate an image arbitrarily.
 
@@ -50,7 +50,7 @@ def rotate(img, angle, interpolation=cv2.INTER_LINEAR,
     center of the image.
 
     Args:
-        img (ndarray): image to be rotated.
+        src (ndarray): image to be rotated.
         angle (float): rotation angle in degrees, positive values mean
             anticlockwise rotation.
         interpolation (int): interpolation method (opencv).
@@ -58,11 +58,12 @@ def rotate(img, angle, interpolation=cv2.INTER_LINEAR,
     Returns:
         (ndarray): the rotated image.
     """
-    height, width = img.shape[:2]
-    matrix = cv2.getRotationMatrix2D((width / 2, height / 2), angle, 1.0)
-    img = cv2.warpAffine(img, matrix, (width, height),
+    height, width = src.shape[:2]
+    center = ((width - 1) * 0.5, (height - 1) * 0.5)
+    matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+    dst = cv2.warpAffine(src, matrix, (width, height),
                          flags=interpolation, borderMode=border_mode)
-    return img
+    return dst
 
 
 def resize(img, height, width, interpolation=cv2.INTER_LINEAR):
@@ -80,7 +81,7 @@ def resize(img, height, width, interpolation=cv2.INTER_LINEAR):
     return cv2.resize(img, (width, height), interpolation=interpolation)
 
 
-def rescale(src, scale, return_scale=False, interpolation='bilinear'):
+def rescale(src, scale, return_scale=False, interpolation=cv2.INTER_LINEAR):
     """ Resize image while keeping the aspect ratio.
 
     Args:
@@ -155,8 +156,7 @@ def center_crop(img, crop_height, crop_width):
     height, width = img.shape[:2]
     x1, y1, x2, y2 = get_center_crop_coords(
         height, width, crop_height, crop_width)
-    img = img[y1:y2, x1:x2]
-    return img
+    return img[y1:y2, x1:x2, ...]
 
 
 # def scaling_crop_pad(src, scale_factor, shift_factor,
