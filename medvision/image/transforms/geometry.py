@@ -52,7 +52,7 @@ def rotate(img, angle, interpolation=cv2.INTER_LINEAR,
     Args:
         img (ndarray): image to be rotated.
         angle (float): rotation angle in degrees, positive values mean
-            clockwise rotation.
+            anticlockwise rotation.
         interpolation (int): interpolation method (opencv).
         border_mode (int): border interpolation mode (opencv).
     Returns:
