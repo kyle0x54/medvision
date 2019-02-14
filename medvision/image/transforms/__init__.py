@@ -1,13 +1,12 @@
-from .colorspace import (bgr2gray, rgb2gray, gray2bgr, gray2rgb,
-                         bgr2rgb, rgb2bgr)
+from .colorspace import (rgb2gray, gray2rgb)
 from .geometry import (vflip, hflip, rot90, rotate, resize, rescale,
                        crop, center_crop, pad_to_square)
-from .normalize import normalize_grayscale, normalize_to_rgb
+from .normalize import normalize_grayscale, normalize_rgb
 
 
 __all__ = [
-    'bgr2gray', 'rgb2gray', 'gray2bgr', 'gray2rgb', 'bgr2rgb', 'rgb2bgr',
+    'rgb2gray', 'gray2rgb',
     'vflip', 'hflip', 'rot90', 'rotate', 'resize', 'rescale', 'crop',
     'center_crop', 'pad_to_square',
-    'normalize_grayscale', 'normalize_to_rgb'
+    'normalize_grayscale', 'normalize_rgb'
 ]

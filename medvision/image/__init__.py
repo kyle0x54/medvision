@@ -1,12 +1,14 @@
-from .transforms import (bgr2gray, rgb2gray, gray2bgr, gray2rgb,
-                         bgr2rgb, rgb2bgr, vflip, hflip, rot90,
-                         rotate, resize, rescale, crop, center_crop,
-                         pad_to_square, normalize_grayscale, normalize_to_rgb)
+from .transforms import (rgb2gray, gray2rgb,
+                         vflip, hflip, rot90, rotate, resize, rescale, crop,
+                         center_crop, pad_to_square,
+                         normalize_grayscale, normalize_rgb,
+                         ImreadMode, imread, imwrite)
 
 
 __all__ = [
-    'bgr2gray', 'rgb2gray', 'gray2bgr', 'gray2rgb', 'bgr2rgb', 'rgb2bgr',
+    'rgb2gray', 'gray2rgb',
     'vflip', 'hflip', 'rot90', 'rotate', 'resize', 'rescale', 'crop',
     'center_crop', 'pad_to_square',
-    'normalize_grayscale', 'normalize_to_rgb'
+    'normalize_grayscale', 'normalize_rgb',
+    'ImreadMode', 'imread', 'imwrite'
 ]

@@ -1,5 +1,5 @@
 import numpy as np
-from .colorspace import gray2rgb, bgr2rgb
+from .colorspace import gray2rgb
 
 
 def normalize_grayscale(src, to_float=True, epsilon=1e-7):
@@ -17,6 +17,8 @@ def normalize_grayscale(src, to_float=True, epsilon=1e-7):
         (ndarray): intensity rescaled image.
 
     """
+    assert src.ndim == 2
+
     if to_float:
         img = src.astype(np.float32)
 
@@ -27,30 +29,25 @@ def normalize_grayscale(src, to_float=True, epsilon=1e-7):
     return (img - min_val) / (max_val - min_val)
 
 
-def normalize_to_rgb(img, mean, std):
-    """ Normalize an image (support grayscale and BGR image).
+def normalize_rgb(img, mean, std):
+    """ Normalize an image (support grayscale and RGB image input).
 
     If input image is an grayscale, first rescale intensity to [0.0, 255.0],
-    then convert into a RGB image. Otherwise, (an BGR image), convert it to
-    a RGB image of float32 type. Then dubtract mean per channel and divide
-    by std per channel.
+    then convert into a RGB image. Otherwise, (an RGB image), convert it to
+    float32. Then dubtract mean per channel and divide by std per channel.
 
     Args:
         img (ndarray): image to be normalized.
         mean (tuple[float] or float): mean values.
         std (tuple[float] or float): standard deviations.
-        to_rgb (bool): whether to convert the image to an uint8 RGB image
-            before normalization.
 
     Return:
-        (ndarray): the normalized image.
+        (ndarray): the normalized RGB image.
     """
     img = img.astype(np.float32)
 
     if img.ndim == 2:
         img = normalize_grayscale(img, to_float=False) * 255.0
         img = gray2rgb(img)
-    else:  # img.ndim == 3
-        img = bgr2rgb(img)
 
     return (img - mean) / std
