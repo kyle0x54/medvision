@@ -15,7 +15,7 @@ def tqdm_imap(func, args, n_processes=None):
         n_processe (int): number of processes to be utilized.
 
     Return:
-        (list): the results for different inputs. 
+        (list): the results for different inputs.
     """
     p = multiprocessing.Pool(n_processes)
 

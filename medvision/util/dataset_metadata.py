@@ -1,3 +1,4 @@
+import os
 import random
 from natsort import natsorted
 import numpy as np
@@ -104,12 +105,13 @@ def gen_cls_dsmd_file(root_dir, c2l_path, dsmd_path, classnames=None):
     for label, classname in enumerate(classnames):
         class2label[classname] = label
 
-        class_dir = os.path.join(root_dir, classname)
+        class_dir = mv.joinpath(root_dir, classname)
         assert mv.isdir(class_dir)
         filenames = natsorted(os.listdir(class_dir))
         for filename in filenames:
             if filename in dsmd:
-                raise FileExistsError('filename {} already exists'.format(filename))
+                raise FileExistsError(
+                    'filename {} already exists'.format(filename))
             dsmd[filename] = label
 
     write_dsmd(class2label, c2l_path)
@@ -147,7 +149,7 @@ def merge_datafolder(in_dir, out_dir, auto_mkdirs=True, classnames=None):
         class_dir = mv.joinpath(in_dir, classname)
         assert mv.isdir(class_dir)
         filenames = natsorted(os.listdir(class_dir))
-        mv.copyfiles(filenames, out_dir, src_root=class_dir, non_overwrite=True)
+        mv.copyfiles(filenames, out_dir, class_dir, non_overwrite=True)
 
 
 def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True):
