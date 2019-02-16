@@ -1,5 +1,5 @@
-import SimpleITK as itk
 import numpy as np
+import SimpleITK as itk
 
 
 def _get_metadata(reader):

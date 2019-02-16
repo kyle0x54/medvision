@@ -1,5 +1,5 @@
 import numpy as np
-from .colorspace import gray2rgb
+import medvision as mv
 
 
 def normalize_grayscale(src, to_float=True, epsilon=1e-7):
@@ -50,6 +50,6 @@ def normalize_rgb(img, mean, std):
 
     if img.ndim == 2:
         img = normalize_grayscale(img, to_float=False) * 255.0
-        img = gray2rgb(img)
+        img = mv.gray2rgb(img)
 
     return (img - mean) / std

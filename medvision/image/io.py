@@ -1,7 +1,7 @@
 from enum import Enum, unique
 import os
 import cv2
-from medvision.util import mkdirs
+import medvision as mv
 
 
 @unique
@@ -48,7 +48,7 @@ def imwrite(img, file_path, auto_mkdirs=True):
         If the given image is a color image. It should be in RGB format.
     """
     if auto_mkdirs:
-        mkdirs(os.path.dirname(file_path))
+        mv.mkdirs(os.path.dirname(file_path))
 
     if img.ndim == 3:
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
