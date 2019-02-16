@@ -20,10 +20,13 @@ def imread(file_path, flag=ImreadMode.RGB):
               refer to ImreadMode for more details.
     Returns:
         (ndarray): loaded image array.
+
+    Note:
+        The format of the loaded image array is RGB.
     """
     img = cv2.imread(file_path, flag.value)
 
-    if flag == ImreadMode.RGB:
+    if img.ndim == 3:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     return img
