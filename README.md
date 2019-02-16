@@ -5,18 +5,36 @@
 [![GitHub license](https://img.shields.io/github/license/kyle0x54/medvision.svg?style=flat)](https://github.com/kyle0x54/medvision/blob/master/LICENSE)
 [![DOI](https://zenodo.org/badge/167765585.svg)](https://zenodo.org/badge/latestdoi/167765585)
 
-# medvision
-
-Medvision is a foundational python library for medical computer vision.
+**Medvision** is an open source python library for medical computer vision.
 
 ## Installation
 
-### Install from pypi
+#### *Install from pypi*
 
-    $ pip install medvision
+```shell
+$ pip install medvision
+```
 
-### Install from source
+#### *Install from source*
 
-    $ git clone git@github.com:kyle0x54/medvision.git
-    $ cd medvision
-    $ pip install .
+```shell
+$ git clone git@github.com:kyle0x54/medvision.git
+$ cd medvision
+$ pip install .
+```
+
+#### *Try your first medvision program*
+
+```shell
+$ python
+```
+
+```python
+>>> import medvision as mv
+>>> mv.isdicom('001.dcm')
+True
+```
+
+## License
+
+[Apache License 2.0](LICENSE)
