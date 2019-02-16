@@ -23,12 +23,33 @@ def mkdirs(path, mode=0o777):
     os.makedirs(path, mode, exist_ok=True)
 
 
-def copyfiles(src_paths, dst_dir, src_root=None):
+def empty_dir(path):
+    assert isdir(path)
+    rmtree(path)
+    mkdirs(path)
+
+
+def non_overwrite_cp(src, dst):
+    if isfile(dst):
+        raise FileExistsError('target file {} already exists'.format(dst))
+
+    if isdir(dst):
+        filename = basename(src)
+        dst_filepath = joinpath(dst, filename)
+        if isfile(dst_filepath):
+            raise FileExistsError(
+                'target file {} already exists'.format(dst_filepath))
+
+    return cp(src, dst)
+
+
+def copyfiles(src_paths, dst_dir, src_root=None, non_overwrite=False):
     assert isdir(dst_dir)
     assert isinstance(src_paths, (tuple, list))
 
+    cp_func = non_overwrite_cp if non_overwrite else cp
     for src_path in src_paths:
-        cp(joinpath(src_root, src_path), dst_dir)
+        cp_func(joinpath(src_root, src_path), dst_dir)
 
 
 @unique

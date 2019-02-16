@@ -4,7 +4,8 @@ import pytest
 import medvision as mv
 
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+DATA_DIR = mv.joinpath(os.path.dirname(__file__), 'data')
+DCM_DIR = mv.joinpath(DATA_DIR, 'dicoms')
 
 
 @contextmanager
@@ -30,8 +31,18 @@ def test_copyfiles():
     mv.mkdirs(dst_dir)
 
     src_paths = ['brain_001.dcm', 'brain_002.dcm']
-    mv.copyfiles(src_paths, dst_dir, mv.joinpath(DATA_DIR, 'dicoms'))
+    mv.copyfiles(src_paths, dst_dir, DCM_DIR)
     assert len(os.listdir(dst_dir)) == 2
+
+    with not_raises(FileExistsError):
+        mv.copyfiles(src_paths, dst_dir, DCM_DIR, non_overwrite=False)
+
+    with pytest.raises(FileExistsError):
+        mv.copyfiles(src_paths, dst_dir, DCM_DIR, non_overwrite=True)
+
+    mv.empty_dir(dst_dir)
+    assert mv.isdir(dst_dir)
+    assert len(os.listdir(dst_dir)) == 0
     mv.rmtree(dst_dir)
 
 
