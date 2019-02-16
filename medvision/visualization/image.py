@@ -11,6 +11,15 @@ def _imshow_tight(im, title, cmap):
 
 
 def imshow(ims, fig_name=None, titles=None, cmap=None, num_cols=None):
+    """ Show an image or multiple images in a single canvas.
+
+    Args:
+        ims (ndarray of list of ndarrays): images to be shown.
+        fig_name (str): name of the plot.
+        cmap (str): the same as matplotlib 'cmap'.
+        num_cols (int): image number per column for multiple images display.
+            If not given, this parameter is automatically determined.
+    """
     if isinstance(ims, (list, tuple)):
         num_ims = len(ims)
     else:

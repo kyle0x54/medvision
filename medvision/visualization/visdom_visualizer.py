@@ -5,6 +5,9 @@ import visdom
 
 class VisdomVisualizer():
     """ A wrapper class for visdom.
+
+    Note:
+        Original visdom APIs are supported through self.vis.function.
     """
     def __init__(self, env='default', **kwargs):
         self.vis = visdom.Visdom(env=env, **kwargs)
@@ -20,9 +23,9 @@ class VisdomVisualizer():
             **kwargs
         )
 
-    def show_images(self, name, img_, **kwargs):
+    def show_images(self, name, imgs_, **kwargs):
         self.vis.images(
-            img_.cpu().numpy(),
+            imgs_.cpu().numpy(),
             win=name,
             opts=dict(title=name),
             **kwargs
