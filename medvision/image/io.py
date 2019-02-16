@@ -6,7 +6,7 @@ from medvision.util import mkdirs
 
 @unique
 class ImreadMode(Enum):
-    COLOR = cv2.IMREAD_COLOR
+    RGB = cv2.RGB
     GRAY = cv2.IMREAD_GRAYSCALE
     UNCHANGED = cv2.IMREAD_UNCHANGED
 
@@ -20,13 +20,10 @@ def imread(file_path, flag=ImreadMode.COLOR):
               refer to ImreadMode for more details.
     Returns:
         (ndarray): loaded image array.
-
-    Note:
-        If read color image, the returned image format is RGB.
     """
     img = cv2.imread(file_path, flag.value)
 
-    if flag == ImreadMode.COLOR:
+    if flag == ImreadMode.RGB:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     return img
@@ -42,13 +39,13 @@ def imwrite(img, file_path, auto_mkdirs=True):
             whether to create it automatically.
 
     Returns:
-        (bool): Successful or not.
+        (bool): returns whether the image is saved successfully.
 
     Note:
-        If the input image is a color image.The format should be RGB.
+        If the given image is a color image. It should be in RGB format.
     """
     if auto_mkdirs:
-        mkdirs(os.path.basename(file_path))
+        mkdirs(os.path.dirname(file_path))
 
     if img.ndim == 3:
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
