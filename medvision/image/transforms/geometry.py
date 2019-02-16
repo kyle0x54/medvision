@@ -44,10 +44,11 @@ def rot90(img, k):
 
 def rotate(src, angle, interpolation=cv2.INTER_LINEAR,
            border_mode=cv2.BORDER_REFLECT_101):
-    """ Rotate an image arbitrarily.
+    """ Rotate an image by arbitrarily degrees.
 
-    Perform arbitrary rotations on an image.The rotation center is the
-    center of the image.
+    Perform arbitrary rotations on an image. The rotation center is the
+    geometric center of the image. The shape of the image keeps unchanged
+    after the rotation.
 
     Args:
         src (ndarray): image to be rotated.
@@ -55,6 +56,7 @@ def rotate(src, angle, interpolation=cv2.INTER_LINEAR,
             anticlockwise rotation.
         interpolation (int): interpolation method (opencv).
         border_mode (int): border interpolation mode (opencv).
+
     Returns:
         (ndarray): the rotated image.
     """
@@ -67,10 +69,10 @@ def rotate(src, angle, interpolation=cv2.INTER_LINEAR,
 
 
 def resize(img, height, width, interpolation=cv2.INTER_LINEAR):
-    """ Resize image to a given size.
+    """ Resize an image to the given size.
 
     Args:
-        img (ndarray): the input image.
+        img (ndarray): the given image.
         height (int): target image height in pixel.
         width (int): target image width in pixel.
         interpolation (int): interpolation method (opencv).
@@ -204,12 +206,14 @@ def center_crop(img, crop_height, crop_width):
 
 
 def pad_to_square(src, border_mode=cv2.BORDER_REFLECT_101, pad_value=0):
-    """ Pad an image to a image with equal height and width.
+    """ Pad an image to so that its height and width are the same.
+
+    For example, an image with shape (3, 4) will be padded to (4, 4).
 
     Args:
         src (ndarray): image to be padded.
         border_mode (int): border interpolation mode (opencv).
-        pad_value(int): values to be padded if
+        pad_value(int): values to be padded if using
             border_mode==cv2.BORDER_CONSTANT
     """
     height, width = src.shape[:2]

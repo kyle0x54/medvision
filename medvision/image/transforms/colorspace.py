@@ -1,7 +1,7 @@
 import cv2
 
 
-def rgb2gray(src, keepdim=False):
+def rgb2gray(src):
     """ Convert a RGB image to grayscale image.
 
     Args:

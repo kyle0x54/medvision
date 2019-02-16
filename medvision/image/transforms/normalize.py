@@ -10,12 +10,11 @@ def normalize_grayscale(src, to_float=True, epsilon=1e-7):
     Args:
         src (ndarray): image to be intensity rescaled.
         to_float (bool): whether to convert the input image to float
-            before processing.
+            before intensity rescale.
         epsilon: a regularization term to avoid divide by 0 error.
 
     Return:
         (ndarray): intensity rescaled image.
-
     """
     assert src.ndim == 2
 
@@ -30,11 +29,10 @@ def normalize_grayscale(src, to_float=True, epsilon=1e-7):
 
 
 def normalize_rgb(img, mean, std):
-    """ Normalize an image (support grayscale and RGB image input).
+    """ Normalize an image.
 
-    If input image is an grayscale, first rescale intensity to [0.0, 255.0],
-    then convert into a RGB image. Otherwise, (an RGB image), convert it to
-    float32. Then dubtract mean per channel and divide by std per channel.
+    Dubtract mean per channel and divide by std per channel. (support
+    grayscale image and RGB image).
 
     Args:
         img (ndarray): image to be normalized.
@@ -43,6 +41,10 @@ def normalize_rgb(img, mean, std):
 
     Return:
         (ndarray): the normalized RGB image.
+
+    Note:
+        For grayscale image, first rescale intensity to [0.0, 255.0].
+        Then convert into a 3-channel RGB image before normalization.
     """
     img = img.astype(np.float32)
 

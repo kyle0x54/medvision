@@ -6,12 +6,12 @@ from medvision.util import mkdirs
 
 @unique
 class ImreadMode(Enum):
-    RGB = cv2.RGB
+    RGB = cv2.IMREAD_COLOR
     GRAY = cv2.IMREAD_GRAYSCALE
     UNCHANGED = cv2.IMREAD_UNCHANGED
 
 
-def imread(file_path, flag=ImreadMode.COLOR):
+def imread(file_path, flag=ImreadMode.RGB):
     """ Read an image.
 
     Args:
