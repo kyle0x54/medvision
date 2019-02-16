@@ -3,6 +3,20 @@ from tqdm import tqdm
 
 
 def tqdm_imap(func, args, n_processes=None):
+    """ Parallel processing with a progress bar.
+
+    Run a function multiple times (with different inputs) utilizing parallel
+    computing. During the parallel processing a progress bar is shown to
+    check the processing progress.
+
+    Args:
+        func (function obj): the function to be called.
+        args (list): the function arguments.
+        n_processe (int): number of processes to be utilized.
+
+    Return:
+        (list): the results for different inputs. 
+    """
     p = multiprocessing.Pool(n_processes)
 
     result = []
