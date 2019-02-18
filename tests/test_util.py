@@ -6,6 +6,7 @@ import medvision as mv
 
 DATA_DIR = mv.joinpath(os.path.dirname(__file__), 'data')
 DCM_DIR = mv.joinpath(DATA_DIR, 'dicoms')
+PNG_DIR = mv.joinpath(DATA_DIR, 'pngs')
 
 
 @contextmanager
@@ -47,15 +48,17 @@ def test_copyfiles():
 
 
 def test_glob_file():
-    filepaths = mv.glob(DATA_DIR, '*.png', mode=mv.GlobMode.FILE, recursive=True)
+    filepaths = mv.glob(DATA_DIR, '*.png', mode=mv.GlobMode.FILE,
+                        recursive=True)
     assert len(filepaths) == 16
 
-    filepaths = mv.glob(DATA_DIR, '*.png', mode=mv.GlobMode.FILE, recursive=False)
+    filepaths = mv.glob(DATA_DIR, '*.png', mode=mv.GlobMode.FILE,
+                        recursive=False)
     assert len(filepaths) == 0
 
-    root = mv.joinpath(DATA_DIR, 'pngs')
-    filepaths = mv.glob(root, '*.png', mode=mv.GlobMode.FILE, recursive=False)
-    assert len(filepaths) == len(os.listdir(root))
+    filepaths = mv.glob(PNG_DIR, '*.png', mode=mv.GlobMode.FILE,
+                        recursive=False)
+    assert len(filepaths) == len(os.listdir(PNG_DIR))
 
 
 def test_glob_dir():
