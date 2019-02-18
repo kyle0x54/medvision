@@ -43,13 +43,19 @@ def load_dsmd(file_path):
             # try to interpret annotation as an integer
             try:
                 value = int(value.strip())
-            except ValueError:
+                metadata[key] = value
+                continue
+            except (TypeError, ValueError):
                 pass
             # try to interpret annotation as an list[int]
             try:
                 value = map(int, value.strip().split())
+                metadata[key] = value
+                continue
             except ValueError:
                 pass
+            # interpret annotation as a string
+            assert isinstance(value, str)
             metadata[key] = value
     return metadata
 
@@ -194,6 +200,8 @@ def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True):
         If there's no image in a split. The corresponding dsmd file will
         not be saved.
     """
+    dsmd_dir = os.path.dirname(dsmd_filepath)
+
     dsmd = load_dsmd(dsmd_filepath)
     num_total = len(dsmd)
 
@@ -204,7 +212,7 @@ def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True):
     sum_ratio = 0.0
     splits = {}
     for filetitle, ratio in datasplit.items():
-        filepath = filetitle + '.txt'
+        filepath = mv.joinpath(dsmd_dir, filetitle + '.txt')
         splits[filepath] = int(num_total * ratio)
         sum_ratio += ratio
     assert 0.0 < sum_ratio <= 1.0
