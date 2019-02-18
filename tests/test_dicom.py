@@ -4,12 +4,12 @@ import pytest
 import medvision as mv
 
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+DATA_DIR = mv.joinpath(os.path.dirname(__file__), 'data')
 DCM_PATH = mv.joinpath(DATA_DIR, 'dicoms', 'brain_001.dcm')
 
 
 def gen_path(*paths):
-    return os.path.join(DATA_DIR, *paths)
+    return mv.joinpath(DATA_DIR, *paths)
 
 
 @pytest.mark.parametrize('given, expected', [

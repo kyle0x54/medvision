@@ -6,7 +6,7 @@ import medvision as mv
 import pytest
 
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+DATA_DIR = mv.joinpath(os.path.dirname(__file__), 'data')
 PNG_IMG_PATH = mv.joinpath(DATA_DIR, 'pngs', 'Blue-Ogi.png')
 IM_GRAY = mv.imread(PNG_IMG_PATH, mv.ImreadMode.GRAY)
 IM_RGB = mv.imread(PNG_IMG_PATH)
@@ -28,7 +28,7 @@ def test_normalize_grayscale():
 @pytest.mark.parametrize('img', [IM_GRAY, IM_RGB])
 def test_imread_imwrite(img):
     dst_dir = mv.joinpath(DATA_DIR, 'temporary_subdir')
-    dst_path = mv.joinpath(dst_dir, os.path.basename(PNG_IMG_PATH))
+    dst_path = mv.joinpath(dst_dir, mv.basename(PNG_IMG_PATH))
     mv.mkdirs(dst_dir)
 
     ret_val = mv.imwrite(img, dst_path)

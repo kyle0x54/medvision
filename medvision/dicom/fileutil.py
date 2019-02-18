@@ -1,4 +1,5 @@
 import os
+import medvision as mv
 
 
 def isdicom(path):
@@ -10,7 +11,7 @@ def isdicom(path):
     Returns:
         (bool): True if given file path is a valid dicom, otherwise False.
     """
-    if not os.path.isfile(path):
+    if not mv.isfile(path):
         return False
 
     # read preamble and magic code
@@ -41,11 +42,11 @@ def isdicomdir(path):
         (bool): True if given directory path is a dicom directory,
                 otherwise False.
     """
-    if not os.path.isdir(path):
+    if not mv.isdir(path):
         return False
 
     for file_name in os.listdir(path):
-        file_path = os.path.join(path, file_name)
+        file_path = mv.joinpath(path, file_name)
         if not isdicom(file_path):
             return False
     else:
