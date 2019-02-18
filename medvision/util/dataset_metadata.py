@@ -170,6 +170,8 @@ def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True):
 
     Note:
         0.0 < datasplit['train'] + datasplit['val'] + datasplit['test'] <= 1.0
+        If there's no image in a split. The corresponding dsmd file will
+        not be saved.
     """
     dsmd = load_dsmd(dsmd_filepath)
     num_total = len(dsmd)
@@ -196,6 +198,7 @@ def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True):
         keys_split = keys[start_index:end_index]
         keys_split = natsorted(keys_split)
         dsmd_split = {keys: dsmd[keys] for keys in keys_split}
-        save_dsmd(dsmd_split, filepath)
+        if len(dsmd_split) != 0:
+            save_dsmd(dsmd_split, filepath)
 
         start_index = end_index
