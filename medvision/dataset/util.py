@@ -10,12 +10,25 @@ def load_dsmd(file_path):
 
     Dataset metadata is a key-value pairs describing a dataset. For example,
     a dataset metadata looks like {'data/1.png': 1, 'data/2.png': 0, ...}.
-    A dataset metadata file is a structured text file which looks like
+    A dataset metadata file is a structured text file. For example,
+    A single label classification dataset metadata file looks like.
     ---------------
     |data/1.png, 1|
     |data/2.png, 0|
     |...          |
     ---------------
+    A multi label classification dataset metadata file looks like.
+    ---------------------
+    |data/1.png, 1, 0, 1|
+    |data/2.png, 0, 0, 0|
+    |...                |
+    ---------------------
+    A segmentation dataset metadata file looks like.
+    -------------------------
+    |data/1.png, data/1.mask|
+    |data/2.png, data/2.mask|
+    |...                    |
+    -------------------------
 
     Args:
         file_path (str): dataset metadata file path.
@@ -26,9 +39,15 @@ def load_dsmd(file_path):
     metadata = {}
     with open(file_path, 'r') as fd:
         for line in fd:
-            key, value = line.strip().split(',')
+            key, value = line.strip().split(',', 1)
+            # try to interpret annotation as an integer
             try:
                 value = int(value.strip())
+            except ValueError:
+                pass
+            # try to interpret annotation as an list[int]
+            try:
+                value = map(int, value.strip().split())
             except ValueError:
                 pass
             metadata[key] = value
