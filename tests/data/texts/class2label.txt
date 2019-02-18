@@ -1,0 +1,4 @@
+pink, 0
+purple, 1
+gold, 2
+blue, 3

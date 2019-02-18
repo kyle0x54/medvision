@@ -47,12 +47,10 @@ def test_copyfiles():
 
 
 def test_glob_file():
-    root = DATA_DIR
-    filepaths = mv.glob(root, '*.png', mode=mv.GlobMode.FILE, recursive=True)
-    assert len(filepaths) == len(os.listdir(mv.joinpath(root, 'pngs')))
+    filepaths = mv.glob(DATA_DIR, '*.png', mode=mv.GlobMode.FILE, recursive=True)
+    assert len(filepaths) == 16
 
-    root = DATA_DIR
-    filepaths = mv.glob(root, '*.png', mode=mv.GlobMode.FILE, recursive=False)
+    filepaths = mv.glob(DATA_DIR, '*.png', mode=mv.GlobMode.FILE, recursive=False)
     assert len(filepaths) == 0
 
     root = mv.joinpath(DATA_DIR, 'pngs')
@@ -67,4 +65,4 @@ def test_glob_dir():
 
     root = DATA_DIR
     filepaths = mv.glob(root, '*', mode=mv.GlobMode.DIR, recursive=True)
-    assert len(filepaths) == 3
+    assert len(filepaths) == 8

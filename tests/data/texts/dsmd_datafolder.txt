@@ -1,0 +1,8 @@
+Pink-Ogi.png, 0
+Pink-Umebachi.png, 0
+Purple-Ogi.png, 1
+Purple-Umebachi.png, 1
+Gold-Ogi.png, 2
+Gold-Umebachi.png, 2
+Blue-Ogi.png, 3
+Blue-Umebachi.png, 3
