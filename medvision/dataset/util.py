@@ -68,6 +68,8 @@ def save_dsmd(dsmd, file_path, auto_mkdirs=True):
 
     with open(file_path, 'w') as fd:
         for key, value in dsmd.items():
+            if isinstance(value, (list, tuple)):  # for multi label case
+                value = ', '.join([str(entry) for entry in value])
             line = '%s, %s\n' % (str(key), str(value))
             fd.write(line)
 
