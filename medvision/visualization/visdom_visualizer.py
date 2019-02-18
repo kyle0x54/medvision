@@ -3,7 +3,7 @@ import numpy as np
 import visdom
 
 
-class VisdomVisualizer():
+class VisdomVisualizer:
     """ A wrapper class for visdom.
 
     Note:

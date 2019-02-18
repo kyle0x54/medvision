@@ -38,7 +38,7 @@ def imwrite(img, file_path, auto_mkdirs=True):
     Args:
         img (ndarray): image array to be written.
         file_path (str): specified file path to save to.
-        auto_mkdir (bool): If the parent folder of `file_path` does not exist,
+        auto_mkdirs (bool): If the parent folder of `file_path` does not exist,
             whether to create it automatically.
 
     Returns:

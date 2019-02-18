@@ -35,17 +35,14 @@ def load_dsmd(file_path):
     return metadata
 
 
-def write_dsmd(dsmd, file_path, auto_mkdirs=True):
-    """ Write dataset metadata to given file path.
+def save_dsmd(dsmd, file_path, auto_mkdirs=True):
+    """ Save dataset metadata to specified file.
 
     Args:
         dsmd (dict): dataset metadata.
         file_path (str): file path to save dataset metadata.
-        auto_mkdir (bool): If the parent folder of `file_path` does not exist,
+        auto_mkdirs (bool): If the parent folder of `file_path` does not exist,
             whether to create it automatically.
-
-    Return:
-        (dict): dataset metadata information.
     """
     if auto_mkdirs:
         mv.mkdirs(os.path.dirname(file_path))
@@ -56,9 +53,10 @@ def write_dsmd(dsmd, file_path, auto_mkdirs=True):
             fd.write(line)
 
 
-def gen_cls_dsmd_file(root_dir, c2l_path, dsmd_path, classnames=None):
+def gen_cls_dsmd_file_from_datafolder(
+        root_dir, c2l_path, dsmd_path, classnames=None):
     """ Generate classification dataset metadata file from DataFolder for
-    given classes.
+    specified classes.
 
     DataFolder is a directory structure for image classification problems.
     Each sub-directory contains images from a special class. DataFolder
@@ -87,10 +85,12 @@ def gen_cls_dsmd_file(root_dir, c2l_path, dsmd_path, classnames=None):
         root_dir (str): root data directory containing all the images.
         c2l_path (str): file path to save class2label info.
         dsmd_path (str): file path to save dataset metadata file.
-        classnames (list[str]): names of given classes.
+        classnames (list[str]): names of specified classes.
             If not given, all classes are considered.
 
     Note:
+        This function is expected to be used together with
+        'gen_cls_ds_from_datafolder()'.
         Filename of each image in DataFolder should be unique. Otherwise,
         A FileExistsError will be thrown.
     """
@@ -114,26 +114,31 @@ def gen_cls_dsmd_file(root_dir, c2l_path, dsmd_path, classnames=None):
                     'filename {} already exists'.format(filename))
             dsmd[filename] = label
 
-    write_dsmd(class2label, c2l_path)
-    write_dsmd(dsmd, dsmd_path)
+    save_dsmd(class2label, c2l_path)
+    save_dsmd(dsmd, dsmd_path)
 
 
-def merge_datafolder(in_dir, out_dir, auto_mkdirs=True, classnames=None):
-    """ Merge images in DataFolder to a single directory.
+def gen_cls_ds_from_datafolder(
+        in_dir, out_dir, auto_mkdirs=True, classnames=None):
+    """ Generate classification dataset from DataFolder.
 
-    DataFolder is described in 'gen_cls_dsmd_file()'. This function will
-    make a copy of all files. Original DataFolder is left unchanged.
+    This function will make a copy of each image in the DataFolder to the
+    specified directory. Original DataFolder is left unchanged.
 
     Args:
-        in_dir (str): given DataFolder root directory.
-        out_dir (str): directory to save images in DataFolder.
-        classnames (list[str]): names of given classes to be collected.
+        in_dir (str): DataFolder root directory.
+        out_dir (str): directory to save all the images in DataFolder.
+        auto_mkdirs (bool): If `out_dir` does not exist, whether to create
+            it automatically.
+        classnames (list[str]): names of specified classes to be collected.
             If not given, all classes are considered.
 
     Note:
+        This function is expected to be used together with
+        gen_cls_dsmd_file_from_datafolder().
         Filename of each image in DataFolder should be unique. Otherwise,
         A FileExistsError will be thrown.
-
+        DataFolder is described in 'gen_cls_dsmd_file_from_datafolder()'.
     """
     assert mv.isdir(in_dir)
 
@@ -156,7 +161,7 @@ def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True):
     """ Split a dataset medadata file into 3 parts.
 
     Split a dataset metadata file into 'train.txt', 'val.txt' and 'test.txt'.
-    And put them in the same directory with given dsmd file.
+    And put them in the same directory with specified dsmd file.
 
     dsmd_filepath (str): file path of dataset metadata.
     datasplit (dict[str, float]): how to split the dataset. e.g.
@@ -191,6 +196,6 @@ def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True):
         keys_split = keys[start_index:end_index]
         keys_split = natsorted(keys_split)
         dsmd_split = {keys: dsmd[keys] for keys in keys_split}
-        write_dsmd(filepath, dsmd_split)
+        save_dsmd(dsmd_split, filepath)
 
         start_index = end_index

@@ -12,7 +12,7 @@ def tqdm_imap(func, args, n_processes=None):
     Args:
         func (function obj): the function to be called.
         args (list): the function arguments.
-        n_processe (int): number of processes to be utilized.
+        n_processes (int): number of processes to be utilized.
 
     Return:
         (list): the results for different inputs.
@@ -32,25 +32,25 @@ def tqdm_imap(func, args, n_processes=None):
 # Multiprocessing cannot be tested in pytest.
 # We can test it here instead.
 if __name__ == '__main__':
-    def func(first, second, third):
-        return first + second + third
+    def add(a, b, c):
+        return a + b + c
 
     first = [str(i) for i in range(100)]
     second = '_m'
     third = '.png'
 
-    # single processer version
-    result_sp = [func(i, second, third) for i in first]
+    # single processor version
+    result_sp = [add(i, second, third) for i in first]
 
-    # multi-processers version 1
-    def func_wrapper(xyz):
-        return func(*xyz)
+    # multi-processors version 1
+    def add_wrapper(xyz):
+        return add(*xyz)
     in_para_wrapper = [(i, second, third) for i in first]
-    result_mp = tqdm_imap(func_wrapper, in_para_wrapper)
+    result_mp = tqdm_imap(add_wrapper, in_para_wrapper)
     assert result_sp == result_mp
 
-    # multi-processers version 2
+    # multi-processors version 2
     from functools import partial
-    partial_func = partial(func, second=second, third=third)
+    partial_func = partial(add, second=second, third=third)
     result_mp = tqdm_imap(partial_func, first)
     assert result_sp == result_mp
