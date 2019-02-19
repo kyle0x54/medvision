@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-import os
 import pytest
 import medvision as mv
 
@@ -35,6 +34,9 @@ def test_copyfiles():
     mv.copyfiles(src_paths, dst_dir, DCM_DIR)
     assert len(mv.listdir(dst_dir)) == 2
 
+    with pytest.raises(FileExistsError):
+        mv.non_overwrite_cp(mv.joinpath(DCM_DIR, src_paths[0]), dst_dir)
+
     with not_raises(FileExistsError):
         mv.copyfiles(src_paths, dst_dir, DCM_DIR, non_overwrite=False)
 
@@ -69,3 +71,24 @@ def test_glob_dir():
     root = DATA_DIR
     filepaths = mv.glob(root, '*', mode=mv.GlobMode.DIR, recursive=True)
     assert len(filepaths) == 8
+
+
+def test_has_duplicated_files():
+    dst_dir = mv.joinpath(DATA_DIR, 'temporary_subdir')
+    mv.mkdirs(dst_dir)
+
+    # non duplicated files case
+    src_paths = ['brain_001.dcm', 'brain_002.dcm', 'brain_003.dcm']
+    mv.copyfiles(src_paths, dst_dir, DCM_DIR)
+    assert not mv.has_duplicated_files(dst_dir)
+
+    # duplicated files case
+    mv.non_overwrite_cp(mv.joinpath(DCM_DIR, src_paths[0]),
+                        mv.joinpath(dst_dir, 'dup.dcm'))
+    assert mv.has_duplicated_files(dst_dir)
+    _, duplicated_files = mv.has_duplicated_files(dst_dir)
+    assert len(duplicated_files) == 1
+    assert (mv.joinpath(dst_dir, 'brain_001.dcm') in duplicated_files[0] and
+            mv.joinpath(dst_dir, 'dup.dcm') in duplicated_files[0])
+
+    mv.rmtree(dst_dir)

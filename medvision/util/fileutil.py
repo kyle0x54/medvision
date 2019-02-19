@@ -1,5 +1,7 @@
+import collections
 from enum import Enum, unique, auto
 from glob import glob as std_glob
+import hashlib
 import os
 import shutil
 from natsort import natsorted
@@ -77,3 +79,47 @@ def glob(root, pattern, mode=GlobMode.FILE, recursive=False):
         pass
 
     return natsorted(result)
+
+
+def compute_md5_str(file_path):
+    if not mv.isfile(file_path):
+        return None
+
+    with open(file_path, 'rb') as f:
+        m = hashlib.md5()
+        m.update(f.read())
+        md5_code = m.hexdigest()
+        return str(md5_code).lower()
+
+
+def has_duplicated_files(data_dir, pattern='*', mode=GlobMode.FILE,
+                         recursive=True, return_duplicated_files=True):
+    """ Check whether there are duplicated files in specified directory.
+
+    Args:
+        data_dir (str): specified directory to be scanned.
+        pattern: refer to 'glob()'.
+        mode: refer to 'glob()'.
+        recursive: refer to 'glob()'.
+        return_duplicated_files: whether to return the duplicated file paths.
+
+    Return:
+        (bool): True if there are duplicated files. False otherwise.
+        (list[tuple], optional): duplicated file path pairs.
+    """
+    filepaths = glob(data_dir, pattern, mode, recursive)
+    md5s = [compute_md5_str(filepath) for filepath in filepaths]
+    md5_counts = collections.Counter(md5s)
+
+    duplicated_files = []
+    for key, count in md5_counts.items():
+        if count > 1:
+            candidates = tuple(filepaths[i] for
+                               i, x in enumerate(md5s) if x == key)
+            duplicated_files.append(candidates)
+            if return_duplicated_files:
+                return True, duplicated_files
+            else:
+                return True
+    else:
+        return False
