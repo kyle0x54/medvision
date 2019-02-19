@@ -71,7 +71,7 @@ def save_dsmd(dsmd, file_path, auto_mkdirs=True):
             whether to create it automatically.
     """
     if auto_mkdirs:
-        mv.mkdirs(os.path.dirname(file_path))
+        mv.mkdirs(mv.parentdir(file_path))
 
     ordered_dsmd = OrderedDict(natsorted(dsmd.items(), key=lambda t: t[0]))
     with open(file_path, 'w') as fd:
@@ -126,7 +126,7 @@ def gen_cls_dsmd_file_from_datafolder(
     assert mv.isdir(root_dir)
 
     if classnames is None:
-        classnames = natsorted(os.listdir(root_dir))
+        classnames = natsorted(mv.listdir(root_dir))
 
     class2label = {}
     dsmd = {}
@@ -136,7 +136,7 @@ def gen_cls_dsmd_file_from_datafolder(
 
         class_dir = mv.joinpath(root_dir, classname)
         assert mv.isdir(class_dir)
-        filenames = natsorted(os.listdir(class_dir))
+        filenames = natsorted(mv.listdir(class_dir))
         for filename in filenames:
             if filename in dsmd:
                 raise FileExistsError(
@@ -173,16 +173,16 @@ def gen_cls_ds_from_datafolder(
 
     # clean output directory
     if auto_mkdirs:
-        mv.mkdirs(os.path.dirname(out_dir))
+        mv.mkdirs(mv.parentdir(out_dir))
     mv.empty_dir(out_dir)
 
     if classnames is None:
-        classnames = os.listdir(in_dir)
+        classnames = mv.listdir(in_dir)
 
     for classname in classnames:
         class_dir = mv.joinpath(in_dir, classname)
         assert mv.isdir(class_dir)
-        filenames = natsorted(os.listdir(class_dir))
+        filenames = natsorted(mv.listdir(class_dir))
         mv.copyfiles(filenames, out_dir, class_dir, non_overwrite=True)
 
 
@@ -202,7 +202,7 @@ def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True):
         If there's no image in a split. The corresponding dsmd file will
         not be saved.
     """
-    dsmd_dir = os.path.dirname(dsmd_filepath)
+    dsmd_dir = mv.parentdir(dsmd_filepath)
 
     dsmd = load_dsmd(dsmd_filepath)
     num_total = len(dsmd)

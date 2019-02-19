@@ -3,7 +3,7 @@ import pytest
 import medvision as mv
 
 
-DATA_DIR = mv.joinpath(os.path.dirname(__file__), 'data')
+DATA_DIR = mv.joinpath(mv.parentdir(__file__), 'data')
 DSMD_CLS_SL = mv.joinpath(DATA_DIR, 'texts', 'dsmd_cls_single_label.txt')
 DSMD_CLS_ML = mv.joinpath(DATA_DIR, 'texts', 'dsmd_cls_multi_label.txt')
 DF_DIR = mv.joinpath(DATA_DIR, 'datafolder')
@@ -47,7 +47,7 @@ def test_gen_cls_ds():
 
     mv.empty_dir(tmp_dir)
     mv.gen_cls_ds_from_datafolder(DF_DIR, tmp_dir)
-    assert len(os.listdir(tmp_dir)) == 8
+    assert len(mv.listdir(tmp_dir)) == 8
 
     mv.rmtree(tmp_dir)
 

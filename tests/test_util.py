@@ -4,7 +4,7 @@ import pytest
 import medvision as mv
 
 
-DATA_DIR = mv.joinpath(os.path.dirname(__file__), 'data')
+DATA_DIR = mv.joinpath(mv.parentdir(__file__), 'data')
 DCM_DIR = mv.joinpath(DATA_DIR, 'dicoms')
 PNG_DIR = mv.joinpath(DATA_DIR, 'pngs')
 
@@ -33,7 +33,7 @@ def test_copyfiles():
 
     src_paths = ['brain_001.dcm', 'brain_002.dcm']
     mv.copyfiles(src_paths, dst_dir, DCM_DIR)
-    assert len(os.listdir(dst_dir)) == 2
+    assert len(mv.listdir(dst_dir)) == 2
 
     with not_raises(FileExistsError):
         mv.copyfiles(src_paths, dst_dir, DCM_DIR, non_overwrite=False)
@@ -43,7 +43,7 @@ def test_copyfiles():
 
     mv.empty_dir(dst_dir)
     assert mv.isdir(dst_dir)
-    assert len(os.listdir(dst_dir)) == 0
+    assert len(mv.listdir(dst_dir)) == 0
     mv.rmtree(dst_dir)
 
 
@@ -58,7 +58,7 @@ def test_glob_file():
 
     filepaths = mv.glob(PNG_DIR, '*.png', mode=mv.GlobMode.FILE,
                         recursive=False)
-    assert len(filepaths) == len(os.listdir(PNG_DIR))
+    assert len(filepaths) == len(mv.listdir(PNG_DIR))
 
 
 def test_glob_dir():

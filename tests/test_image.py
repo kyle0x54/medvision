@@ -6,7 +6,7 @@ import medvision as mv
 import pytest
 
 
-DATA_DIR = mv.joinpath(os.path.dirname(__file__), 'data')
+DATA_DIR = mv.joinpath(mv.parentdir(__file__), 'data')
 PNG_IMG_PATH = mv.joinpath(DATA_DIR, 'pngs', 'Blue-Ogi.png')
 IM_GRAY = mv.imread(PNG_IMG_PATH, mv.ImreadMode.GRAY)
 IM_RGB = mv.imread(PNG_IMG_PATH)

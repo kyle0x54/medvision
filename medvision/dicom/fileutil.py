@@ -45,7 +45,7 @@ def isdicomdir(path):
     if not mv.isdir(path):
         return False
 
-    for file_name in os.listdir(path):
+    for file_name in mv.listdir(path):
         file_path = mv.joinpath(path, file_name)
         if not isdicom(file_path):
             return False

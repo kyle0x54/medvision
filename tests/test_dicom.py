@@ -4,7 +4,7 @@ import pytest
 import medvision as mv
 
 
-DATA_DIR = mv.joinpath(os.path.dirname(__file__), 'data')
+DATA_DIR = mv.joinpath(mv.parentdir(__file__), 'data')
 DCM_PATH = mv.joinpath(DATA_DIR, 'dicoms', 'brain_001.dcm')
 
 

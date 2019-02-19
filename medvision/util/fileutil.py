@@ -7,9 +7,11 @@ from natsort import natsorted
 
 isdir = os.path.isdir
 isfile = os.path.isfile
+listdir = os.listdir
 
 joinpath = os.path.join
 basename = os.path.basename
+parentdir = os.path.dirname
 
 cp = shutil.copy
 rm = os.remove
