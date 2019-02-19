@@ -1,5 +1,6 @@
 import math
 import matplotlib.pyplot as plt
+import medvision as mv
 
 
 def _imshow_tight(img, title, cmap):
@@ -21,7 +22,7 @@ def imshow(imgs, fig_name=None, titles=None, cmap=None, num_cols=None):
         num_cols (int): image number per column for multiple images display.
             If not given, this parameter is automatically determined.
     """
-    if isinstance(imgs, (list, tuple)):
+    if mv.isarrayinstance(imgs):
         num_imgs = len(imgs)
     else:
         num_imgs = 1
@@ -31,7 +32,7 @@ def imshow(imgs, fig_name=None, titles=None, cmap=None, num_cols=None):
         titles = [''] * len(imgs)
     elif isinstance(titles, str):
         titles = [titles] * len(imgs)
-    else:  # isinstance(titles, (list, tuple))
+    else:  # mv.isarrayinstance(titles)
         assert len(titles) == len(imgs)
 
     if num_cols is None:

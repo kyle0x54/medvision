@@ -1,5 +1,4 @@
-from collections import OrderedDict
-import os
+import collections
 import random
 from natsort import natsorted
 import numpy as np
@@ -37,7 +36,7 @@ def load_dsmd(file_path):
     Return:
         (dict): dataset metadata information.
     """
-    metadata = OrderedDict()
+    metadata = collections.OrderedDict()
     with open(file_path, 'r') as fd:
         for line in fd:
             key, value = line.strip().split(',', 1)
@@ -73,10 +72,11 @@ def save_dsmd(dsmd, file_path, auto_mkdirs=True):
     if auto_mkdirs:
         mv.mkdirs(mv.parentdir(file_path))
 
-    ordered_dsmd = OrderedDict(natsorted(dsmd.items(), key=lambda t: t[0]))
+    ordered_dsmd = collections.OrderedDict(natsorted(dsmd.items(),
+                                                     key=lambda t: t[0]))
     with open(file_path, 'w') as fd:
         for key, value in ordered_dsmd.items():
-            if isinstance(value, (list, tuple)):  # for multi label case
+            if mv.isarrayinstance(value):  # for multi label case
                 value = ', '.join([str(entry) for entry in value])
             line = '%s, %s\n' % (str(key), str(value))
             fd.write(line)

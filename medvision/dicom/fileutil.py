@@ -1,4 +1,3 @@
-import os
 import medvision as mv
 
 

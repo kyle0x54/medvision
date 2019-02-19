@@ -3,6 +3,7 @@ from glob import glob as std_glob
 import os
 import shutil
 from natsort import natsorted
+import medvision as mv
 
 
 isdir = os.path.isdir
@@ -47,7 +48,7 @@ def non_overwrite_cp(src, dst):
 
 def copyfiles(src_paths, dst_dir, src_root=None, non_overwrite=False):
     assert isdir(dst_dir)
-    assert isinstance(src_paths, (tuple, list))
+    assert mv.isarrayinstance(src_paths)
 
     cp_func = non_overwrite_cp if non_overwrite else cp
     for src_path in src_paths:

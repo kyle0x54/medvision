@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import medvision as mv
 
 
 def vflip(img):
@@ -34,7 +35,7 @@ def rot90(img, k):
 
     Args:
         img (ndarray): image to be rotated.
-        k.(integer): number of times the array is rotated by 90 degrees.
+        k (integer): number of times the array is rotated by 90 degrees.
 
     Returns:
         (ndarray): the rotated image.
@@ -100,14 +101,14 @@ def rescale(src, scale, return_scale=False, interpolation=cv2.INTER_LINEAR):
         (ndarray): the rescaled image
         (float, optional): the scaling factor
     """
-    assert isinstance(scale, (float, int, tuple))
+    assert isinstance(scale, (float, int)) or mv.isarrayinstance(scale)
 
     height, width = src.shape[:2]
 
     # compute scale factor
     if isinstance(scale, (float, int)):
         assert scale > 0
-    else:  # isinstance(scale, tuple):
+    else:  # mv.isarrayinstance(scale):
         assert len(scale) == 2
         assert scale[0] > 0 and scale[1] > 0
         max_long_edge, max_short_edge = max(scale), min(scale)

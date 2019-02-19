@@ -1,5 +1,4 @@
 from enum import Enum, unique
-import os
 import cv2
 import medvision as mv
 
