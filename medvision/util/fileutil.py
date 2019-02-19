@@ -92,22 +92,17 @@ def compute_md5_str(file_path):
         return str(md5_code).lower()
 
 
-def has_duplicated_files(data_dir, pattern='*', mode=GlobMode.FILE,
-                         recursive=True, return_duplicated_files=True):
-    """ Check whether there are duplicated files in specified directory.
+def find_duplicated_files(data_dir, pattern='*'):
+    """ Find duplicated files in specified directory.
 
     Args:
         data_dir (str): specified directory to be scanned.
         pattern: refer to 'glob()'.
-        mode: refer to 'glob()'.
-        recursive: refer to 'glob()'.
-        return_duplicated_files: whether to return the duplicated file paths.
 
     Return:
-        (bool): True if there are duplicated files. False otherwise.
-        (list[tuple], optional): duplicated file path pairs.
+        (list[tuple]): duplicated file path pairs.
     """
-    filepaths = glob(data_dir, pattern, mode, recursive)
+    filepaths = glob(data_dir, pattern, mode=GlobMode.FILE, recursive=True)
     md5s = [compute_md5_str(filepath) for filepath in filepaths]
     md5_counts = collections.Counter(md5s)
 
@@ -118,10 +113,4 @@ def has_duplicated_files(data_dir, pattern='*', mode=GlobMode.FILE,
                                i, x in enumerate(md5s) if x == key)
             duplicated_files.append(candidates)
 
-    if duplicated_files:
-        if return_duplicated_files:
-            return True, duplicated_files
-        else:
-            return True
-    else:
-        return False
+    return duplicated_files
