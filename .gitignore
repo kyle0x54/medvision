@@ -1,4 +1,5 @@
 # Vim swap files
+.idea/
 *.swp
 
 # Byte-compiled / optimized / DLL files
