@@ -1,3 +1,4 @@
+import ast
 import collections
 import random
 from natsort import natsorted
@@ -40,22 +41,11 @@ def load_dsmd(file_path):
     with open(file_path, 'r') as fd:
         for line in fd:
             key, value = line.strip().split(',', 1)
-            # try to interpret annotation as an integer
+            # try to interpret annotation as reasonable type.
             try:
-                value = int(value.strip())
-                metadata[key] = value
-                continue
-            except (TypeError, ValueError):
+                value = ast.literal_eval(value.strip())
+            except (SyntaxError, ValueError):
                 pass
-            # try to interpret annotation as an list[int]
-            try:
-                value = map(int, value.strip().split())
-                metadata[key] = value
-                continue
-            except ValueError:
-                pass
-            # interpret annotation as a string
-            assert isinstance(value, str)
             metadata[key] = value
     return metadata
 
