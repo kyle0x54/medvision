@@ -1,6 +1,6 @@
+import collections
 import math
 import matplotlib.pyplot as plt
-import medvision as mv
 
 
 def _imshow_tight(img, title, cmap):
@@ -11,29 +11,24 @@ def _imshow_tight(img, title, cmap):
     plt.title(title)
 
 
-def imshow(imgs, fig_name=None, titles=None, cmap=None, num_cols=None):
+def imshow(imgs, num_cols=None, fig_name=None, titles='', cmap=None):
     """ Show an image or multiple images in a single canvas.
 
     Args:
         imgs (ndarray or tuple/list[ndarray]): images to be shown.
-        fig_name (str): name of the plot.
-        titles (tuple/list[str]): sub-plot titles.
-        cmap (str): the same as matplotlib 'cmap'.
         num_cols (int): image number per column for multiple images display.
             If not given, this parameter is automatically determined.
+        fig_name (str): name of the plot.
+        titles (str or tuple[str]): sub-plot titles.
+        cmap (str): the same as matplotlib 'cmap'.
     """
-    if mv.isarrayinstance(imgs):
-        num_imgs = len(imgs)
-    else:
-        num_imgs = 1
+    if not isinstance(imgs, collections.Sequence):
         imgs = [imgs]
+    num_imgs = len(imgs)
 
-    if titles is None:
-        titles = [''] * len(imgs)
-    elif isinstance(titles, str):
-        titles = [titles] * len(imgs)
-    else:  # mv.isarrayinstance(titles)
-        assert len(titles) == len(imgs)
+    if isinstance(titles, str):
+        titles = [titles] * num_imgs
+    assert len(titles) == num_imgs
 
     if num_cols is None:
         num_cols = int(math.ceil(math.sqrt(num_imgs)))
