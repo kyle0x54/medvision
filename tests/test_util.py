@@ -84,11 +84,16 @@ def test_has_duplicated_files():
 
     # duplicated files case
     mv.non_overwrite_cp(mv.joinpath(DCM_DIR, src_paths[0]),
-                        mv.joinpath(dst_dir, 'dup.dcm'))
+                        mv.joinpath(dst_dir, 'dup_0.dcm'))
     assert mv.has_duplicated_files(dst_dir)
     _, duplicated_files = mv.has_duplicated_files(dst_dir)
     assert len(duplicated_files) == 1
     assert (mv.joinpath(dst_dir, 'brain_001.dcm') in duplicated_files[0] and
-            mv.joinpath(dst_dir, 'dup.dcm') in duplicated_files[0])
+            mv.joinpath(dst_dir, 'dup_0.dcm') in duplicated_files[0])
+
+    mv.non_overwrite_cp(mv.joinpath(DCM_DIR, src_paths[1]),
+                        mv.joinpath(dst_dir, 'dup_1.dcm'))
+    _, duplicated_files = mv.has_duplicated_files(dst_dir)
+    assert len(duplicated_files) == 2
 
     mv.rmtree(dst_dir)

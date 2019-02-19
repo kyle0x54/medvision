@@ -117,9 +117,11 @@ def has_duplicated_files(data_dir, pattern='*', mode=GlobMode.FILE,
             candidates = tuple(filepaths[i] for
                                i, x in enumerate(md5s) if x == key)
             duplicated_files.append(candidates)
-            if return_duplicated_files:
-                return True, duplicated_files
-            else:
-                return True
+
+    if duplicated_files:
+        if return_duplicated_files:
+            return True, duplicated_files
+        else:
+            return True
     else:
         return False
