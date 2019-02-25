@@ -3,7 +3,8 @@ import math
 import matplotlib.pyplot as plt
 
 
-def _imshow_tight(img, title, cmap):
+def _imshow_tight(img, title):
+    cmap = 'gray' if img.ndim == 2 else None
     plt.imshow(img, cmap=cmap)
     plt.axis('off')
     plt.xlim([0, img.shape[1]])
@@ -11,7 +12,7 @@ def _imshow_tight(img, title, cmap):
     plt.title(title)
 
 
-def imshow(imgs, num_cols=None, fig_name=None, titles='', cmap=None):
+def imshow(imgs, num_cols=None, fig_name=None, titles=''):
     """ Show an image or multiple images in a single canvas.
 
     Args:
@@ -20,7 +21,6 @@ def imshow(imgs, num_cols=None, fig_name=None, titles='', cmap=None):
             If not given, this parameter is automatically determined.
         fig_name (str): name of the plot.
         titles (str or tuple[str]): sub-plot titles.
-        cmap (str): the same as matplotlib 'cmap'.
     """
     if not isinstance(imgs, collections.Sequence):
         imgs = [imgs]
@@ -39,7 +39,7 @@ def imshow(imgs, num_cols=None, fig_name=None, titles='', cmap=None):
 
     for i, img in enumerate(imgs):
         plt.subplot(num_rows, num_cols, i + 1)
-        _imshow_tight(img, titles[i], cmap)
+        _imshow_tight(img, titles[i])
 
     plt.show()
 
@@ -47,7 +47,7 @@ def imshow(imgs, num_cols=None, fig_name=None, titles='', cmap=None):
 if __name__ == '__main__':
     import cv2
     im = cv2.imread('../../tests/data/pngs/Blue-Ogi.png', cv2.IMREAD_GRAYSCALE)
-    imshow(im, fig_name='show single image', titles='name', cmap='gray')
+    imshow(im, fig_name='show single image', titles='name')
     im = cv2.imread('../../tests/data/pngs/Blue-Ogi.png', cv2.IMREAD_COLOR)
     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
     imshow([im] * 5, fig_name='show multiple images',
