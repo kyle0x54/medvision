@@ -64,7 +64,7 @@ class GlobMode(Enum):
     ALL = auto()
 
 
-def glob(root, pattern, mode=GlobMode.FILE, recursive=False):
+def glob(root, pattern='*', mode=GlobMode.FILE, recursive=False):
     root = os.path.expanduser(root)
     pattern = joinpath('**', pattern) if recursive else pattern
     pathname = joinpath(root, pattern)

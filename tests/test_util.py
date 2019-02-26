@@ -58,8 +58,7 @@ def test_glob_file():
                         recursive=False)
     assert len(filepaths) == 0
 
-    filepaths = mv.glob(PNG_DIR, '*.png', mode=mv.GlobMode.FILE,
-                        recursive=False)
+    filepaths = mv.glob(PNG_DIR, mode=mv.GlobMode.FILE, recursive=False)
     assert len(filepaths) == len(mv.listdir(PNG_DIR))
 
 
