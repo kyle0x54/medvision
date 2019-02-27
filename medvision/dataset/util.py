@@ -50,6 +50,52 @@ def load_dsmd(file_path):
     return metadata
 
 
+def load_dsmd_det(file_path, class2label_file_path):
+    # TODO: merge with 'load_dsmd'
+    metadata = {}
+    class2label = load_dsmd(class2label_file_path)
+    num_classes = len(class2label)
+
+    # label should start from 0
+    assert min(class2label.values()) == 0
+
+    with open(file_path, 'r') as fd:
+        for line in fd:
+            key, value = line.strip().split(',', 1)
+            value, class_name = value.strip().rsplit(',', 1)
+            label = class2label[class_name] if class_name else None
+
+            if label is None:
+                metadata[key] = [None] * num_classes
+                continue
+
+            # try to interpret annotation as reasonable type.
+            try:
+                value = ast.literal_eval(value.strip())
+            except (SyntaxError, ValueError):
+                pass
+
+            if key not in metadata:
+                metadata[key] = [None] * num_classes
+                metadata[key][label] = [value]
+            elif metadata[key][label] is None:
+                metadata[key][label] = [value]
+            else:
+                metadata[key][label].append(value)
+
+    # convert bboxes to ndarray
+    for key in metadata:
+        for j in range(num_classes):
+            if metadata[key][j] is not None:
+                metadata[key][j] = np.array(metadata[key][j],
+                                            dtype=np.float32)
+            else:
+                metadata[key][j] = np.zeros((0, 4), dtype=np.float32)
+
+    metadata = collections.OrderedDict(natsorted(metadata.items()))
+    return metadata
+
+
 def save_dsmd(dsmd, file_path, auto_mkdirs=True):
     """ Save dataset metadata to specified file.
 
@@ -62,14 +108,33 @@ def save_dsmd(dsmd, file_path, auto_mkdirs=True):
     if auto_mkdirs:
         mv.mkdirs(mv.parentdir(file_path))
 
-    ordered_dsmd = collections.OrderedDict(natsorted(dsmd.items(),
-                                                     key=lambda t: t[0]))
+    ordered_dsmd = collections.OrderedDict(natsorted(dsmd.items()))
     with open(file_path, 'w') as fd:
         for key, value in ordered_dsmd.items():
             if mv.isarrayinstance(value):  # for multi label case
                 value = ', '.join([str(entry) for entry in value])
             line = '%s, %s\n' % (str(key), str(value))
             fd.write(line)
+
+
+def save_dsmd_det(dsmd, file_path, label2class, auto_mkdirs=True):
+    # TODO: merge with 'save_dsmd'
+    if auto_mkdirs:
+        mv.mkdirs(mv.parentdir(file_path))
+
+    ordered_dsmd = collections.OrderedDict(natsorted(dsmd.items()))
+    with open(file_path, 'w') as fd:
+        for key, value in ordered_dsmd.items():
+            if sum([len(i) for i in value]) == 0:
+                fd.write('%s,,,,,\n' % str(key))
+                continue
+
+            for label, bboxes in enumerate(value):
+                class_name = label2class[label]
+                for bbox in bboxes:
+                    bbox = ','.join([str(elem) for elem in bbox])
+                    line = '%s,%s,%s\n' % (str(key), str(bbox), class_name)
+                    fd.write(line)
 
 
 def gen_cls_dsmd_file_from_datafolder(
@@ -223,3 +288,15 @@ def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True):
             save_dsmd(dsmd_split, filepath)
 
         start_index = end_index
+
+
+# TODO: move to unit test
+if __name__ == '__main__':
+    file_path = '/home/kyle/Desktop/train_with_invert.csv'
+    out_path = '/home/kyle/Desktop/out.csv'
+    class2label_file_path = '/home/kyle/Desktop/c2l.csv'
+    dsmd = load_dsmd_det(file_path, class2label_file_path)
+
+    class2label = load_dsmd(class2label_file_path)
+    label2class = {value: key for key, value in class2label.items()}
+    save_dsmd_det(dsmd, out_path, label2class, auto_mkdirs=True)
