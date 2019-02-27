@@ -6,6 +6,9 @@ import sys
 from shutil import rmtree
 
 from setuptools import find_packages, setup, Command
+from setuptools.extension import Extension
+from Cython.Build import cythonize
+import numpy
 
 
 NAME = 'medvision'
@@ -18,7 +21,7 @@ VERSION = None
 
 
 REQUIRED = [
-    'matplotlib', 'natsort', 'numpy', 'opencv-python',
+    'cython', 'matplotlib', 'natsort', 'numpy', 'opencv-python',
     'SimpleITK', 'tqdm', 'visdom'
 ]
 
@@ -76,6 +79,14 @@ class UploadCommand(Command):
         sys.exit()
 
 
+extensions = [
+    Extension(
+        'medvision.evaluation.compute_overlap',
+        ['medvision/evaluation/compute_overlap.pyx'],
+        include_dirs=[numpy.get_include()]),
+    ]
+
+
 setup(
     name=NAME,
     version=about['__version__'],
@@ -103,5 +114,6 @@ setup(
     cmdclass={
         'upload': UploadCommand,
     },
-    zip_safe=False
+    zip_safe=False,
+    ext_modules=cythonize(extensions),
 )

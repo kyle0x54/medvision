@@ -21,6 +21,8 @@ clean-build:
 	@rm -rfv build/
 	@rm -rfv dist/
 	@rm -rfv *.egg-info
+	@find . -type f -name "*.c" | xargs rm -fv
+	@find . -type f -name "*.so" | xargs rm -fv
 
 clean: clean-pyc clean-build
 
@@ -44,3 +46,5 @@ install_depend:
 	pip install flake8
 
 	sudo apt install cloc
+
+	python setup.py build_ext --inplace
