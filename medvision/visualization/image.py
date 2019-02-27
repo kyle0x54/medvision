@@ -84,7 +84,7 @@ def imshow(imgs, num_cols=None, fig_name=None, titles=''):
         num_cols (int): image number per column for multiple images display.
             If not given, this parameter is automatically determined.
         fig_name (str): name of the plot.
-        titles (str or tuple[str]): sub-plot titles.
+        titles (str or list[str]): sub-plot titles.
     """
     if not isinstance(imgs, collections.Sequence):
         imgs = [imgs]
