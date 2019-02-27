@@ -1,7 +1,7 @@
 .PHONY: help clean test lint linecount install install_depend
 
 help:
-	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "Please use 'make <target>' where <target> is one of"
 	@echo "  clean-build    to remove cache files"
 	@echo "  clean-pyc      to remove build files"
 	@echo "  clean          to remove build files and cache files"
