@@ -21,6 +21,7 @@ $ pip install medvision
 ```shell
 $ git clone git@github.com:kyle0x54/medvision.git
 $ cd medvision
+$ python setup.py build_ext --inplace
 $ pip install .
 ```
 
