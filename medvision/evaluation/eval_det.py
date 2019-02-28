@@ -2,6 +2,38 @@ import numpy as np
 from .compute_overlap import compute_overlap
 
 
+def _compute_ap_voc07(rec, pre):
+    ap = 0.
+    for t in np.arange(0., 1.1, 0.1):
+        if np.sum(rec >= t) == 0:
+            p = 0
+        else:
+            p = np.max(pre[rec >= t])
+        ap = ap + p / 11.
+
+    return ap
+
+
+def _compute_ap_voc12(rec, pre):
+    # correct AP calculation
+    # first append sentinel values at the end
+    mrec = np.concatenate(([0.], rec, [1.]))
+    mpre = np.concatenate(([0.], pre, [0.]))
+
+    # compute the precision envelope
+    for i in range(mpre.size - 1, 0, -1):
+        mpre[i - 1] = np.maximum(mpre[i - 1], mpre[i])
+
+    # to calculate area under PR curve, look for points
+    # where X axis (recall) changes value
+    i = np.where(mrec[1:] != mrec[:-1])[0]
+
+    # and sum (\Delta recall) * precision
+    ap = np.sum((mrec[i + 1] - mrec[i]) * mpre[i + 1])
+
+    return ap
+
+
 def _compute_ap(rec, pre, use_voc07_metric=False):
     """ Compute the average precision, given the recall and precision curves.
 
@@ -16,31 +48,9 @@ def _compute_ap(rec, pre, use_voc07_metric=False):
         The average precision as computed in py-faster-rcnn.
     """
     if use_voc07_metric:
-        # 11 point metric
-        ap = 0.
-        for t in np.arange(0., 1.1, 0.1):
-            if np.sum(rec >= t) == 0:
-                p = 0
-            else:
-                p = np.max(pre[rec >= t])
-            ap = ap + p / 11.
+        return _compute_ap_voc07(rec, pre)
     else:
-        # correct AP calculation
-        # first append sentinel values at the end
-        mrec = np.concatenate(([0.], rec, [1.]))
-        mpre = np.concatenate(([0.], pre, [0.]))
-
-        # compute the precision envelope
-        for i in range(mpre.size - 1, 0, -1):
-            mpre[i - 1] = np.maximum(mpre[i - 1], mpre[i])
-
-        # to calculate area under PR curve, look for points
-        # where X axis (recall) changes value
-        i = np.where(mrec[1:] != mrec[:-1])[0]
-
-        # and sum (\Delta recall) * precision
-        ap = np.sum((mrec[i + 1] - mrec[i]) * mpre[i + 1])
-    return ap
+        return _compute_ap_voc12(rec, pre)
 
 
 def eval_det(gts, dts, num_classes=1, iou_thr=0.5, score_thr=0.05,
