@@ -56,9 +56,41 @@ def load_dsmd_det(file_path, c2l_path):
     --------------------------------
     |data/1.png,170,146,397,681,cat|
     |data/1.png,473,209,723,673,cat|
-    |data/2.png,552,167,745,272,dog|
+    |data/1.png,552,167,745,272,dog|
+    |data/2.png,578,267,624,304,dog|
+    |data/3.png,,,,,               |
     |...                           |
     --------------------------------
+    or
+    ------------------------------------
+    |data/1.png,170,146,397,681,0.5,cat|
+    |data/1.png,473,209,723,673,0.2,cat|
+    |data/1.png,552,167,745,272,0.7,dog|
+    |data/2.png,578,267,624,304,0.9,dog|
+    |...                               |
+    ------------------------------------
+    Each line contains following information.
+    (filepath,xmin,ymin,xmax,ymax,probability_score[optional], label)
+
+    A class-to-label file looks like (note that the label starts from 0)
+    --------
+    |cat, 0|
+    |dog, 1|
+    |...   |
+    --------
+
+    Loaded dsmd is a dictionary looks like
+    {
+        data/1.png: [
+            [bboxes of category 'cat' in ndarray of shape (n, 4)],
+            [bboxes of category 'dog' in ndarray of shape (n, 4)],
+            ...
+        ]
+        data/2.png: [
+            ...
+        ]
+        ...
+    }
     """
     # TODO: merge with 'load_dsmd'
     metadata = {}
@@ -151,7 +183,7 @@ def gen_cls_dsmd_file_from_datafolder(
     """ Generate classification dataset metadata file from DataFolder for
     specified classes.
 
-    DataFolder is a directory structure for image classification passert_equal_dsmdsroblems.
+    DataFolder is a directory structure for image classification problems.
     Each sub-directory contains images from a special class. DataFolder
     directory structure looks like
     -----------------------
@@ -309,3 +341,18 @@ if __name__ == '__main__':
     class2label = load_dsmd(class2label_file_path)
     label2class = {value: key for key, value in class2label.items()}
     save_dsmd_det(dsmd, out_path, label2class, auto_mkdirs=True)
+
+    dsmd = load_dsmd_det(out_path, class2label_file_path)
+    dsmd = [value for key, value in dsmd.items()]
+    dsmd_det = []
+    for img_id, _ in enumerate(dsmd):
+        dsmd_det.append([])
+        for label_id, _ in enumerate(dsmd[img_id]):
+            dsmd_det[img_id].append([])
+            num_bboxes = len(dsmd[img_id][label_id])
+            scores = np.ones((num_bboxes, 1), dtype=np.float32)
+            dsmd_det[img_id][label_id] = np.hstack([dsmd[img_id][label_id],
+                                                    scores])
+
+    det_metric = mv.eval_det(dsmd, dsmd_det)
+    print(det_metric)
