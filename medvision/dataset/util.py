@@ -13,23 +13,23 @@ def load_dsmd(file_path):
     a dataset metadata looks like {'data/1.png': 1, 'data/2.png': 0, ...}.
     A dataset metadata file is a structured text file. For example,
     A single label classification dataset metadata file looks like.
-    ---------------
-    |data/1.png, 1|
-    |data/2.png, 0|
-    |...          |
-    ---------------
+    --------------
+    |data/1.png,1|
+    |data/2.png,0|
+    |...         |
+    --------------
     A multi label classification dataset metadata file looks like.
-    ---------------------
-    |data/1.png, 1, 0, 1|
-    |data/2.png, 0, 0, 0|
-    |...                |
-    ---------------------
+    ------------------
+    |data/1.png,1,0,1|
+    |data/2.png,0,0,0|
+    |...             |
+    ------------------
     A segmentation dataset metadata file looks like.
-    -------------------------
-    |data/1.png, data/1.mask|
-    |data/2.png, data/2.mask|
-    |...                    |
-    -------------------------
+    ------------------------
+    |data/1.png,data/1.mask|
+    |data/2.png,data/2.mask|
+    |...                   |
+    ------------------------
 
     Args:
         file_path (str): dataset metadata file path.
@@ -50,10 +50,19 @@ def load_dsmd(file_path):
     return metadata
 
 
-def load_dsmd_det(file_path, class2label_file_path):
+def load_dsmd_det(file_path, c2l_path):
+    """
+    A detection dataset metadata file looks like.
+    --------------------------------
+    |data/1.png,170,146,397,681,cat|
+    |data/1.png,473,209,723,673,cat|
+    |data/2.png,552,167,745,272,dog|
+    |...                           |
+    --------------------------------
+    """
     # TODO: merge with 'load_dsmd'
     metadata = {}
-    class2label = load_dsmd(class2label_file_path)
+    class2label = load_dsmd(c2l_path)
     num_classes = len(class2label)
 
     # label should start from 0
@@ -83,7 +92,7 @@ def load_dsmd_det(file_path, class2label_file_path):
             else:
                 metadata[key][label].append(value)
 
-    # convert bboxes to ndarray
+    # convert bboxes from list of lists to ndarray
     for key in metadata:
         for j in range(num_classes):
             if metadata[key][j] is not None:
@@ -112,8 +121,8 @@ def save_dsmd(dsmd, file_path, auto_mkdirs=True):
     with open(file_path, 'w') as fd:
         for key, value in ordered_dsmd.items():
             if mv.isarrayinstance(value):  # for multi label case
-                value = ', '.join([str(entry) for entry in value])
-            line = '%s, %s\n' % (str(key), str(value))
+                value = ','.join([str(entry) for entry in value])
+            line = '%s,%s\n' % (str(key), str(value))
             fd.write(line)
 
 
@@ -142,7 +151,7 @@ def gen_cls_dsmd_file_from_datafolder(
     """ Generate classification dataset metadata file from DataFolder for
     specified classes.
 
-    DataFolder is a directory structure for image classification problems.
+    DataFolder is a directory structure for image classification passert_equal_dsmdsroblems.
     Each sub-directory contains images from a special class. DataFolder
     directory structure looks like
     -----------------------
@@ -158,10 +167,10 @@ def gen_cls_dsmd_file_from_datafolder(
 
     Generated dsmd file looks like
     ----------
-    |1.png, 0|
-    |2.png, 0|
-    |3.png, 1|
-    |4.png, 1|
+    |1.png,0|
+    |2.png,0|
+    |3.png,1|
+    |4.png,1|
     |...     |
     ----------
 
@@ -292,9 +301,9 @@ def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True):
 
 # TODO: move to unit test
 if __name__ == '__main__':
-    file_path = '/home/kyle/Desktop/train_with_invert.csv'
-    out_path = '/home/kyle/Desktop/out.csv'
-    class2label_file_path = '/home/kyle/Desktop/c2l.csv'
+    file_path = '/home/huiying/Desktop/train_with_invert.csv'
+    out_path = '/home/huiying/Desktop/out.csv'
+    class2label_file_path = '/home/huiying/Desktop/classes.csv'
     dsmd = load_dsmd_det(file_path, class2label_file_path)
 
     class2label = load_dsmd(class2label_file_path)
