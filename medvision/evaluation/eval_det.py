@@ -1,8 +1,8 @@
 import numpy as np
-from compute_overlap import compute_overlap
+from .compute_overlap import compute_overlap
 
 
-def compute_ap(rec, pre, use_voc07_metric=False):
+def _compute_ap(rec, pre, use_voc07_metric=False):
     """ Compute the average precision, given the recall and precision curves.
 
     Code originally from https://github.com/rbgirshick/py-faster-rcnn.
@@ -125,7 +125,7 @@ def eval_det(gts, dts, num_classes=1, iou_thr=0.5, score_thr=0.05,
         precision = tps / np.maximum(tps + fps, np.finfo(np.float32).eps)
 
         # compute AP
-        average_precision = compute_ap(recall, precision)
+        average_precision = _compute_ap(recall, precision)
         average_precisions[label] = average_precision, num_anns
 
     return average_precisions
