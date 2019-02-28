@@ -222,7 +222,7 @@ def gen_cls_dsmd_file_from_datafolder(
     assert mv.isdir(root_dir)
 
     if classnames is None:
-        classnames = natsorted(mv.listdir(root_dir))
+        classnames = mv.listdir(root_dir)
 
     class2label = {}
     dsmd = {}
@@ -232,7 +232,7 @@ def gen_cls_dsmd_file_from_datafolder(
 
         class_dir = mv.joinpath(root_dir, classname)
         assert mv.isdir(class_dir)
-        filenames = natsorted(mv.listdir(class_dir))
+        filenames = mv.listdir(class_dir)
         for filename in filenames:
             if filename in dsmd:
                 raise FileExistsError(
@@ -278,7 +278,7 @@ def gen_cls_ds_from_datafolder(
     for classname in classnames:
         class_dir = mv.joinpath(in_dir, classname)
         assert mv.isdir(class_dir)
-        filenames = natsorted(mv.listdir(class_dir))
+        filenames = mv.listdir(class_dir)
         mv.copyfiles(filenames, out_dir, class_dir, non_overwrite=True)
 
 

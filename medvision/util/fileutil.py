@@ -10,7 +10,11 @@ import medvision as mv
 
 isdir = os.path.isdir
 isfile = os.path.isfile
-listdir = os.listdir
+
+
+def listdir(path):
+    return natsorted(listdir(path))
+
 
 joinpath = os.path.join
 basename = os.path.basename
