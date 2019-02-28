@@ -13,7 +13,7 @@ isfile = os.path.isfile
 
 
 def listdir(path):
-    return natsorted(listdir(path))
+    return natsorted(os.listdir(path))
 
 
 joinpath = os.path.join
