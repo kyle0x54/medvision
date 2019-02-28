@@ -31,12 +31,12 @@ def imread(file_path, flag=ImreadMode.RGB):
     return img
 
 
-def imwrite(img, file_path, auto_mkdirs=True):
+def imwrite(file_path, img, auto_mkdirs=True):
     """ Save image to specified file.
 
     Args:
-        img (ndarray): image array to be written.
         file_path (str): specified file path to save to.
+        img (ndarray): image array to be written.
         auto_mkdirs (bool): If the parent folder of `file_path` does not exist,
             whether to create it automatically.
 

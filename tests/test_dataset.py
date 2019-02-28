@@ -23,7 +23,7 @@ def test_dsmd_io(dsmd_file):
     tmp_path = mv.joinpath(tmp_dir, 'tmp_dsmd.txt')
 
     dsmd_loaded = mv.load_dsmd(dsmd_file)
-    mv.save_dsmd(dsmd_loaded, tmp_path)
+    mv.save_dsmd(tmp_path, dsmd_loaded)
     dsmd_reloaded = mv.load_dsmd(tmp_path)
     assert_equal_dsmds(dsmd_loaded, dsmd_reloaded)
 
@@ -62,9 +62,9 @@ def test_split_dsmd_file(dsmd_file):
 
     # shuffle
     mv.split_dsmd_file(tmp_path, datasplit)
-    train_dsmd_file_path = mv.joinpath(tmp_dir, 'train.txt')
-    val_dsmd_file_path = mv.joinpath(tmp_dir, 'val.txt')
-    test_dsmd_file_path = mv.joinpath(tmp_dir, 'test.txt')
+    train_dsmd_file_path = mv.joinpath(tmp_dir, 'train.csv')
+    val_dsmd_file_path = mv.joinpath(tmp_dir, 'val.csv')
+    test_dsmd_file_path = mv.joinpath(tmp_dir, 'test.csv')
     assert mv.isfile(train_dsmd_file_path)
     assert mv.isfile(val_dsmd_file_path)
     assert not mv.isfile(test_dsmd_file_path)
@@ -76,9 +76,9 @@ def test_split_dsmd_file(dsmd_file):
 
     # non shuffle
     mv.split_dsmd_file(tmp_path, datasplit, shuffle=False)
-    train_dsmd_file_path = mv.joinpath(tmp_dir, 'train.txt')
-    val_dsmd_file_path = mv.joinpath(tmp_dir, 'val.txt')
-    test_dsmd_file_path = mv.joinpath(tmp_dir, 'test.txt')
+    train_dsmd_file_path = mv.joinpath(tmp_dir, 'train.csv')
+    val_dsmd_file_path = mv.joinpath(tmp_dir, 'val.csv')
+    test_dsmd_file_path = mv.joinpath(tmp_dir, 'test.csv')
     assert mv.isfile(train_dsmd_file_path)
     assert mv.isfile(val_dsmd_file_path)
     assert not mv.isfile(test_dsmd_file_path)

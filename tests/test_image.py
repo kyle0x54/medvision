@@ -30,7 +30,7 @@ def test_imread_imwrite(img):
     dst_path = mv.joinpath(dst_dir, mv.basename(PNG_IMG_PATH))
     mv.mkdirs(dst_dir)
 
-    ret_val = mv.imwrite(img, dst_path)
+    ret_val = mv.imwrite(dst_path, img)
     assert ret_val
     img_reloaded = mv.imread(dst_path, mv.ImreadMode.UNCHANGED)
     assert_image_equal(img, img_reloaded)

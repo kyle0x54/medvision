@@ -1,12 +1,13 @@
-from .util import (load_dsmd, save_dsmd, gen_cls_dsmd_file_from_datafolder,
-                   gen_cls_ds_from_datafolder, split_dsmd_file)
-
-from .util import load_dsmd_det, save_dsmd_det
+from .dsmd import make_dsmd
+from .classification import (gen_cls_dsmd_file_from_datafolder,
+                             gen_cls_ds_from_datafolder)
+from .util import load_dsmd, save_dsmd, load_c2l, split_dsmd_file
 
 
 __all__ = [
-    'load_dsmd', 'save_dsmd', 'gen_cls_dsmd_file_from_datafolder',
-    'gen_cls_ds_from_datafolder', 'split_dsmd_file',
+    'make_dsmd',
 
-    'load_dsmd_det', 'save_dsmd_det'
+    'gen_cls_dsmd_file_from_datafolder', 'gen_cls_ds_from_datafolder',
+
+    'load_dsmd', 'save_dsmd', 'load_c2l', 'split_dsmd_file',
 ]
