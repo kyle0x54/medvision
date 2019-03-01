@@ -21,6 +21,8 @@ def load_dsmd(dsmd_path, c2l_path=None, mode='cls'):
         return load_cls_dsmd(dsmd_path)
     elif mode == 'det':
         return load_det_dsmd(dsmd_path, c2l_path)
+    else:
+        raise ValueError('only support cls, seg, det modes')
 
 
 def save_dsmd(dsmd_path, data, c2l_path=None, auto_mkdirs=True, mode='cls'):
@@ -38,6 +40,8 @@ def save_dsmd(dsmd_path, data, c2l_path=None, auto_mkdirs=True, mode='cls'):
         return save_cls_dsmd(dsmd_path, data, auto_mkdirs)
     elif mode == 'det':
         return save_det_dsmd(dsmd_path, data, c2l_path, auto_mkdirs)
+    else:
+        raise ValueError('only support cls, seg, det modes')
 
 
 def load_c2l(c2l_path):
