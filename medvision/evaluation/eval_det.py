@@ -58,11 +58,10 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05,
     """ Evaluate a given dataset using a given model.
 
     Args:
-        dts (list[list[ndarray]]): detected bounding boxes for
-            different labels in a set of images, each bbox is of the
-            shape (n, 5).
-        gts (list[list[ndarray]]): ground truth bounding boxes for
-            different labels in a set of images, each bbox is of the
+        dts (OrderedDict or list[list[ndarray]]): detected bounding boxes for
+            different labels in a set of images, each bbox is of shape (n, 5).
+        gts (OrderedDict or list[list[ndarray]]): ground truth bounding boxes
+            for different labels in a set of images, each bbox is of
             shape (n, 4).
             gts[img_id][label_id] = bboxes (for a specific label in an image).
         num_classes (int): number of classes to detect.
@@ -78,6 +77,10 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05,
     """
     assert len(gts) == len(dts)
     num_imgs = len(gts)
+
+    if isinstance(dts, dict) and isinstance(gts, dict):
+        dts = [value for key, value in dts.items()]
+        gts = [value for key, value in gts.items()]
 
     average_precisions = {}
 
