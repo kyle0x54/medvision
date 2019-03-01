@@ -53,18 +53,18 @@ def _compute_ap(rec, pre, use_voc07_metric=False):
         return _compute_ap_voc12(rec, pre)
 
 
-def eval_det(gts, dts, num_classes=1, iou_thr=0.5, score_thr=0.05,
+def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05,
              num_max_det=100, save_path=None):
     """ Evaluate a given dataset using a given model.
 
     Args:
+        dts (list[list[ndarray]]): detected bounding boxes for
+            different labels in a set of images, each bbox is of the
+            shape (n, 5).
         gts (list[list[ndarray]]): ground truth bounding boxes for
             different labels in a set of images, each bbox is of the
             shape (n, 4).
             gts[img_id][label_id] = bboxes (for a specific label in an image).
-        dts (list[list[ndarray]]): detected bounding boxes for
-            different labels in a set of images, each bbox is of the
-            shape (n, 5).
         num_classes (int): number of classes to detect.
         iou_thr (float): threshold to determine whether a detection is
             positive or negative.
