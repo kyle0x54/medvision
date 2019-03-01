@@ -154,28 +154,3 @@ def save_det_dsmd(dsmd_path, data, c2l_path, auto_mkdirs=True):
     with open(dsmd_path, 'w') as fd:
         for key, value in dsmd.items():
             _write_record(fd, key, value, label2class)
-
-
-# TODO: move to unit test
-if __name__ == '__main__':
-    file_path = '/home/kyle/Desktop/test/dsmd_test/train_with_invert.csv'
-    out_path = '/home/kyle/Desktop/test/dsmd_test/out.csv'
-    c2l_path = '/home/kyle/Desktop/test/dsmd_test/c2l.csv'
-    dsmd = load_det_dsmd(file_path, c2l_path)
-
-    save_det_dsmd(out_path, dsmd, c2l_path, auto_mkdirs=True)
-
-    dsmd = load_det_dsmd(out_path, c2l_path)
-    dsmd = [value for key, value in dsmd.items()]
-    dsmd_det = []
-    for img_id, _ in enumerate(dsmd):
-        dsmd_det.append([])
-        for label_id, _ in enumerate(dsmd[img_id]):
-            dsmd_det[img_id].append([])
-            num_bboxes = len(dsmd[img_id][label_id])
-            scores = np.ones((num_bboxes, 1), dtype=np.float32)
-            dsmd_det[img_id][label_id] = np.hstack([dsmd[img_id][label_id],
-                                                    scores])
-
-    det_metric = mv.eval_det(dsmd_det, dsmd)
-    print(det_metric)
