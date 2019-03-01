@@ -1,9 +1,9 @@
-from collections import OrderedDict
-from natsort import natsorted
+from .classification import load_cls_dsmd, save_cls_dsmd
+from .detection import load_det_dsmd, save_det_dsmd
 
 
-def make_dsmd(data):
-    """ Make a dataset metadata.
+def load_dsmd(dsmd_path, c2l_path=None, mode='cls'):
+    """ Load dataset metadata.
 
     Dataset Metadata is a key-value pairs describing a dataset.
     For example, a dataset metadata can be a dictionary looks like
@@ -63,10 +63,58 @@ def make_dsmd(data):
     +-------------------------------------------------------+
 
     Args:
-        data (dict): dataset metadata.
+        dsmd_path (str): dataset metadata file path.
+        c2l_path (str, optional): class-to-label file.
+        mode (str): dataset mission, can be one of 'cls', 'seg', 'det'.
+
+    Return:
+        (OrderedDict): dataset metadata.
     """
-    if isinstance(data, dict):
-        dsmd = OrderedDict(natsorted(data.items()))
-        return dsmd
+    if mode in ['cls', 'seg']:
+        return load_cls_dsmd(dsmd_path)
+    elif mode == 'det':
+        return load_det_dsmd(dsmd_path, c2l_path)
     else:
-        raise ValueError('dsmd only support dict type')
+        raise ValueError('only support cls, seg, det modes')
+
+
+def save_dsmd(dsmd_path, data, c2l_path=None, auto_mkdirs=True, mode='cls'):
+    """ Save dataset metadata to specified file.
+
+    Args:
+        dsmd_path (str): file path to save dataset metadata.
+        data (dict): dataset metadata, refer to 'load_dsmd'.
+        c2l_path (str, optional): class-to-label file.
+        auto_mkdirs (bool): If the parent folder of `file_path` does
+            not exist, whether to create it automatically.
+        mode (str): dataset mission, can be one of 'cls', 'seg', 'det'.
+    """
+    if mode in ['cls', 'seg']:
+        return save_cls_dsmd(dsmd_path, data, auto_mkdirs)
+    elif mode == 'det':
+        return save_det_dsmd(dsmd_path, data, c2l_path, auto_mkdirs)
+    else:
+        raise ValueError('only support cls, seg, det modes')
+
+
+def load_c2l(c2l_path):
+    """ Load class-to-label mapping.
+
+    A class-to-label file defines the mapping from class_names to
+    labels, which looks like (Note that the label value starts from 0)
+
+    +------------------------------------------------------+
+    | Class-to-Label File                                  |
+    +------------------------------------------------------+
+    |cat, 0                                                |
+    |dog, 1                                                |
+    |...                                                   |
+    +------------------------------------------------------+
+
+    Args:
+        c2l_path (str): class-to-label file.
+
+    Return:
+        (OrderedDict): class-to-label mapping.
+    """
+    return load_dsmd(c2l_path)

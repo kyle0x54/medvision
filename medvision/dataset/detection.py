@@ -72,7 +72,7 @@ def save_det_dsmd(dsmd_path, data, c2l_path, auto_mkdirs=True):
 
     Args:
         dsmd_path (str): file path to save dataset metadata.
-        data (dict): dataset metadata, refer to 'make_dsmd'.
+        data (dict): dataset metadata, refer to 'load_dsmd'.
         c2l_path (str): class-to-label file.
         auto_mkdirs (bool): If the parent folder of `file_path` does
             not exist, whether to create it automatically.
