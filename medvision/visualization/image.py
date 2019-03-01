@@ -182,7 +182,7 @@ def imshow_bboxes(img,
         _imshow_switcher([img_with_result, img], title)
 
     if save_path is not None:
-        mv.imwrite(img, save_path)
+        mv.imwrite(save_path, img)
 
 
 if __name__ == '__main__':
