@@ -66,3 +66,38 @@ def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True, suffix='.csv'):
             mv.save_dsmd(file_path, dsmd_split)
 
         start_index = end_index
+
+
+def match_dsmds(dt_src, gt_src, return_unmatched=False):
+    """ Match 2 dataset metadata (e.g. annotation and detection result)
+
+    Args:
+        dt_src (dsmd): a dataset metadata instance.
+        gt_src (dsmd): another dataset metadata instance.
+        return_unmatched (bool): whether to return the unmatched
+            part of dsmds.
+
+    Return:
+        (dsmd) matched dsmd of the first term.
+        (dsmd) matched dsmd of the second term.
+        (dsmd, optional) missing items in the 1st dsmd when
+            matching with the 2nd dsmd.
+        (dsmd, optional) unmatched items in the first dsmd when
+            matching with the 2nd dsmd.
+    """
+    dt_keys = set(dt_src.keys())
+    gt_keys = set(gt_src.keys())
+
+    intersection_keys = dt_keys & gt_keys
+    missing_keys = gt_keys - dt_keys
+    unmatched_keys = dt_keys - gt_keys
+
+    dt_dst = make_dsmd({key: dt_src[key] for key in intersection_keys})
+    gt_dst = make_dsmd({key: gt_src[key] for key in intersection_keys})
+    missing = make_dsmd({key: gt_src[key] for key in missing_keys})
+    unmatched = make_dsmd({key: dt_src[key] for key in unmatched_keys})
+
+    if return_unmatched:
+        return dt_dst, gt_dst, missing, unmatched
+    else:
+        return dt_dst, gt_dst
