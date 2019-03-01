@@ -8,6 +8,8 @@ DSMD_CLS_ML = mv.joinpath(DATA_DIR, 'texts', 'dsmd_cls_multi_label.txt')
 DF_DIR = mv.joinpath(DATA_DIR, 'datafolder')
 DSMD_DF = mv.joinpath(DATA_DIR, 'texts', 'dsmd_datafolder.txt')
 CLS2LBL = mv.joinpath(DATA_DIR, 'texts', 'class2label.txt')
+DSMD_DET_GT = mv.joinpath(DATA_DIR, 'texts', 'dsmd_det_gt.csv')
+DSMD_DET_C2L = mv.joinpath(DATA_DIR, 'texts', 'det_classes.csv')
 
 
 def assert_equal_dsmds(a, b):
@@ -18,13 +20,25 @@ def assert_equal_dsmds(a, b):
 
 
 @pytest.mark.parametrize('dsmd_file', [DSMD_CLS_SL, DSMD_CLS_ML])
-def test_dsmd_io(dsmd_file):
+def test_dsmd_io_cls(dsmd_file):
     tmp_dir = mv.joinpath(DATA_DIR, 'temporary_subdir')
     tmp_path = mv.joinpath(tmp_dir, 'tmp_dsmd.txt')
 
     dsmd_loaded = mv.load_dsmd(dsmd_file)
     mv.save_dsmd(tmp_path, dsmd_loaded)
     dsmd_reloaded = mv.load_dsmd(tmp_path)
+    assert_equal_dsmds(dsmd_loaded, dsmd_reloaded)
+
+    mv.rmtree(tmp_dir)
+
+
+def test_dsmd_io_det():
+    tmp_dir = mv.joinpath(DATA_DIR, 'temporary_subdir')
+    tmp_path = mv.joinpath(tmp_dir, 'tmp_dsmd.txt')
+
+    dsmd_loaded = mv.load_dsmd(DSMD_DET_GT, DSMD_DET_C2L, mode='det')
+    mv.save_dsmd(tmp_path, dsmd_loaded, DSMD_DET_C2L, mode='det')
+    dsmd_reloaded = mv.load_dsmd(DSMD_DET_GT, DSMD_DET_C2L, mode='det')
     assert_equal_dsmds(dsmd_loaded, dsmd_reloaded)
 
     mv.rmtree(tmp_dir)
