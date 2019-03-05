@@ -4,5 +4,6 @@ natsort
 numpy
 opencv-python
 SimpleITK
+torch
 tqdm
 visdom
