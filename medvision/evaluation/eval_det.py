@@ -127,7 +127,8 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
             detection is valid.
 
     Returns
-        (dict): a dict mapping class names to mAP scores.
+        (dict): map label to (average precision, number of GT bboxes).
+        (dict): map label to (average false positive per image, sensitivity).
     """
     assert len(gts) == len(dts)
     num_imgs = len(gts)
@@ -136,7 +137,8 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
         dts = [value for key, value in dts.items()]
         gts = [value for key, value in gts.items()]
 
-    average_precisions = {}
+    aps = {}
+    frocs = {}
 
     # match ground truths and detection results
     for label in range(num_classes):
@@ -174,25 +176,25 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
 
         # no annotations -> AP for this class is 0
         if num_anns == 0:
-            average_precisions[label] = 0, 0
+            aps[label] = 0, 0
             continue
 
         # sort by score
         indices = np.argsort(-scores)
-        fps = fps[indices]
-        tps = tps[indices]
+        fps, tps = fps[indices], tps[indices]
 
         # compute false positives and true positives at retrieval cutoff
         # of k bboxes (k in [1, n], n is the total number of detected bboxes)
-        fps = np.cumsum(fps)
-        tps = np.cumsum(tps)
+        fps, tps = np.cumsum(fps), np.cumsum(tps)
 
         # compute recall and precision
         recall = tps / num_anns
         precision = tps / np.maximum(tps + fps, np.finfo(np.float32).eps)
 
         # compute AP
-        average_precision = _compute_ap(recall, precision)
-        average_precisions[label] = average_precision, num_anns
+        aps[label] = _compute_ap(recall, precision), num_anns
 
-    return average_precisions
+        # compute FROC
+        frocs[label] = fps / num_imgs, recall  # recall = sensitivity
+
+    return aps, frocs
