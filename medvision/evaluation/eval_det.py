@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import numpy as np
 from .compute_overlap import compute_overlap
 
@@ -53,9 +54,64 @@ def _compute_ap(rec, pre, use_voc07_metric=False):
         return _compute_ap_voc12(rec, pre)
 
 
-def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05,
-             num_max_det=100, save_path=None):
-    """ Evaluate a given dataset using a given model.
+def eval_det4cls(dts, gts, num_classes=1):
+    """ Evaluate a detector's classification capability.
+
+    Only support 2-class classification. If (at least) 1 target is detected in
+    an image, the image is considered to be 'positive'. Otherwise, the image
+    is considered to be 'negative'.
+
+    Args:
+        dts (OrderedDict or list[list[ndarray]]): detected bounding boxes for
+            different labels in a set of images, each bbox is of shape (n, 5).
+        gts (OrderedDict or list[list[ndarray]]): ground truth bounding boxes
+            for different labels in a set of images, each bbox is of
+            shape (n, 4).
+            gts[img_id][label_id] = bboxes (for a specific label in an image).
+        num_classes (int): number of classes to detect.
+
+    Returns
+        (dict): a dict containing classification metrics TP, FP, TN, FN,
+        accuracy, recall, precision.
+    """
+    assert len(gts) == len(dts)
+    assert num_classes == 1
+
+    # convert gt/dt from dict to list
+    if isinstance(dts, dict) and isinstance(gts, dict):
+        dts = [value for key, value in dts.items()]
+        gts = [value for key, value in gts.items()]
+
+    # compute detector's classification capability
+    tp, fp, tn, fn = 0, 0, 0, 0
+    for i in range(len(gts)):
+        gt = gts[i][0]
+        dt = dts[i][0]
+
+        if dt.any() and gt.any():
+            tp += 1
+        elif dt.any() and not gt.any():
+            fp += 1
+        elif not dt.any() and gt.any():
+            fn += 1
+        else:  # not dt.any() and not gt.any():
+            tn += 1
+
+    # build result
+    result = OrderedDict()
+    result['tp'] = tp
+    result['fp'] = tp
+    result['tn'] = tp
+    result['fn'] = tp
+    result['accuracy'] = (tp + tn) / (tp + fn + tn + fp)
+    result['recall'] = tp / (tp + fn)
+    result['precision'] = tp / (tp + fp)
+
+    return result
+
+
+def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
+    """ Evaluate a given dataset by comparing DT with GT.
 
     Args:
         dts (OrderedDict or list[list[ndarray]]): detected bounding boxes for
@@ -69,8 +125,6 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05,
             positive or negative.
         score_thr : score confidence threshold to determine whether a
             detection is valid.
-        num_max_det (int): maximum number of detections to use per image.
-        save_path (str): path to save images with detection results.
 
     Returns
         (dict): a dict mapping class names to mAP scores.

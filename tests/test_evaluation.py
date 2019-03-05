@@ -18,6 +18,9 @@ def test_eval_det_a():
     assert 0.263 < ap < 0.264
     assert int(num_anns) == 546
 
+    m = mv.eval_det4cls(dts, gts)
+    assert 0.849 < m['accuracy'] < 0.850
+
 
 def test_eval_det_b():
     gts = mv.load_dsmd(DSMD_DET_GT, DSMD_DET_C2L, mode='det')
@@ -36,3 +39,6 @@ def test_eval_det_b():
     ap, num_anns = det_metric[0]
     assert ap > 0.99
     assert int(num_anns) == 546
+
+    m = mv.eval_det4cls(dts, gts)
+    assert m['accuracy'] > 0.99
