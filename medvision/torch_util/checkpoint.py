@@ -3,13 +3,6 @@ import torch
 import medvision as mv
 
 
-def nograd(f):
-    def decorator(*args, **kwargs):
-        with torch.no_grad():
-            return f(*args, **kwargs)
-    return decorator
-
-
 def _weights_to_cpu(state_dict_gpu):
     """ Copy a model state_dict to cpu.
 

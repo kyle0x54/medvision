@@ -1,6 +1,8 @@
-from .checkpoint import nograd, save_checkpoint, load_checkpoint
+from .checkpoint import save_checkpoint, load_checkpoint
+from .util import nograd
 
 
 __all__ = [
-    'nograd', 'save_checkpoint', 'load_checkpoint'
+    'save_checkpoint', 'load_checkpoint',
+    'nograd'
 ]
