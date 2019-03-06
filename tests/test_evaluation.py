@@ -14,7 +14,7 @@ def test_eval_det_a():
     gts = mv.load_dsmd(DSMD_DET_GT, DSMD_DET_C2L, mode='det')
     det_metric = mv.eval_det(
         dts, gts, num_classes=len(class2label), iou_thr=0.5)
-    ap, num_anns = det_metric[0][0]
+    ap, num_anns = det_metric[0]['ap'], det_metric[0]['num_gt_bboxes']
     assert 0.263 < ap < 0.264
     assert int(num_anns) == 546
 
@@ -36,7 +36,7 @@ def test_eval_det_b():
                 [gts[img_id][label_id], scores])
 
     det_metric = mv.eval_det(dts, gts)
-    ap, num_anns = det_metric[0][0]
+    ap, num_anns = det_metric[0]['ap'], det_metric[0]['num_gt_bboxes']
     assert ap > 0.99
     assert int(num_anns) == 546
 

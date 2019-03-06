@@ -127,8 +127,7 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
             detection is valid.
 
     Returns
-        (dict): map label to (average precision, number of GT bboxes).
-        (dict): map label to (average false positive per image, sensitivity).
+        (OrderedDict): AP, number of GT bboxes, FROC curve for each label.
     """
     assert len(gts) == len(dts)
     num_imgs = len(gts)
@@ -137,8 +136,7 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
         dts = [value for key, value in dts.items()]
         gts = [value for key, value in gts.items()]
 
-    aps = {}
-    frocs = {}
+    results = OrderedDict()
 
     # match ground truths and detection results
     for label in range(num_classes):
@@ -174,9 +172,12 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
                     fps = np.append(fps, 1)
                     tps = np.append(tps, 0)
 
-        # no annotations -> AP for this class is 0
+        # no annotations -> AP for this class is None
         if num_anns == 0:
-            aps[label] = 0, 0
+            results[label] = OrderedDict()
+            results[label]['ap'] = None
+            results[label]['num_gt_bboxes'] = 0
+            results[label]['froc'] = None
             continue
 
         # sort by score
@@ -191,10 +192,10 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
         recall = tps / num_anns
         precision = tps / np.maximum(tps + fps, np.finfo(np.float32).eps)
 
-        # compute AP
-        aps[label] = _compute_ap(recall, precision), num_anns
+        # compute AP, number of ground truth bboxes and FROC
+        results[label] = OrderedDict()
+        results[label]['ap'] = _compute_ap(recall, precision)
+        results[label]['num_gt_bboxes'] = num_anns
+        results[label]['froc'] = fps / num_imgs, recall  # recall = sensitivity
 
-        # compute FROC
-        frocs[label] = fps / num_imgs, recall  # recall = sensitivity
-
-    return aps, frocs
+    return results
