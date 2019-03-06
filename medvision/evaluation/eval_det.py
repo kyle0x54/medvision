@@ -100,9 +100,9 @@ def eval_det4cls(dts, gts, num_classes=1):
     # build result
     result = OrderedDict()
     result['tp'] = tp
-    result['fp'] = tp
-    result['tn'] = tp
-    result['fn'] = tp
+    result['fp'] = fp
+    result['tn'] = tn
+    result['fn'] = fn
     result['accuracy'] = (tp + tn) / (tp + fn + tn + fp)
     result['recall'] = tp / (tp + fn)
     result['precision'] = tp / np.maximum(tp + fp, np.finfo(np.float32).eps)
