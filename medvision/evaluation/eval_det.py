@@ -54,10 +54,10 @@ def _compute_ap(rec, pre, use_voc07_metric=False):
         return _compute_ap_voc12(rec, pre)
 
 
-def eval_det4cls(dts, gts, num_classes=1):
+def eval_det4cls(dts, gts, score_thr=0.05):
     """ Evaluate a detector's classification capability.
 
-    Only support 2-class classification. If (at least) 1 target is detected in
+    Only support 1-class detection. If (at least) 1 target is detected in
     an image, the image is considered to be 'positive'. Otherwise, the image
     is considered to be 'negative'.
 
@@ -68,14 +68,13 @@ def eval_det4cls(dts, gts, num_classes=1):
             for different labels in a set of images, each bbox is of
             shape (n, 4).
             gts[img_id][label_id] = bboxes (for a specific label in an image).
-        num_classes (int): number of classes to detect.
-
+        score_thr (float): score confidence threshold to determine whether a
+            detection is valid.
     Returns
         (dict): a dict containing classification metrics TP, FP, TN, FN,
         accuracy, recall, precision.
     """
     assert len(gts) == len(dts)
-    assert num_classes == 1
 
     # convert gt/dt from dict to list
     if isinstance(dts, dict) and isinstance(gts, dict):
@@ -85,16 +84,24 @@ def eval_det4cls(dts, gts, num_classes=1):
     # compute detector's classification capability
     tp, fp, tn, fn = 0, 0, 0, 0
     for i in range(len(gts)):
+        assert len(gts[i]) == 1, 'only support 1-class detection'
+        assert len(dts[i]) == 1, 'only support 1-class detection'
         gt = gts[i][0]
         dt = dts[i][0]
 
-        if dt.any() and gt.any():
+        if len(dt) != 0:
+            has_dt = dt[:, 4].max() > score_thr
+        else:
+            has_dt = False
+        has_gt = gt.any()
+
+        if has_dt and has_gt:
             tp += 1
-        elif dt.any() and not gt.any():
+        elif has_dt and not has_gt:
             fp += 1
-        elif not dt.any() and gt.any():
+        elif not has_dt and has_gt:
             fn += 1
-        else:  # not dt.any() and not gt.any():
+        else:  # not has_dt and not has_gt:
             tn += 1
 
     # build result
@@ -123,7 +130,7 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
         num_classes (int): number of classes to detect.
         iou_thr (float): threshold to determine whether a detection is
             positive or negative.
-        score_thr : score confidence threshold to determine whether a
+        score_thr (float): score confidence threshold to determine whether a
             detection is valid.
 
     Returns
