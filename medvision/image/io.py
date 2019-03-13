@@ -15,7 +15,7 @@ def imread(file_path, flag=ImreadMode.RGB):
 
     Args:
         file_path (str): image file path.
-        flag (str): flags specifying the color type of a loaded image,
+        flag (ImreadMode): flags specifying the color type of a loaded image,
               refer to ImreadMode for more details.
     Returns:
         (ndarray): loaded image array.
