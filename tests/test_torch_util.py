@@ -30,4 +30,3 @@ def test_no_grad():
     x = torch.zeros(1, requires_grad=True)
     y = x * 2
     assert y.requires_grad is False
-
