@@ -22,7 +22,7 @@ VERSION = None
 
 REQUIRED = [
     'cython', 'matplotlib', 'natsort', 'numpy', 'opencv-python',
-    'SimpleITK', 'torch', 'tqdm', 'visdom'
+    'SimpleITK', 'tensorboardX', 'torch', 'tqdm', 'visdom'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))

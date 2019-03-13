@@ -4,6 +4,7 @@ natsort
 numpy
 opencv-python
 SimpleITK
+tensorboardX
 torch
 tqdm
 visdom
