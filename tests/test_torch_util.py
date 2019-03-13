@@ -23,3 +23,11 @@ def test_make_np(img):
     tensor = torch.from_numpy(img)
     img_converted = mv.make_np(tensor)
     assert_image_equal(img, img_converted)
+
+
+@mv.nograd
+def test_no_grad():
+    x = torch.zeros(1, requires_grad=True)
+    y = x * 2
+    assert y.requires_grad is False
+
