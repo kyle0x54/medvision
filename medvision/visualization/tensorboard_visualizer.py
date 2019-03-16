@@ -8,15 +8,33 @@ class TensorboardVisualizer:
     """ A wrapper class for tensorboardX.
 
     Note:
-        Original tensorboardX APIs can be called via self.vis.function_name.
+        Original tensorboardX API call is supported.
     """
-    def __init__(self, env=None, **kwargs):
-        comment = '_' + str(env) if env is not None else ''
+    def __init__(self, experiment=None, **kwargs):
+        comment = '_' + str(experiment) if experiment is not None else ''
+        if self.experiment_exists(experiment):
+            self.has_writer = False
+            raise ValueError(
+                'experiment [{}] already exists.'.format(experiment))
+        else:
+            self.has_writer = True
         self.writer = SummaryWriter(comment=comment, **kwargs)
-        self.log_text = ''
 
     def __del__(self):
-        self.writer.close()
+        if self.has_writer:
+            self.writer.close()
+
+    @staticmethod
+    def experiment_exists(experiment):
+        if not mv.isdir('runs'):
+            return False
+
+        all_experiments = mv.listdir('runs')
+        all_experiments = [e.split('_', 3)[-1] for e in all_experiments]
+        if experiment in all_experiments:
+            return True
+        else:
+            return False
 
     def plot(self, name, x, y, group='data'):
         tag = group + '/' + name
@@ -72,9 +90,16 @@ if __name__ == '__main__':
                 np.random.rand(100), n_iter)
 
     dataset = datasets.MNIST('mnist', train=False, download=True)
-    images = dataset.test_data[:100].float()
-    label = dataset.test_labels[:100]
+    images = dataset.data[:100].float()
+    label = dataset.targets[:100]
 
     features = images.view(100, 784)
     visualizer.add_embedding(features, metadata=label,
                              label_img=images.unsqueeze(1))
+
+    try:
+        visualizer_2 = TensorboardVisualizer('tensorboard-test')
+    except ValueError:
+        print('duplicate experiments successfully detected')
+    else:
+        raise ValueError('duplicate experiments undetected')
