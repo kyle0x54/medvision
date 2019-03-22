@@ -32,6 +32,12 @@ rmtree = shutil.rmtree
 move = shutil.move
 
 
+def symlink(src, dst, overwrite=True, **kwargs):
+    if os.path.lexists(dst) and overwrite:
+        os.remove(dst)
+    os.symlink(src, dst, **kwargs)
+
+
 def mkdirs(path, mode=0o777):
     path = os.path.expanduser(path)
     path = os.path.abspath(path)
