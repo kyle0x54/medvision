@@ -93,7 +93,8 @@ def eval_det4cls(dts, gts, score_thr=0.05):
             has_dt = dt[:, 4].max() > score_thr
         else:
             has_dt = False
-        has_gt = gt.any()
+
+        has_gt = (len(gt) != 0)
 
         if has_dt and has_gt:
             tp += 1
@@ -111,7 +112,7 @@ def eval_det4cls(dts, gts, score_thr=0.05):
     result['tn'] = tn
     result['fn'] = fn
     result['accuracy'] = (tp + tn) / (tp + fn + tn + fp)
-    result['recall'] = tp / (tp + fn)
+    result['recall'] = tp / np.maximum(tp + fn, np.finfo(np.float32).eps)
     result['precision'] = tp / np.maximum(tp + fp, np.finfo(np.float32).eps)
 
     return result
