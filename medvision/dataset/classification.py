@@ -111,7 +111,7 @@ def gen_cls_ds_from_datafolder(
 
     # clean output directory
     if auto_mkdirs:
-        mv.mkdirs(mv.parentdir(out_dir))
+        mv.mkdirs(out_dir)
     mv.empty_dir(out_dir)
 
     if classnames is None:
