@@ -176,7 +176,8 @@ def imshow_bboxes(img,
                 cv2.putText(img_with_result, label_text,
                             (_bboxes_int[j, 0], _bboxes_int[j, 1] - 2),
                             cv2.FONT_HERSHEY_COMPLEX, font_scale,
-                            colors[i].value)
+                            colors[i].value,
+                            thickness)
 
     if show:
         _imshow_switcher([img_with_result, img], title)
