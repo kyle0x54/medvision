@@ -2,8 +2,8 @@
 
 help:
 	@echo "Please use 'make <target>' where <target> is one of"
-	@echo "  clean-build    to remove cache files"
-	@echo "  clean-pyc      to remove build files"
+	@echo "  clean-build    to remove build files"
+	@echo "  clean-pyc      to remove cache files"
 	@echo "  clean          to remove build files and cache files"
 	@echo "  test           to run unittests and check code coverage"
 	@echo "  lint           to run static analysis of source code"
