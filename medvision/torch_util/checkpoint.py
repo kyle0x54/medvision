@@ -50,7 +50,7 @@ def save_checkpoint(model, path, optimizer=None, metadata=None):
     torch.save(checkpoint, path)
 
 
-def load_checkpoint(model, path, map_location=None, strict=True):
+def load_checkpoint(model, path, map_location='cpu', strict=True):
     """ Load checkpoint from a file.
 
     Args:
