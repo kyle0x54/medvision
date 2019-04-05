@@ -114,7 +114,9 @@ def eval_det4cls(dts, gts, score_thr=0.05):
 
     eps = np.finfo(np.float32).eps
     result['accuracy'] = (tp + tn) / np.maximum(tp + fn + tn + fp, eps)
-    result['recall'] = tp / np.maximum(tp + fn, eps)
+    result['sensitivity'] = tp / np.maximum(tp + fn, eps)
+    result['specificity'] = tn / np.maximum(tn + fp, eps)
+    result['recall'] = result['sensitivity']
     result['precision'] = tp / np.maximum(tp + fp, eps)
 
     return result
