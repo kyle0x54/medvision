@@ -1,3 +1,4 @@
+from .config_util import load_config_cmdline, load_config
 from .fileutil import (isdir, isfile, listdir,
                        joinpath, basename, abspath, parentdir,
                        cp, rm, cptree, rmtree, move, symlink,
@@ -10,6 +11,8 @@ from .typeutil import isarrayinstance
 
 
 __all__ = [
+    'load_config_cmdline', 'load_config',
+
     'isdir', 'isfile', 'listdir',
     'joinpath', 'basename', 'abspath', 'parentdir',
     'cp', 'rm', 'cptree', 'rmtree', 'move', 'symlink',
