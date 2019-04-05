@@ -76,7 +76,7 @@ def _imshow_switcher(imgs, title=''):
     plt.show()
 
 
-def imshow(imgs, num_cols=None, fig_name=None, titles=''):
+def imshow(imgs, num_cols=None, fig_name=None, titles='', save_path=None):
     """ Show an image or multiple images in a single canvas.
 
     Args:
@@ -85,6 +85,7 @@ def imshow(imgs, num_cols=None, fig_name=None, titles=''):
             If not given, this parameter is automatically determined.
         fig_name (str): name of the plot.
         titles (str or list[str]): sub-plot titles.
+        save_path (str, optional): path to save the image.
     """
     if not isinstance(imgs, collections.Sequence):
         imgs = [imgs]
@@ -105,6 +106,12 @@ def imshow(imgs, num_cols=None, fig_name=None, titles=''):
     for i, img in enumerate(imgs):
         plt.subplot(num_rows, num_cols, i + 1)
         _imshow_tight(img, titles[i])
+
+    # mng = plt.get_current_fig_manager()
+    # mng.resize(*mng.window.maxsize())
+
+    if save_path is not None:
+        plt.savefig(save_path)
 
     plt.show()
 
