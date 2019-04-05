@@ -75,9 +75,10 @@ def eval_det4cls(dts, gts, score_thr=0.05):
         accuracy, recall, precision.
     """
     assert len(gts) == len(dts)
+    assert type(dts) == type(gts), 'dts and gts must be of the same type'
 
     # convert gt/dt from dict to list
-    if isinstance(dts, dict) and isinstance(gts, dict):
+    if isinstance(dts, OrderedDict) and isinstance(gts, OrderedDict):
         dts = [value for key, value in dts.items()]
         gts = [value for key, value in gts.items()]
 
@@ -107,6 +108,7 @@ def eval_det4cls(dts, gts, score_thr=0.05):
 
     # build result
     result = OrderedDict()
+
     result['tp'] = tp
     result['fp'] = fp
     result['tn'] = tn
@@ -142,9 +144,10 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
         (OrderedDict): AP, number of GT bboxes, FROC curve for each label.
     """
     assert len(gts) == len(dts)
+    assert type(dts) == type(gts), 'dts and gts must be of the same type'
     num_imgs = len(gts)
 
-    if isinstance(dts, dict) and isinstance(gts, dict):
+    if isinstance(dts, OrderedDict) and isinstance(gts, OrderedDict):
         dts = [value for key, value in dts.items()]
         gts = [value for key, value in gts.items()]
 
