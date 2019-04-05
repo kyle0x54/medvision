@@ -31,7 +31,8 @@ REQUIRED = [
     'tensorboardX',
     'torch',
     'tqdm',
-    'visdom'
+    'visdom',
+    'yacs'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))

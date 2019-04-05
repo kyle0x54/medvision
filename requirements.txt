@@ -9,3 +9,4 @@ tensorboardX
 torch
 tqdm
 visdom
+yacs
