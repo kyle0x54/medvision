@@ -54,6 +54,25 @@ def _compute_ap(rec, pre, use_voc07_metric=False):
         return _compute_ap_voc12(rec, pre)
 
 
+def _to_list(dts, gts):
+    """ Convert gt/dt from OrderedDict to list[list[ndarray]].
+    Args:
+        dts (OrderedDict or list[list[ndarray]]): detected bounding boxes for
+            different labels in a set of images, each bbox is of shape (n, 5).
+        gts (OrderedDict or list[list[ndarray]]): ground truth bounding boxes
+            for different labels in a set of images, each bbox is of
+            shape (n, 4).
+            gts[img_id][label_id] = bboxes (for a specific label in an image).
+    """
+    if isinstance(dts, OrderedDict):
+        dts = [value for key, value in dts.items()]
+
+    if isinstance(gts, OrderedDict):
+        gts = [value for key, value in gts.items()]
+
+    return dts, gts
+
+
 def eval_det4cls(dts, gts, score_thr=0.05):
     """ Evaluate a detector's classification capability.
 
@@ -75,12 +94,7 @@ def eval_det4cls(dts, gts, score_thr=0.05):
         accuracy, recall, precision.
     """
     assert len(gts) == len(dts)
-    assert type(dts) == type(gts), 'dts and gts must be of the same type'
-
-    # convert gt/dt from dict to list
-    if isinstance(dts, OrderedDict) and isinstance(gts, OrderedDict):
-        dts = [value for key, value in dts.items()]
-        gts = [value for key, value in gts.items()]
+    dts, gts = _to_list(dts, gts)
 
     # compute detector's classification capability
     tp, fp, tn, fn = 0, 0, 0, 0
@@ -144,12 +158,8 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
         (OrderedDict): AP, number of GT bboxes, FROC curve for each label.
     """
     assert len(gts) == len(dts)
-    assert type(dts) == type(gts), 'dts and gts must be of the same type'
+    dts, gts = _to_list(dts, gts)
     num_imgs = len(gts)
-
-    if isinstance(dts, OrderedDict) and isinstance(gts, OrderedDict):
-        dts = [value for key, value in dts.items()]
-        gts = [value for key, value in gts.items()]
 
     results = OrderedDict()
 
