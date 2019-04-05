@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import pytest
 import medvision as mv
@@ -9,6 +10,13 @@ DCM_PATH = mv.joinpath(DATA_DIR, 'dicoms', 'brain_001.dcm')
 
 def gen_path(*paths):
     return mv.joinpath(DATA_DIR, *paths)
+
+
+def assert_image_equal(a, b):
+    assert a.shape == b.shape
+    assert a.dtype == b.dtype
+    diff = np.abs(a.astype(np.float32) - b.astype(np.float32))
+    assert math.isclose(diff.max(), 0.0)
 
 
 @pytest.mark.parametrize('given, expected', [
@@ -57,3 +65,30 @@ def test_dcminfo():
     assert info['0010|0020'] == '123565'  # patient id
     assert info['0020|0010'] == '8811'  # study id
     assert tag2list(info['0028|0030']) == [0.859375, 0.859375]  # pixel spacing
+
+
+def test_dcmread_dr():
+    img = mv.dcmread_dr(DCM_PATH)
+    img_, metadata = mv.dcmread(DCM_PATH, read_header=True)
+    assert_image_equal(img, img_)
+
+    img = mv.dcmread_dr(DCM_PATH, mv.DrReadMode.UNCHANGED)
+    img_, metadata = mv.dcmread(DCM_PATH, read_header=True)
+    assert_image_equal(img, img_)
+
+    img = mv.dcmread_dr(DCM_PATH, mv.DrReadMode.MONOCHROME1)
+    img_, metadata = mv.dcmread(DCM_PATH, read_header=True)
+    assert_image_equal(img, img_.max() - img_)
+
+    img, metadata = mv.dcmread_dr(DCM_PATH,
+                                  mv.DrReadMode.MONOCHROME1,
+                                  read_header=True)
+    assert metadata['0028|0004'].find('MONOCHROME1') != -1
+
+    img, metadata = mv.dcmread_dr(DCM_PATH, read_header=True)
+    assert metadata['0028|0004'].find('MONOCHROME2') != -1
+
+    img, metadata = mv.dcmread_dr(DCM_PATH,
+                                  mv.DrReadMode.UNCHANGED,
+                                  read_header=True)
+    assert metadata['0028|0004'].find('MONOCHROME2') != -1
