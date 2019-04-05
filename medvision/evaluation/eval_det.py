@@ -45,7 +45,7 @@ def _compute_ap(rec, pre, use_voc07_metric=False):
         pre (list): the precision curve.
         use_voc07_metric (bool): whether to voc2007 11 points metric.
 
-    Returns
+    Returns:
         The average precision as computed in py-faster-rcnn.
     """
     if use_voc07_metric:
@@ -70,7 +70,7 @@ def eval_det4cls(dts, gts, score_thr=0.05):
             gts[img_id][label_id] = bboxes (for a specific label in an image).
         score_thr (float): score confidence threshold to determine whether a
             detection is valid.
-    Returns
+    Returns:
         (dict): a dict containing classification metrics TP, FP, TN, FN,
         accuracy, recall, precision.
     """
@@ -111,9 +111,11 @@ def eval_det4cls(dts, gts, score_thr=0.05):
     result['fp'] = fp
     result['tn'] = tn
     result['fn'] = fn
-    result['accuracy'] = (tp + tn) / np.maximum(tp + fn + tn + fp, np.finfo(np.float32).eps)
-    result['recall'] = tp / np.maximum(tp + fn, np.finfo(np.float32).eps)
-    result['precision'] = tp / np.maximum(tp + fp, np.finfo(np.float32).eps)
+
+    eps = np.finfo(np.float32).eps
+    result['accuracy'] = (tp + tn) / np.maximum(tp + fn + tn + fp, eps)
+    result['recall'] = tp / np.maximum(tp + fn, eps)
+    result['precision'] = tp / np.maximum(tp + fp, eps)
 
     return result
 
@@ -134,7 +136,7 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
         score_thr (float): score confidence threshold to determine whether a
             detection is valid.
 
-    Returns
+    Returns:
         (OrderedDict): AP, number of GT bboxes, FROC curve for each label.
     """
     assert len(gts) == len(dts)
