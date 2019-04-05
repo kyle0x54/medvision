@@ -18,10 +18,11 @@ def listdir(path):
 
 joinpath = os.path.join
 basename = os.path.basename
+abspath = os.path.abspath
 
 
 def parentdir(path):
-    path = os.path.abspath(path)
+    path = abspath(path)
     return os.path.dirname(path)
 
 
@@ -40,7 +41,7 @@ def symlink(src, dst, overwrite=True, **kwargs):
 
 def mkdirs(path, mode=0o777):
     path = os.path.expanduser(path)
-    path = os.path.abspath(path)
+    path = abspath(path)
     os.makedirs(path, mode, exist_ok=True)
 
 
