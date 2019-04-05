@@ -21,8 +21,17 @@ VERSION = None
 
 
 REQUIRED = [
-    'cython', 'matplotlib', 'natsort', 'numpy', 'opencv-python',
-    'SimpleITK', 'tensorboardX', 'torch', 'tqdm', 'visdom'
+    'cython',
+    'matplotlib',
+    'natsort',
+    'numpy',
+    'opencv-python',
+    'scikit-learn',
+    'SimpleITK',
+    'tensorboardX',
+    'torch',
+    'tqdm',
+    'visdom'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))

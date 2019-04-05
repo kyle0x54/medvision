@@ -3,6 +3,7 @@ matplotlib
 natsort
 numpy
 opencv-python
+scikit-learn
 SimpleITK
 tensorboardX
 torch
