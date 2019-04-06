@@ -18,7 +18,7 @@ def test_eval_det_a():
     assert 0.263 < ap < 0.264
     assert int(num_anns) == 546
 
-    m = mv.eval_det4cls(dts, gts)
+    m = mv.eval_det4binarycls(dts, gts)
     assert 0.849 < m['accuracy'] < 0.850
 
 
@@ -40,5 +40,5 @@ def test_eval_det_b():
     assert ap > 0.99
     assert int(num_anns) == 546
 
-    m = mv.eval_det4cls(dts, gts)
+    m = mv.eval_det4binarycls(dts, gts)
     assert m['accuracy'] > 0.99

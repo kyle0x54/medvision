@@ -73,7 +73,7 @@ def _to_list(dts, gts):
     return dts, gts
 
 
-def eval_det4cls(dts, gts, score_thr=0.05):
+def eval_det4binarycls(dts, gts, score_thr=0.05):
     """ Evaluate a detector's classification capability.
 
     Only support 1-class detection. If (at least) 1 target is detected in
