@@ -6,6 +6,8 @@ from .fileutil import (isdir, isfile, listdir,
                        non_overwrite_cp, copyfiles,
                        GlobMode, glob,
                        find_duplicated_files)
+from .init_util import (init_logging, init_random_seed, init_cuda_devices,
+                        init_experiment, init_system)
 from .multiprocessutil import tqdm_imap
 from .timer import Timer
 from .typeutil import isarrayinstance
@@ -21,6 +23,9 @@ __all__ = [
     'non_overwrite_cp', 'copyfiles',
     'GlobMode', 'glob',
     'find_duplicated_files',
+
+    'init_logging', 'init_random_seed', 'init_cuda_devices',
+    'init_experiment', 'init_system',
 
     'tqdm_imap',
 

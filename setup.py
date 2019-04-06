@@ -21,6 +21,7 @@ VERSION = None
 
 
 REQUIRED = [
+    'colorlog',
     'cython',
     'matplotlib',
     'natsort',
