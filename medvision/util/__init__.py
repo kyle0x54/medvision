@@ -7,6 +7,7 @@ from .fileutil import (isdir, isfile, listdir,
                        GlobMode, glob,
                        find_duplicated_files)
 from .multiprocessutil import tqdm_imap
+from .timer import Timer
 from .typeutil import isarrayinstance
 
 
@@ -21,6 +22,9 @@ __all__ = [
     'GlobMode', 'glob',
     'find_duplicated_files',
 
+    'tqdm_imap',
+
+    'Timer',
+
     'isarrayinstance',
-    'tqdm_imap'
 ]
