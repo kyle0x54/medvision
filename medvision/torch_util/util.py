@@ -1,13 +1,13 @@
-from enum import Enum, unique, auto
+from enum import Enum, unique
 import numpy as np
 import torch
 
 
 @unique
 class ModeKey(Enum):
-    TRAIN = auto()
-    VAL = auto()
-    TEST = auto()
+    TRAIN = 'train'
+    VAL = 'val'
+    TEST = 'test'
 
 
 def nograd(f):
