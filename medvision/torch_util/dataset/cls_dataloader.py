@@ -4,6 +4,7 @@ import medvision as mv
 
 
 def build_cls_dataloader(cfg, mode, build_transform, image_loader):
+    # TODO: avoid using cfg as argument
     # init dataloader parameters
     if mode == mv.ModeKey.TRAIN:
         batch_size = cfg.TRAIN.BATCH_SIZE

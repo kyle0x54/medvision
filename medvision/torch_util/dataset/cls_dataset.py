@@ -3,6 +3,7 @@ import medvision as mv
 
 
 class ClsDataset(Dataset):
+    # TODO: avoid using cfg as argument
     def __init__(self, cfg, mode, build_transform, image_loader):
         self.is_train = (mode == mv.ModeKey.TRAIN)
 
