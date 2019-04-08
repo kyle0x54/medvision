@@ -1,4 +1,5 @@
 class Hook:
+    # general hook
     def before_run(self, runner):
         pass
 
@@ -17,6 +18,17 @@ class Hook:
     def after_iter(self, runner):
         pass
 
+    # misc
+    def every_n_epochs(self, runner, n):
+        return (runner.epoch + 1) % n == 0 if n > 0 else False
+
+    def every_n_inner_iters(self, runner, n):
+        return (runner.inner_iter + 1) % n == 0 if n > 0 else False
+
+    def every_n_iters(self, runner, n):
+        return (runner.iter + 1) % n == 0 if n > 0 else False
+
+    # train hook
     def before_train_epoch(self, runner):
         self.before_epoch(runner)
 
@@ -32,6 +44,7 @@ class Hook:
     def before_train_iter(self, runner):
         self.before_iter(runner)
 
+    # validation hook
     def before_val_iter(self, runner):
         self.before_iter(runner)
 
@@ -40,15 +53,3 @@ class Hook:
 
     def after_val_iter(self, runner):
         self.after_iter(runner)
-
-    def every_n_epochs(self, runner, n):
-        return (runner.epoch + 1) % n == 0 if n > 0 else False
-
-    def every_n_inner_iters(self, runner, n):
-        return (runner.inner_iter + 1) % n == 0 if n > 0 else False
-
-    def every_n_iters(self, runner, n):
-        return (runner.iter + 1) % n == 0 if n > 0 else False
-
-    def end_of_epoch(self, runner):
-        return runner.inner_iter + 1 == len(runner.data_loader)
