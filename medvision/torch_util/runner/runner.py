@@ -31,6 +31,7 @@ class Runner:
         self.batch_processor = batch_processor
         self.optimizer = self.build_optimizer(optimizer)
         self.work_dir = mv.abspath(work_dir if work_dir is not None else '.')
+        self.experiment = mv.basename(self.work_dir)
         self.average_meter = AverageMeter()
 
         self._hooks = []
@@ -222,3 +223,6 @@ class Runner:
     @property
     def max_iters(self):
         return self._max_iters
+
+    def register_logger_hooks(self, experiment='default'):
+        pass
