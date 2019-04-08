@@ -6,45 +6,68 @@ import medvision as mv
 
 class Runner:
     def __init__(self,
+                 mode,
                  model,
                  batch_processor,
+                 train_dataloader=None,
+                 val_dataloader=None,
                  optimizer=None,
-                 work_dir=None):
+                 work_dir=None,
+                 max_epochs=10000):
         """ A training helper for PyTorch.
 
         Args:
-            model (:obj:`torch.nn.Module`): The model to be run.
+            model (`torch.nn.Module`): The model to be run.
+            mode ('ModeKey'): running mode.
             batch_processor (callable): A callable method that process a data
                 batch. The interface of this method should be
                 `batch_processor(model, data, train_mode) -> dict`
-            optimizer (dict or :obj:`torch.optim.Optimizer`): If it is a dict,
-                runner will construct an optimizer according to it.
-            work_dir (str, optional): The working directory to save checkpoints
-                and logs.
+            train_dataloader ('DataLoader'): train data loader.
+            val_dataloader ('DataLoader'): validation data loader.
+            optimizer (dict or `Optimizer`): If it is a dict, runner will
+                construct an optimizer according to it.
+            work_dir (str, optional): The working directory to save
+                checkpoints, logs and other outputs.
+            max_epochs (int): Total training epochs.
         """
+        assert isinstance(mode, mv.ModeKey)
         assert isinstance(model, torch.nn.Module)
         assert callable(batch_processor)
         assert isinstance(optimizer, (str, torch.optim.Optimizer))
         assert isinstance(work_dir, str) or work_dir is None
+        assert isinstance(max_epochs, int)
 
+        self.mode = mode
+        self.epoch_runner = getattr(self, mode.value)
         self.model = model
         self.batch_processor = batch_processor
+        self.train_dataloader = train_dataloader
+        self.val_dataloader = val_dataloader
         self.optimizer = self.build_optimizer(optimizer)
-        self.work_dir = mv.abspath(work_dir if work_dir is not None else '.')
-        self.experiment = mv.basename(self.work_dir)
-        self.average_meter = AverageMeter()
-
-        self._hooks = []
-        self._epoch = 0
-        self._iter = 0
-        self._inner_iter = 0
-        self._max_epochs = 0
-        self._max_iters = 0
-
-        self.mode = None
 
         # create work_dir
+        self.work_dir = mv.abspath(work_dir if work_dir is not None else '.')
         mv.mkdirs(self.work_dir)
+
+        # init TensorboardX visualizer and dataloader
+        if mode == mv.ModeKey.TRAIN:
+            experiment = mv.basename(self.work_dir)
+            self.visualizer = mv.TensorboardVisualizer(experiment)
+            self.dataloader = self.train_dataloader
+        else:
+            self.visualizer = None
+            self.dataloader = self.val_dataloader
+
+        # init hooks and average meter
+        self._hooks = []
+        self.average_meter = AverageMeter()
+
+        # init loop parameters
+        self._epoch = 0
+        self._max_epochs = max_epochs if mode == mv.ModeKey.TRAIN else 1
+        self._inner_iter = 0
+        self._iter = 0
+        self._max_iters = 0
 
         # get model name from model class
         if hasattr(self.model, 'module'):
@@ -63,7 +86,6 @@ class Runner:
         assert isinstance(hook, Hook)
 
         hook.priority = mv.get_priority(priority)
-
         # insert the hook to a sorted list
         for i in range(len(self._hooks) - 1, -1, -1):
             if priority >= self._hooks[i].priority:
@@ -76,16 +98,12 @@ class Runner:
         for hook in self._hooks:
             getattr(hook, fn_name)(self)
 
-    def train(self, data_loader, **kwargs):
+    def train(self, **kwargs):
         self.model.train()
-        self.mode = mv.ModeKey.TRAIN
-
-        self.data_loader = data_loader
-        self._max_iters = self._max_epochs * len(data_loader)
-
+        self._max_iters = self._max_epochs * len(self.train_dataloader)
         self.call_hook('before_train_epoch')
 
-        for i, data_batch in enumerate(data_loader):
+        for i, data_batch in enumerate(self.train_dataloader):
             self._inner_iter = i
             self.call_hook('before_train_iter')
             outputs = self.batch_processor(
@@ -95,8 +113,7 @@ class Runner:
             if 'log_vars' in outputs:
                 self.average_meter.update(
                     outputs['log_vars'],
-                    outputs['num_samples']
-                )
+                    outputs['num_samples'])
             self.outputs = outputs
             self.call_hook('after_train_iter')
             self._iter += 1
@@ -104,15 +121,11 @@ class Runner:
         self.call_hook('after_train_epoch')
         self._epoch += 1
 
-    def val(self, data_loader, **kwargs):
+    def val(self, **kwargs):
         self.model.eval()
-        self.mode = mv.ModeKey.VAL
-
-        self.data_loader = data_loader
-
         self.call_hook('before_val_epoch')
 
-        for i, data_batch in enumerate(data_loader):
+        for i, data_batch in enumerate(self.val_dataloader):
             self._inner_iter = i
             self.call_hook('before_val_iter')
             with torch.no_grad():
@@ -123,64 +136,28 @@ class Runner:
             if 'log_vars' in outputs:
                 self.average_meter.update(
                     outputs['log_vars'],
-                    outputs['num_samples']
-                )
+                    outputs['num_samples'])
             self.outputs = outputs
             self.call_hook('after_val_iter')
 
         self.call_hook('after_val_epoch')
+        self._epoch += 1
 
-    def run_(self, data_loaders, workflow, **kwargs):
-        while self.epoch < self.max_epochs:
-            for i, flow in enumerate(workflow):
-                mode, epochs = flow
-                if isinstance(mode, mv.ModeKey):
-                    epoch_runner = getattr(self, mode.value)
-                elif callable(mode):  # customized epoch runner
-                    epoch_runner = mode
-                else:
-                    raise TypeError(
-                        'mode in workflow must be a ModeKey or a callable '
-                        'function, not {}'.format(type(mode))
-                    )
-                for _ in range(epochs):
-                    if (mode == mv.ModeKey.TRAIN and
-                            self.epoch >= self.max_epochs):
-                        return
-                    epoch_runner(data_loaders[i], **kwargs)
-
-    def run(self, data_loaders, workflow, max_epochs, **kwargs):
-        """Start running.
-
-        Args:
-            data_loaders (list[:obj:`DataLoader`]): Dataloaders for training
-                and validation.
-            workflow (list[tuple]): A list of (phase, epochs) to specify the
-                running order and epochs. E.g, [('train', 2), ('val', 1)] means
-                running 2 epochs for training and 1 epoch for validation,
-                iteratively.
-            max_epochs (int): Total training epochs.
-        """
-        assert isinstance(data_loaders, list)
-        assert isinstance(workflow, (tuple, list))
-        assert len(data_loaders) == len(workflow)
-
-        self._epoch = 0
-        self._max_epochs = max_epochs
-
+    def run(self, **kwargs):
         self.call_hook('before_run')
-        self.run_(data_loaders, workflow, max_epochs, **kwargs)
+        while self.epoch < self.max_epochs:
+            self.epoch_runner(self.dataloader, **kwargs)
         self.call_hook('after_run')
 
     def build_optimizer(self, optimizer):
-        """Init the optimizer.
+        """ Init the optimizer.
 
         Args:
-            optimizer (dict or :obj:`~torch.optim.Optimizer`): Either an
-                optimizer object or a dict used for constructing the optimizer.
+            optimizer (dict or `Optimizer`): Either an optimizer object
+                or a dict used for constructing the optimizer.
 
         Returns:
-            :obj:`~torch.optim.Optimizer`: An optimizer object.
+            (`Optimizer`): An optimizer object.
 
         Examples:
             >>> optimizer = dict(type='SGD', lr=0.01, momentum=0.9)
@@ -196,6 +173,17 @@ class Runner:
                 'but got {}'.format(type(optimizer)))
         return optimizer
 
+    def current_lr(self):
+        """Get current learning rates.
+
+        Returns:
+            (list): Current learning rate of all param groups.
+        """
+        if self.optimizer is None:
+            raise RuntimeError(
+                'lr is not applicable because optimizer does not exist.')
+        return [group['lr'] for group in self.optimizer.param_groups]
+
     @property
     def hooks(self):
         return self._hooks
@@ -209,20 +197,20 @@ class Runner:
         return self._epoch
 
     @property
-    def iter(self):
-        return self._iter
+    def max_epochs(self):
+        return self._max_epochs
 
     @property
     def inner_iter(self):
         return self._inner_iter
 
     @property
-    def max_epochs(self):
-        return self._max_epochs
+    def iter(self):
+        return self._iter
 
     @property
     def max_iters(self):
         return self._max_iters
 
-    def register_logger_hooks(self, experiment='default'):
+    def register_logger_hooks(self):
         pass

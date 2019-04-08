@@ -15,10 +15,6 @@ class LoggerHook(Hook):
     def log(self, runner):
         pass
 
-    def before_run(self, runner):
-        if runner.mode == mv.ModeKey.TRAIN:
-            self.visualizer = mv.TensorboardVisualizer(runner.experiment)
-
     def before_epoch(self, runner):
         runner.average_meter.clear()  # clear logs of last epoch
 
@@ -37,15 +33,3 @@ class LoggerHook(Hook):
         runner.average_meter.average()
         self.log(runner)
 
-
-# class ClsLoggerHook(LoggerHook):
-#     def __init__(self, interval):
-#         super(ClsLoggerHook, self).__init__(interval)
-#
-#     def log(self, runner):
-#         if runner.mode == 'train':
-#             lr_str = ', '.join(
-#                 ['{:.5f}'.format(lr) for lr in runner.current_lr()])
-#             log_str = 'Epoch [{}][{}/{}]\tlr: {}, '.format(
-#                 runner.epoch + 1, runner.inner_iter + 1,
-#                 len(runner.data_loader), lr_str)
