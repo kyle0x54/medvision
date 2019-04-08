@@ -18,7 +18,10 @@ def make_dsmd(data):
         raise ValueError('dsmd only support dict type')
 
 
-def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True, suffix='.csv'):
+def split_dsmd_file(dsmd_filepath,
+                    datasplit=None,
+                    shuffle=True,
+                    suffix='.csv'):
     """ Split a dataset medadata file into 3 parts.
 
     Split a dataset metadata file into 'train.csv', 'val.csv' and 'test.csv'.
@@ -34,6 +37,9 @@ def split_dsmd_file(dsmd_filepath, datasplit, shuffle=True, suffix='.csv'):
         If there's no image in a split. The corresponding dsmd file will
         not be saved.
     """
+    if datasplit is None:
+        datasplit = {'train': 0.9, 'val': 0.1}
+
     dsmd_dir = mv.parentdir(dsmd_filepath)
 
     dsmd = mv.load_dsmd(dsmd_filepath)
