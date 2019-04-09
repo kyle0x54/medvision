@@ -31,4 +31,3 @@ class LoggerHook(Hook):
     def after_val_epoch(self, runner):
         runner.average_meter.average()
         self.log(runner)
-
