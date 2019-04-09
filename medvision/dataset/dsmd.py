@@ -2,7 +2,7 @@ from .classification import load_cls_dsmd, save_cls_dsmd
 from .detection import load_det_dsmd, save_det_dsmd
 
 
-def load_dsmd(dsmd_path, c2l_path=None, mode='cls'):
+def load_dsmd(dsmd_path, class2label=None, mode='cls'):
     """ Load dataset metadata.
 
     Dataset Metadata is a key-value pairs describing a dataset.
@@ -64,7 +64,7 @@ def load_dsmd(dsmd_path, c2l_path=None, mode='cls'):
 
     Args:
         dsmd_path (str): dataset metadata file path.
-        c2l_path (str, optional): class-to-label file.
+        class2label (str or dict): class-to-label file or dict.
         mode (str): dataset mission, can be one of 'cls', 'seg', 'det'.
 
     Return:
@@ -73,18 +73,18 @@ def load_dsmd(dsmd_path, c2l_path=None, mode='cls'):
     if mode in ['cls', 'seg']:
         return load_cls_dsmd(dsmd_path)
     elif mode == 'det':
-        return load_det_dsmd(dsmd_path, c2l_path)
+        return load_det_dsmd(dsmd_path, class2label)
     else:
         raise ValueError('only support cls, seg, det modes')
 
 
-def save_dsmd(dsmd_path, data, c2l_path=None, auto_mkdirs=True, mode='cls'):
+def save_dsmd(dsmd_path, data, class2label=None, auto_mkdirs=True, mode='cls'):
     """ Save dataset metadata to specified file.
 
     Args:
         dsmd_path (str): file path to save dataset metadata.
         data (dict): dataset metadata, refer to 'load_dsmd'.
-        c2l_path (str, optional): class-to-label file.
+        class2label (str or dict): class-to-label file or class2label dict.
         auto_mkdirs (bool): If the parent folder of `file_path` does
             not exist, whether to create it automatically.
         mode (str): dataset mission, can be one of 'cls', 'seg', 'det'.
@@ -92,7 +92,7 @@ def save_dsmd(dsmd_path, data, c2l_path=None, auto_mkdirs=True, mode='cls'):
     if mode in ['cls', 'seg']:
         return save_cls_dsmd(dsmd_path, data, auto_mkdirs)
     elif mode == 'det':
-        return save_det_dsmd(dsmd_path, data, c2l_path, auto_mkdirs)
+        return save_det_dsmd(dsmd_path, data, class2label, auto_mkdirs)
     else:
         raise ValueError('only support cls, seg, det modes')
 

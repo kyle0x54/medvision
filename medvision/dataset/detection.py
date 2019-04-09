@@ -74,12 +74,12 @@ def _convert_bboxes_format(data):
     return data
 
 
-def load_det_dsmd(dsmd_path, c2l_path):
+def load_det_dsmd(dsmd_path, class2label):
     """ load detection dataset metadata.
 
     Args:
         dsmd_path (str): dataset metadata file path.
-        c2l_path (str): class-to-label file.
+        class2label (str or dict): class-to-label file.
 
     Return:
         (OrderedDict): Loaded dsmd is a OrderedDict looks like
@@ -96,7 +96,8 @@ def load_det_dsmd(dsmd_path, c2l_path):
         }
     """
     data = {}
-    class2label = mv.load_c2l(c2l_path)
+    if isinstance(class2label, str):
+        class2label = mv.load_c2l(class2label)
 
     # label should start from 0
     assert min(class2label.values()) == 0
@@ -132,21 +133,22 @@ def _write_record(fd, key, value, label2class):
                 fd.write(line)
 
 
-def save_det_dsmd(dsmd_path, data, c2l_path, auto_mkdirs=True):
+def save_det_dsmd(dsmd_path, data, class2label, auto_mkdirs=True):
     """ Save dataset metadata to specified file.
 
     Args:
         dsmd_path (str): file path to save dataset metadata.
         data (dict): dataset metadata, refer to 'load_dsmd'.
-        c2l_path (str): class-to-label file.
-        auto_mkdirs (bool): If the parent folder of `file_path` does
-            not exist, whether to create it automatically.
+        class2label (str or dict): class-to-label file or class2label dict.
+        auto_mkdirs (bool): If the parent folder of `file_path` does not
+            exist, whether to create it automatically.
     """
     if auto_mkdirs:
         mv.mkdirs(mv.parentdir(dsmd_path))
 
     # get label->class mapping
-    class2label = mv.load_c2l(c2l_path)
+    if isinstance(class2label, str):
+        class2label = mv.load_c2l(class2label)
     label2class = {value: key for key, value in class2label.items()}
 
     # write dataset metadata loop
