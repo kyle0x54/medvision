@@ -1,5 +1,4 @@
 from .hook import Hook
-import medvision as mv
 
 
 class LoggerHook(Hook):
