@@ -36,7 +36,10 @@ if __name__ == '__main__':
     # TODO: move to unittest
     annot_dir = '/mnt/sdb1/tb/internal/label'
     dsmd_path = '/mnt/sdb1/tb/internal/1.csv'
-    replace_ext = lambda x: x.replace('.txt', '.dcm')
+
+    def replace_ext(x):
+        return x.replace('.txt', '.dcm')
+
     dsmd = bdc2dsmd_det_2d(annot_dir, replace_ext=replace_ext)
     mv.save_dsmd(dsmd_path, dsmd, {'tb': 0}, mode='det')
 
