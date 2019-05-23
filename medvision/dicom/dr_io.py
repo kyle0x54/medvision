@@ -15,9 +15,9 @@ def _invert_if_needed(img, mode, mono):
     mono = 1 if mono.find('MONOCHROME1') != -1 else 2
 
     if mode_code != mono and mode_code is not DrReadMode.UNCHANGED.value:
-        return img.max() - img
+        return img.max() + img.min() - img, True
     else:
-        return img
+        return img, False
 
 
 def dcmread_dr(dicom_path, mode=DrReadMode.MONOCHROME2, read_header=False):
@@ -47,10 +47,14 @@ def dcmread_dr(dicom_path, mode=DrReadMode.MONOCHROME2, read_header=False):
     assert monochrome_tag in metadata
     mono = metadata[monochrome_tag].upper()
 
-    img = _invert_if_needed(img, mode, mono)
+    img, is_inverted = _invert_if_needed(img, mode, mono)
 
     if read_header:
-        if mode != DrReadMode.UNCHANGED:
+        metadata['0028|1050'] = float(metadata['0028|1050'].split('\\')[0])
+        metadata['0028|1051'] = float(metadata['0028|1051'].split('\\')[0])
+        if is_inverted:
+            metadata['0028|1050'] = (img.max() + img.min() -
+                                     metadata['0028|1050'])
             metadata['0028|0004'] = mode.name
         return img, metadata
     else:
