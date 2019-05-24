@@ -27,6 +27,7 @@ REQUIRED = [
     'natsort',
     'numpy',
     'opencv-python',
+    'pydicom',
     'scikit-learn',
     'SimpleITK',
     'tensorboardX',

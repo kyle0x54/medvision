@@ -1,4 +1,5 @@
 from enum import Enum, unique
+import pydicom
 import medvision as mv
 
 
@@ -11,10 +12,8 @@ class DrReadMode(Enum):
 
 def _invert_if_needed(img, mode, mono):
     # Convert 'Photometric Interpretation' if needed
-    mode_code = mode.value
-    mono = 1 if mono.find('MONOCHROME1') != -1 else 2
-
-    if mode_code != mono and mode_code is not DrReadMode.UNCHANGED.value:
+    mono = 1 if mono.upper().find('MONOCHROME1') != -1 else 2
+    if mode.value != mono and mode.value is not DrReadMode.UNCHANGED.value:
         return img.max() + img.min() - img, True
     else:
         return img, False
@@ -37,25 +36,28 @@ def dcmread_dr(dicom_path, mode=DrReadMode.MONOCHROME2, read_header=False):
         with ascending pixel values, whereas MONOCHROME2 ranges from dark
         to bright with ascending pixel values.
     """
-    img, metadata = mv.dcmread(dicom_path, read_header=True)
+    img, ds = mv.dcmread(dicom_path, read_header=True)
 
     if img.ndim == 3:
         img = img[:, :, 0]
 
     # fetch monochrome value
-    monochrome_tag = '0028|0004'
-    assert monochrome_tag in metadata
-    mono = metadata[monochrome_tag].upper()
+    assert 'PhotometricInterpretation' in ds
+    mono = ds.PhotometricInterpretation
 
     img, is_inverted = _invert_if_needed(img, mode, mono)
 
     if read_header:
-        metadata['0028|1050'] = float(metadata['0028|1050'].split('\\')[0])
-        metadata['0028|1051'] = float(metadata['0028|1051'].split('\\')[0])
+        if 'WindowCenter' in ds and 'WindowWidth' in ds:
+            if isinstance(ds.WindowCenter, pydicom.multival.MultiValue):
+                ds.WindowCenter = ds.WindowCenter[0]
+                ds.WindowWidth = ds.WindowWidth[0]
+            ds.WindowCenter = float(ds.WindowCenter)
+            ds.WindowWidth = float(ds.WindowWidth)
+            if is_inverted:
+                ds.WindowCenter = (img.max() + img.min() - ds.WindowCenter)
         if is_inverted:
-            metadata['0028|1050'] = (img.max() + img.min() -
-                                     metadata['0028|1050'])
-            metadata['0028|0004'] = mode.name
-        return img, metadata
+            ds.PhotometricInterpretation = mode.name
+        return img, ds
     else:
         return img

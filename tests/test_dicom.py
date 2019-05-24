@@ -40,7 +40,7 @@ def test_isdicomdir(given, expected):
 
 
 def tag2list(tag_str):
-    return [float(s) for s in tag_str.split('\\')]
+    return [float(s) for s in tag_str]
 
 
 def test_dcmread():
@@ -51,44 +51,47 @@ def test_dcmread():
     img, info = mv.dcmread(DCM_PATH, read_header=True)
     assert img.dtype == np.int16
     assert img.shape == (256, 256)
-    assert int(info['0028|0107']) == 884
-    assert info['0010|0020'] == '123565'  # patient id
-    assert info['0020|0010'] == '8811'  # study id
+    assert info.LargestImagePixelValue == 884
+    assert info.PatientID == '123565'  # patient id
+    assert info.StudyID == '8811'  # study id
 
-    assert tag2list(info['0028|0030']) == [0.859375, 0.859375]  # pixel spacing
+    # pixel spacing
+    assert tag2list(info.PixelSpacing) == [0.859375, 0.859375]
 
 
 def test_dcminfo():
     info = mv.dcminfo(DCM_PATH)
-    assert int(info['0028|1052']) == 0
-    assert int(info['0028|0107']) == 884
-    assert info['0010|0020'] == '123565'  # patient id
-    assert info['0020|0010'] == '8811'  # study id
-    assert tag2list(info['0028|0030']) == [0.859375, 0.859375]  # pixel spacing
+    assert int(info.RescaleIntercept) == 0
+    assert info.LargestImagePixelValue == 884
+    assert info.PatientID == '123565'  # patient id
+    assert info.StudyID == '8811'  # study id
+
+    # pixel spacing
+    assert tag2list(info.PixelSpacing) == [0.859375, 0.859375]
 
 
 def test_dcmread_dr():
     img = mv.dcmread_dr(DCM_PATH)
-    img_, metadata = mv.dcmread(DCM_PATH, read_header=True)
+    img_, ds = mv.dcmread(DCM_PATH, read_header=True)
     assert_image_equal(img, img_)
 
     img = mv.dcmread_dr(DCM_PATH, mv.DrReadMode.UNCHANGED)
-    img_, metadata = mv.dcmread(DCM_PATH, read_header=True)
+    img_, ds = mv.dcmread(DCM_PATH, read_header=True)
     assert_image_equal(img, img_)
 
     img = mv.dcmread_dr(DCM_PATH, mv.DrReadMode.MONOCHROME1)
-    img_, metadata = mv.dcmread(DCM_PATH, read_header=True)
+    img_, ds = mv.dcmread(DCM_PATH, read_header=True)
     assert_image_equal(img, img_.max() - img_)
 
-    img, metadata = mv.dcmread_dr(DCM_PATH,
-                                  mv.DrReadMode.MONOCHROME1,
-                                  read_header=True)
-    assert metadata['0028|0004'].find('MONOCHROME1') != -1
+    img, ds = mv.dcmread_dr(DCM_PATH,
+                            mv.DrReadMode.MONOCHROME1,
+                            read_header=True)
+    assert ds.PhotometricInterpretation.find('MONOCHROME1') != -1
 
-    img, metadata = mv.dcmread_dr(DCM_PATH, read_header=True)
-    assert metadata['0028|0004'].find('MONOCHROME2') != -1
+    img, ds = mv.dcmread_dr(DCM_PATH, read_header=True)
+    assert ds.PhotometricInterpretation.find('MONOCHROME2') != -1
 
-    img, metadata = mv.dcmread_dr(DCM_PATH,
-                                  mv.DrReadMode.UNCHANGED,
-                                  read_header=True)
-    assert metadata['0028|0004'].find('MONOCHROME2') != -1
+    img, ds = mv.dcmread_dr(DCM_PATH,
+                            mv.DrReadMode.UNCHANGED,
+                            read_header=True)
+    assert ds.PhotometricInterpretation.find('MONOCHROME2') != -1

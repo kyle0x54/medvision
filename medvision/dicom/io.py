@@ -1,22 +1,6 @@
 import numpy as np
 import SimpleITK as itk
-
-
-def _get_metadata(reader):
-    """ Read metadata from a SimpleITK.SimpleITK.ImageFileReader object.
-
-    Args:
-        reader (obj): SimpleITK file reader.
-
-    Return:
-        (dict): dicom tag and value pairs {tag: value}.
-    """
-    metadata = {}
-    for tag in reader.GetMetaDataKeys():
-        value = reader.GetMetaData(tag)
-        metadata[tag] = value
-
-    return metadata
+import pydicom
 
 
 def dcmread(dicom_path, read_header=False):
@@ -29,14 +13,19 @@ def dcmread(dicom_path, read_header=False):
 
     Return:
         (ndarray): dicom image array.
-        (dict, optional): dicom metadata.
+        (pydicom.dataset.FileDataset): an instance of FileDataset
+        that represents a parsed DICOM file.
     """
-    img_itk = itk.ReadImage(dicom_path)
-    img = itk.GetArrayFromImage(img_itk)
-    img = np.squeeze(img)
+    ds = pydicom.dcmread(dicom_path)
+    try:
+        img = ds.pixel_array
+    except Exception:
+        img_itk = itk.ReadImage(dicom_path)
+        img = itk.GetArrayFromImage(img_itk)
+        img = np.squeeze(img)
+
     if read_header:
-        metadata = _get_metadata(img_itk)
-        return img, metadata
+        return img, ds
     else:
         return img
 
@@ -44,19 +33,14 @@ def dcmread(dicom_path, read_header=False):
 def dcminfo(dicom_path):
     """ Read metadata (dicom tags) from DICOM file.
 
-    The metadata is stored in dicom tag and value pairs {tag: value}.
-    For example, {'0008|0020': '20010316', '0018|0020': 'SE', ...}
+    Refer to pydicom.dcmread
 
     Args:
         dicom_path (str): path of the dicom file.
 
     Return:
-        (dict): dicom metadata.
+        (pydicom.dataset.FileDataset): an instance of FileDataset
+        that represents a parsed DICOM file.
     """
-    reader = itk.ImageFileReader()
-    reader.SetFileName(dicom_path)
-    reader.LoadPrivateTagsOn()
-    reader.ReadImageInformation()
-
-    metadata = _get_metadata(reader)
-    return metadata
+    ds = pydicom.dcmread(dicom_path)
+    return ds
