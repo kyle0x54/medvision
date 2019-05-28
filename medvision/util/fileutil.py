@@ -19,6 +19,7 @@ def listdir(path):
 joinpath = os.path.join
 basename = os.path.basename
 abspath = os.path.abspath
+splitext = os.path.splitext
 
 
 def parentdir(path):
