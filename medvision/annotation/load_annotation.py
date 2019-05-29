@@ -14,7 +14,7 @@ def load_bdc_dr_annot(annot_path, class2label=None):
     Returns:
         (list[ndarray]): a list containing all annotation contours.
     """
-    with open(annot_path, 'rt') as fd:
+    with open(annot_path, 'rt', encoding='GBK') as fd:
         lines = fd.readlines()
 
     contours = []
