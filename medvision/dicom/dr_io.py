@@ -55,7 +55,9 @@ def dcmread_dr(dicom_path, mode=DrReadMode.MONOCHROME2, read_header=False):
             ds.WindowCenter = float(ds.WindowCenter)
             ds.WindowWidth = float(ds.WindowWidth)
             if is_inverted:
-                ds.WindowCenter = (img.max() + img.min() - ds.WindowCenter)
+                ds.WindowCenter = (float(img.max()) +
+                                   float(img.min()) -
+                                   ds.WindowCenter)
         if is_inverted:
             ds.PhotometricInterpretation = mode.name
         return img, ds
