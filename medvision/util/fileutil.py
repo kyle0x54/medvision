@@ -71,8 +71,12 @@ def copyfiles(src_paths, dst_dir, src_root=None, non_overwrite=False):
     assert mv.isarrayinstance(src_paths)
 
     cp_func = non_overwrite_cp if non_overwrite else cp
-    for src_path in src_paths:
-        cp_func(joinpath(src_root, src_path), dst_dir)
+    if src_root is not None:
+        for src_path in src_paths:
+            cp_func(joinpath(src_root, src_path), dst_dir)
+    else:
+        for src_path in src_paths:
+            cp_func(src_path, dst_dir)
 
 
 @unique
