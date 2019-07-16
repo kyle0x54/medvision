@@ -14,7 +14,7 @@ def _invert_if_needed(img, mode, mono):
     # Convert 'Photometric Interpretation' if needed
     mono = 1 if mono.upper().find('MONOCHROME1') != -1 else 2
     if mode.value != mono and mode.value is not DrReadMode.UNCHANGED.value:
-        return img.max() + img.min() - img, True
+        return img.max() - img + img.min(), True
     else:
         return img, False
 
