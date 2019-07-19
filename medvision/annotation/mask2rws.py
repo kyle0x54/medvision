@@ -24,8 +24,8 @@ def mask2rws_contour(mask_path, rws_path):
     mask = mv.imread(mask_path, mv.ImreadMode.GRAY)
     contours, _ = cv2.findContours(
         mask,
-        cv2.RETR_EXTERNAL,
-        cv2.CHAIN_APPROX_NONE
+        cv2.RETR_TREE,
+        cv2.CHAIN_APPROX_SIMPLE
     )
 
     shapes = []
