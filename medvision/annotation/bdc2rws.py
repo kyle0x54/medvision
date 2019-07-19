@@ -54,8 +54,9 @@ def batch_bdc2rws_contour(dcm_dir, bdc_dir, rws_dir, **kwargs):
         bdc_dir (str): bdc annotation files directory.
         rws_dir (str): rws annotation files directory.
 
-    N.B. dicom file title should be exactly the same with annotation file title.
-    e.g. 123.dcm, 123.txt
+    N.B.
+        dicom title should be exactly the same with annotation
+        file title. e.g. 123.dcm, 123.txt
     """
     mv.mkdirs(rws_dir)
     dcm_filenames = mv.listdir(dcm_dir)

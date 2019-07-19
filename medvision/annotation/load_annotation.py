@@ -64,8 +64,8 @@ def load_bdc_dr_bbox(annot_path, class2label=None):
 
 if __name__ == '__main__':
     # TODO: move to unittest
-    image_path = '/mnt/sdb1/TB/Train/1st_scan/1.2.156.14702.30.1000.2.2201701301436355066.143635.dcm'
-    annot_path = '/mnt/sdb1/TB/Train/label/1.2.156.14702.30.1000.2.2201701301436355066.143635.txt'
+    image_path = '/mnt/sdb1/1.dcm'
+    annot_path = '/mnt/sdb1/1.txt'
     bboxes = load_bdc_dr_bbox(annot_path, lambda x: 1)
     import medvision as mv
     image = mv.dcmread_dr(image_path)
