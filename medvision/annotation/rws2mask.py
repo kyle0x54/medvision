@@ -65,7 +65,7 @@ def shape_to_mask(img_shape, points, shape_type=None,
     return mask
 
 
-def rws_contour2mask(rws_path, mask_path):
+def rws2mask(rws_path, mask_path):
     rws_contour = load_rws_contour(rws_path)
 
     img_shape = (rws_contour['height'], rws_contour['width'])
@@ -79,7 +79,7 @@ def rws_contour2mask(rws_path, mask_path):
     mv.imwrite(mask_path, mask)
 
 
-def batch_mask2rws_contour(rws_dir, mask_dir, **kwargs):
+def batch_rws2mask(rws_dir, mask_dir, **kwargs):
     """ Convert rws format annotation to mask format.
 
     Args:
@@ -97,12 +97,12 @@ def batch_mask2rws_contour(rws_dir, mask_dir, **kwargs):
     for file_title in tqdm(file_titles):
         rws_path = mv.joinpath(rws_dir, file_title + '.json')
         mask_path = mv.joinpath(mask_dir, file_title + '.png')
-        rws_contour2mask(rws_path, mask_path, **kwargs)
+        rws2mask(rws_path, mask_path, **kwargs)
 
 
 if __name__ == '__main__':
     # TODO: move to unittest
-    rws_dir = '/mnt/sdb1/BoneSeg/val/rws'
-    mask_dir = '/mnt/sdb1/BoneSeg/val/masks'
+    rws_dir = '/mnt/sdb1/BoneSeg/train/rws_refined'
+    mask_dir = '/mnt/sdb1/BoneSeg/train/lbls'
 
-    batch_mask2rws_contour(rws_dir, mask_dir)
+    batch_rws2mask(rws_dir, mask_dir)

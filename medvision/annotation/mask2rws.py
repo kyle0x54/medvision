@@ -20,8 +20,14 @@ def _gen_rws_shape(label, contour):
     )
 
 
-def mask2rws_contour(mask_path, rws_path):
-    mask = mv.imread(mask_path, mv.ImreadMode.GRAY)
+def mask2rws(mask_path, rws_path, dcm_path=None):
+    if isinstance(mask_path, str):
+        mask = mv.imread(mask_path, mv.ImreadMode.GRAY)
+        dcm_path = mv.basename(mask_path).replace('.png', '.dcm')
+    else:
+        mask = mask_path
+        assert dcm_path is not None
+
     contours, _ = cv2.findContours(
         mask,
         cv2.RETR_TREE,
@@ -39,7 +45,7 @@ def mask2rws_contour(mask_path, rws_path):
         shapes=shapes,
         lineColor=None,
         fillColor=None,
-        imagePath=mv.basename(mask_path).replace('.png', '.dcm'),
+        imagePath=dcm_path,
         imageData=None,
         imageHeight=mask.shape[0],
         imageWidth=mask.shape[1],
@@ -49,7 +55,7 @@ def mask2rws_contour(mask_path, rws_path):
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-def batch_mask2rws_contour(mask_dir, rws_dir, **kwargs):
+def batch_mask2rws(mask_dir, rws_dir, **kwargs):
     """ Convert mask format annotation to rws format.
 
     Args:
@@ -67,12 +73,12 @@ def batch_mask2rws_contour(mask_dir, rws_dir, **kwargs):
     for file_title in tqdm(file_titles):
         mask_path = mv.joinpath(mask_dir, file_title + '.png')
         rws_path = mv.joinpath(rws_dir, file_title + '.json')
-        mask2rws_contour(mask_path, rws_path, **kwargs)
+        mask2rws(mask_path, rws_path, **kwargs)
 
 
 if __name__ == '__main__':
     # TODO: move to unittest
-    mask_dir = '/mnt/sdb1/BoneSeg/val/lbls'
-    rws_dir = '/mnt/sdb1/BoneSeg/val/rws'
+    mask_dir = '/mnt/sdb1/BoneSeg/train/masks'
+    rws_dir = '/mnt/sdb1/BoneSeg/train/rws_refined'
 
-    batch_mask2rws_contour(mask_dir, rws_dir)
+    batch_mask2rws(mask_dir, rws_dir)
