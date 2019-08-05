@@ -7,7 +7,6 @@ import sklearn
 def draw_froc(average_fps,
               sensitivity,
               save_path=None,
-              show=True,
               bLogPlot=True,
               **kwargs):
     """ Plot the FROC curve.
@@ -43,7 +42,7 @@ def draw_froc(average_fps,
 
     if save_path is not None:
         plt.savefig(save_path)
-    if show:
+    else:
         plt.show()
 
 
@@ -64,7 +63,8 @@ def save_roc_curve(roc_curve, save_path=None):
     plt.legend(loc="lower right")
     if save_path is not None:
         plt.savefig(save_path)
-    plt.show()
+    else:
+        plt.show()
 
 
 def save_pr_curve(pr_curve, save_path=None):
@@ -79,4 +79,5 @@ def save_pr_curve(pr_curve, save_path=None):
     plt.title('PR Curve')
     if save_path is not None:
         plt.savefig(save_path)
-    plt.show()
+    else:
+        plt.show()
