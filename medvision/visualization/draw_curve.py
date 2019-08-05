@@ -1,8 +1,14 @@
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FixedFormatter
+import numpy as np
 import sklearn
 
 
-def draw_froc(average_fps, sensitivity, save_path=None, **kwargs):
+def draw_froc(average_fps,
+              sensitivity,
+              save_path=None,
+              bLogPlot=True,
+              **kwargs):
     """ Plot the FROC curve.
 
     Args:
@@ -12,16 +18,32 @@ def draw_froc(average_fps, sensitivity, save_path=None, **kwargs):
         different thresholds.
         save_path (str): path to save the froc curve drawing.
     """
-    plt.figure()
-    plt.xlabel('False Positives')
+    average_fps = np.append(average_fps, 64)
+    sensitivity = np.append(sensitivity, sensitivity[-1])
+    plt.plot(average_fps, sensitivity, **kwargs)
+    plt.xlabel('Average number of false positives per scan')
     plt.ylabel('Sensitivity')
     plt.title('FROC Curve')
+    plt.xlim(0.125, 64)
     plt.ylim([0, 1])
-    plt.plot(average_fps, sensitivity, **kwargs)
-    plt.grid()
+    plt.legend(loc='lower right')
+
+    ax = plt.gca()
+    xaxis = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64]
+    if bLogPlot:
+        plt.xscale('log', basex=2)
+        ax.xaxis.set_major_formatter(FixedFormatter(xaxis))
+
+    # set your ticks manually
+    ax.xaxis.set_ticks(xaxis)
+    ax.yaxis.set_ticks(np.arange(0, 1.1, 0.1))
+    plt.grid(b=True, which='both')
+    plt.tight_layout()
+
     if save_path is not None:
         plt.savefig(save_path)
-    plt.show()
+    else:
+        plt.show()
 
 
 def save_roc_curve(roc_curve, save_path=None):
@@ -41,7 +63,8 @@ def save_roc_curve(roc_curve, save_path=None):
     plt.legend(loc="lower right")
     if save_path is not None:
         plt.savefig(save_path)
-    plt.show()
+    else:
+        plt.show()
 
 
 def save_pr_curve(pr_curve, save_path=None):
@@ -56,4 +79,5 @@ def save_pr_curve(pr_curve, save_path=None):
     plt.title('PR Curve')
     if save_path is not None:
         plt.savefig(save_path)
-    plt.show()
+    else:
+        plt.show()
