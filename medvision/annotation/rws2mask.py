@@ -2,7 +2,6 @@ import math
 import PIL.Image
 import PIL.ImageDraw
 import json
-import cv2
 import medvision as mv
 import numpy as np
 from tqdm import tqdm
@@ -102,7 +101,7 @@ def batch_rws2mask(rws_dir, mask_dir, **kwargs):
 
 if __name__ == '__main__':
     # TODO: move to unittest
-    rws_dir = '/mnt/sdb1/BoneSeg/train/rws_refined'
-    mask_dir = '/mnt/sdb1/BoneSeg/train/lbls'
+    rws_dir = '/home/huiying/.rws/rws'
+    mask_dir = '/home/huiying/.rws/masks'
 
     batch_rws2mask(rws_dir, mask_dir)

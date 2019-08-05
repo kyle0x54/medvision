@@ -78,7 +78,7 @@ def batch_mask2rws(mask_dir, rws_dir, **kwargs):
 
 if __name__ == '__main__':
     # TODO: move to unittest
-    mask_dir = '/mnt/sdb1/BoneSeg/train/masks'
-    rws_dir = '/mnt/sdb1/BoneSeg/train/rws_refined'
+    mask_dir = '/home/huiying/.rws/masks'
+    rws_dir = '/home/huiying/.rws/rws_verification'
 
     batch_mask2rws(mask_dir, rws_dir)
