@@ -35,6 +35,15 @@ def _compute_ap_voc12(rec, pre):
     return ap
 
 
+def _compute_froc(fps, rec, begin=0.125, end=2):
+    # to average recall of fps within [begin, end]
+    index = [i for i, fp in enumerate(list(fps)) if (begin <= fp <= end)]
+
+    froc_auc = np.sum(rec[index]) / float(len(index))
+
+    return froc_auc
+
+
 def _compute_ap(rec, pre, use_voc07_metric=False):
     """ Compute the average precision, given the recall and precision curves.
 
@@ -207,7 +216,7 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
 
         # sort by score
         indices = np.argsort(-scores)
-        fps, tps = fps[indices], tps[indices]
+        fps, tps, scores = fps[indices], tps[indices], scores[indices]
 
         # compute false positives and true positives at retrieval cutoff
         # of k bboxes (k in [1, n], n is the total number of detected bboxes)
@@ -222,5 +231,14 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
         results[label]['ap'] = _compute_ap(recall, precision)
         results[label]['num_gt_bboxes'] = num_anns
         results[label]['froc'] = fps / num_imgs, recall  # recall = sensitivity
+        results[label]['froc_auc'] = _compute_froc(fps / num_imgs, recall)
+
+        # find score of 0.5 fps and 1 fps.
+        fps_per_image = fps / num_imgs
+        for i in range(len(scores) - 1):
+            if fps_per_image[i] < 0.5 <= fps_per_image[i + 1]:
+                results[label]['score_half_fps'] = scores[i]
+            if fps_per_image[i] < 1 <= fps_per_image[i + 1]:
+                results[label]['score_one_fps'] = scores[i]
 
     return results
