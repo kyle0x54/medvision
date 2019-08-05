@@ -4,7 +4,12 @@ import numpy as np
 import sklearn
 
 
-def draw_froc(average_fps, sensitivity, save_path=None, show=True, bLogPlot=True, **kwargs):
+def draw_froc(average_fps,
+              sensitivity,
+              save_path=None,
+              show=True,
+              bLogPlot=True,
+              **kwargs):
     """ Plot the FROC curve.
 
     Args:
