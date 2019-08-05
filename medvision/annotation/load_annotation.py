@@ -3,8 +3,8 @@ import cv2
 import numpy as np
 
 
-def load_bdc_dr_annot(annot_path, class2label=None):
-    """ Load a DR BDC annotation file.
+def load_bdc_dr_contour(annot_path, class2label=None):
+    """ Load a DR BDC contour annotation file.
 
     Args:
         annot_path (str): annotation file path.
@@ -54,7 +54,7 @@ def load_bdc_dr_bbox(annot_path, class2label=None):
     """
     bboxes = []
 
-    contours = load_bdc_dr_annot(annot_path, class2label)
+    contours = load_bdc_dr_contour(annot_path, class2label)
     for label, contour in contours:
         bbox = _contour2bbox(contour)
         bboxes.append((label, bbox))
@@ -64,8 +64,8 @@ def load_bdc_dr_bbox(annot_path, class2label=None):
 
 if __name__ == '__main__':
     # TODO: move to unittest
-    image_path = '/mnt/sdb1/tb/internal/tb/002565.dcm'
-    annot_path = '/mnt/sdb1/tb/internal/label/002565.txt'
+    image_path = '/mnt/sdb1/1.dcm'
+    annot_path = '/mnt/sdb1/1.txt'
     bboxes = load_bdc_dr_bbox(annot_path, lambda x: 1)
     import medvision as mv
     image = mv.dcmread_dr(image_path)
