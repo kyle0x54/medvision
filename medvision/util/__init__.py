@@ -2,6 +2,7 @@ from .build_object import build_object_from_dict
 from .config_util import load_config_cmdline, load_config
 from .fileutil import (isdir, isfile, listdir,
                        joinpath, basename, abspath, splitext, parentdir,
+                       filetitle,
                        cp, rm, cptree, rmtree, move, symlink,
                        mkdirs, empty_dir,
                        non_overwrite_cp, copyfiles,
@@ -22,6 +23,7 @@ __all__ = [
 
     'isdir', 'isfile', 'listdir',
     'joinpath', 'basename', 'abspath', 'splitext', 'parentdir',
+    'filetitle',
     'cp', 'rm', 'cptree', 'rmtree', 'move', 'symlink',
     'mkdirs', 'empty_dir',
     'non_overwrite_cp', 'copyfiles',

@@ -27,6 +27,10 @@ def parentdir(path):
     return os.path.dirname(path)
 
 
+def filetitle(path):
+    return os.path.splitext(os.path.basename(path))[0]
+
+
 cp = shutil.copy
 rm = os.remove
 cptree = shutil.copytree
