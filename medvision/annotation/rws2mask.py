@@ -1,34 +1,11 @@
 import math
 import PIL.Image
 import PIL.ImageDraw
-import json
 import medvision as mv
 import numpy as np
 from tqdm import tqdm
 
-
-def load_rws_contour(filepath):
-    with open(filepath, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-
-    # relative path from label file to relative path from cwd
-    image_path = mv.joinpath(mv.parentdir(filepath), data['imagePath'])
-    height = data.get('imageHeight')
-    width = data.get('imageWidth')
-    shapes = []
-    for s in data['shapes']:
-        shape = (
-            s['label'],
-            s['points'],
-        )
-        shapes.append(shape)
-
-    return {
-        'height': height,
-        'width': width,
-        'image_path': image_path,
-        'shapes': shapes
-    }
+from .rws import load_rws_contour
 
 
 def shape_to_mask(img_shape, points, shape_type=None,
