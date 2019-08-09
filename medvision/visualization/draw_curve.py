@@ -20,6 +20,7 @@ def draw_froc(average_fps,
     """
     average_fps = np.append(average_fps, 64)
     sensitivity = np.append(sensitivity, sensitivity[-1])
+    plt.figure()
     plt.plot(average_fps, sensitivity, **kwargs)
     plt.xlabel('Average number of false positives per scan')
     plt.ylabel('Sensitivity')
