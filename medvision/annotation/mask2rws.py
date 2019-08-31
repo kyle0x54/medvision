@@ -28,6 +28,10 @@ def mask2rws(mask_path, rws_path, dcm_path=None):
         mask = mask_path
         assert dcm_path is not None
 
+    if mask.max() == 0:
+        print('skip mask with no annotation regions: {}'.format(mask_path))
+        return
+
     contours, _ = cv2.findContours(
         mask,
         cv2.RETR_TREE,
