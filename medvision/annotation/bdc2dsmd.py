@@ -1,13 +1,13 @@
 import numpy as np
-from .load_annotation import load_bdc_dr_bbox
+from .bdc import load_bdc_dr_bbox
 import medvision as mv
 
 
-def bdc2dsmd_det_2d(annot_dir,
-                    image_dir=None,
-                    class2label=None,
-                    ignore_label_name=True,
-                    replace_ext=lambda x: x):
+def bdc2dsmd_bbox(annot_dir,
+                  image_dir=None,
+                  class2label=None,
+                  ignore_label_name=True,
+                  replace_ext=lambda x: x):
     # N.B. annotation file name and image file name should be the same
     num_classes = len(class2label) if class2label is not None else 1
 
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     def replace_ext(x):
         return x.replace('.txt', '.dcm')
 
-    dsmd = bdc2dsmd_det_2d(annot_dir, replace_ext=replace_ext)
+    dsmd = bdc2dsmd_bbox(annot_dir, replace_ext=replace_ext)
     mv.save_dsmd(dsmd_path, dsmd, {'tb': 0}, mode='det')
 
     dsmd = mv.load_dsmd(dsmd_path, {'tb': 0}, mode='det')
