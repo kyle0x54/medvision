@@ -165,6 +165,10 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
 
     Returns:
         (OrderedDict): AP, number of GT bboxes, FROC curve for each label.
+
+    N.B.
+        Each detection result (bboxes) should be sorted by prediction scores
+        in descending order before calling this function.
     """
     assert len(gts) == len(dts)
     dts, gts = _to_list(dts, gts)

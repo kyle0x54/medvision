@@ -87,14 +87,18 @@ def load_checkpoint(model, path, map_location='cpu', strict=True):
         model.load_state_dict(state_dict, strict)
 
 
-def save_ckpt_to_dir(model, ckpt_dir, identifier):
+def save_ckpt_to_dir(model, ckpt_dir, identifier, save_to_disk=True):
     """ Save checkpoint to file and make a soft link to the latest ckpt.
 
     Args:
         model (Module): module whose params are to be saved.
         ckpt_dir (str): directory to save the checkpoint file.
         identifier (str): ckpt identifier (e.g. number of epochs).
+        save_to_disk (bool): whether to save ckpt to disk.
     """
+    if not save_to_disk:
+        return
+
     model_path = mv.joinpath(ckpt_dir, str(identifier) + '.pth')
     mv.save_checkpoint(model, model_path)
 

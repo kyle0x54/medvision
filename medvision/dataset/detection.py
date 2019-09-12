@@ -57,7 +57,7 @@ def _update_data(data, line, class2label):
         data[key][label].append(value)
 
 
-def _convert_bboxes_format(data):
+def convert_bboxes_format(data):
     """ Convert bboxes from list of lists to ndarray of shape (n, 4).
     """
     assert len(data) != 0
@@ -107,7 +107,7 @@ def load_det_dsmd(dsmd_path, class2label):
             _update_data(data, line, class2label)
 
     # convert bboxes from list of lists to ndarray
-    data = _convert_bboxes_format(data)
+    data = convert_bboxes_format(data)
 
     return mv.make_dsmd(data)
 

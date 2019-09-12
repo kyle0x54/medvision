@@ -2,7 +2,7 @@ import logging
 import json
 import medvision as mv
 from tqdm import tqdm
-from .load_annotation import load_bdc_dr_contour
+from .bdc import load_bdc_dr_contour
 
 
 def _gen_rws_shape(label, contour):
