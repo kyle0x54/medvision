@@ -176,15 +176,28 @@ def imshow_bboxes(img,
         for j in range(_top_k):
             left_top = (_bboxes_int[j, 0], _bboxes_int[j, 1])
             right_bottom = (_bboxes_int[j, 2], _bboxes_int[j, 3])
-            cv2.rectangle(img_with_result, left_top, right_bottom,
-                          colors[i].value, thickness)
+            cv2.rectangle(
+                img_with_result, left_top, right_bottom,
+                colors[i].value, thickness
+            )
             if plot_prob:
                 label_text = '%.2f' % _bboxes[j, -1]
-                cv2.putText(img_with_result, label_text,
-                            (_bboxes_int[j, 0], _bboxes_int[j, 1] - 2),
-                            cv2.FONT_HERSHEY_COMPLEX, font_scale,
-                            colors[i].value,
-                            thickness)
+                ((text_width, text_height), _) = cv2.getTextSize(
+                    label_text, cv2.FONT_HERSHEY_SIMPLEX, font_scale, thickness
+                )
+                cv2.rectangle(
+                    img_with_result,
+                    (left_top[0], left_top[1] - int(1.3 * text_height)),
+                    (left_top[0] + text_width, left_top[1]),
+                    colors[i].value, -1
+                )
+                cv2.putText(
+                    img_with_result, label_text,
+                    (left_top[0], left_top[1] - int(0.3 * text_height)),
+                    cv2.FONT_HERSHEY_SIMPLEX, font_scale,
+                    (255, 255, 255),
+                    thickness=thickness, lineType=cv2.LINE_AA
+                )
 
     if show:
         _imshow_switcher([img_with_result, img], title)
