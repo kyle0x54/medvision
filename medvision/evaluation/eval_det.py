@@ -181,12 +181,10 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
 
         for i in range(num_imgs):
             gt = gts[i][label]
-            dt = np.array(dts[i][label])
+            dt = dts[i][label]
+            dt = dt[np.argsort(-dt[:, 4])]
             num_anns += len(gt)
             matched_anns = []
-            if dt.size:
-                sort_indices = np.argsort(-dt[:, 4])
-                dt = dt[sort_indices].reshape(-1, 5)
 
             for d in dt:
                 scores = np.append(scores, d[4])
