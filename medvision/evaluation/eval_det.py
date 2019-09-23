@@ -165,10 +165,6 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
 
     Returns:
         (OrderedDict): AP, number of GT bboxes, FROC curve for each label.
-
-    N.B.
-        Each detection result (bboxes) should be sorted by prediction scores
-        in descending order before calling this function.
     """
     assert len(gts) == len(dts)
     dts, gts = _to_list(dts, gts)
@@ -186,6 +182,7 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
         for i in range(num_imgs):
             gt = gts[i][label]
             dt = dts[i][label]
+            dt = dt[np.argsort(-dt[:, 4])]
             num_anns += len(gt)
             matched_anns = []
 
@@ -238,11 +235,16 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
         results[label]['froc_auc'] = _compute_froc(fps / num_imgs, recall)
 
         # find score of 0.5 fps and 1 fps.
+        # TODO: move to project level code/script
         fps_per_image = fps / num_imgs
+        fp_range = np.array(range(10)) * 0.1 + 0.1
+        results[label]["pr"] = {}
         for i in range(len(scores) - 1):
-            if fps_per_image[i] < 0.5 <= fps_per_image[i + 1]:
-                results[label]['score_half_fps'] = scores[i]
-            if fps_per_image[i] < 1 <= fps_per_image[i + 1]:
-                results[label]['score_one_fps'] = scores[i]
+            for n in fp_range:
+                if fps_per_image[i] < n <= fps_per_image[i + 1]:
+                    results[label]["pr"]["fp-" + str(n)[:3]] \
+                        = {"thr": scores[i],
+                           "recall": recall[i],
+                           "precision": precision[i]}
 
     return results
