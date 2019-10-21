@@ -44,8 +44,12 @@ def rws2dsmd_bbox(filepaths, num_classes, class2label):
 def _gen_rws_shape(bbox, label):
     flags = {}
     shape_type = 'rectangle'
+    line_color = (0, 255, 0, 128)
+    fill_color = (255, 0, 0, 128)
     return dict(
         label=label,
+        line_color=line_color,
+        fill_color=fill_color,
         points=[[float(bbox[0]), float(bbox[1])],
                 [float(bbox[2]), float(bbox[3])]],
         shape_type=shape_type,
@@ -90,12 +94,14 @@ def dsmd2rws_det(dsmd, dcm_dir, suffix='.json_AI', class2label=None, thr=0.3):
                     label2class[i] + "_{:.3f}".format(bbox[-1])
                 shape = _gen_rws_shape(bbox[:4], label)
                 shapes.append(shape)
-        if len(shape) == 0:
+        if len(shapes) == 0:
             continue
         data = dict(
             version='0.1.0',
             flags={},
             shapes=shapes,
+            lineColor=None,
+            fillColor=None,
             imagePath=mv.basename(dcm_infos[key][0]),
             imageData=None,
             imageHeight=dcm_infos[key][1],
