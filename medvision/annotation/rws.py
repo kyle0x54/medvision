@@ -48,16 +48,13 @@ def load_rws_bbox(filepath):
     shapes = []
     for label, points in rws_bboxes['shapes']:
         assert len(points) == 2, 'only support rectangle annotation'
-        top_left = points[0]
-        bottom_right = points[1]
+        xmin = min(points[0][0], points[1][0])
+        ymin = min(points[0][1], points[1][1])
+        xmax = max(points[0][0], points[1][0])
+        ymax = max(points[0][1], points[1][1])
         shape = (
             label,
-            [
-                top_left[0],
-                top_left[1],
-                bottom_right[0],
-                bottom_right[1]
-            ]
+            [xmin, ymin, xmax, ymax]
         )
         shapes.append(shape)
 
