@@ -10,7 +10,7 @@ from .fileutil import (isdir, isfile, listdir,
                        find_duplicated_files)
 from .init_util import (init_logging, init_random_seed, init_cuda_devices,
                         init_experiment, init_system)
-from .multiprocessutil import tqdm_imap
+from .multiprocessutil import tqdm_imap, tqdm_imap_unordered
 from .priority import Priority, get_priority
 from .timer import Timer
 from .typeutil import isarrayinstance
@@ -33,7 +33,7 @@ __all__ = [
     'init_logging', 'init_random_seed', 'init_cuda_devices',
     'init_experiment', 'init_system',
 
-    'tqdm_imap',
+    'tqdm_imap', 'tqdm_imap_unordered',
 
     'Priority', 'get_priority',
 

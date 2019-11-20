@@ -29,6 +29,14 @@ def tqdm_imap(func, args, n_processes=None):
     return result
 
 
+def tqdm_imap_unordered(func, args, n_processes=None):
+    p = multiprocessing.Pool(n_processes)
+    for _ in tqdm(p.imap_unordered(func, args), total=len(args)):
+        pass
+    p.close()
+    p.join()
+
+
 # Multiprocessing cannot be tested in pytest.
 # We can test it here instead.
 if __name__ == '__main__':
