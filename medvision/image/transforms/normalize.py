@@ -53,3 +53,16 @@ def normalize_rgb(img, mean, std):
         img = mv.gray2rgb(img)
 
     return (img - mean) / std
+
+
+def imadjust_grayscale(im, low_pct, high_pct):
+    assert im.ndim == 2
+    assert 0.0 <= low_pct < high_pct <= 1.0
+
+    low_loc = int(round((im.size - 1) * low_pct))
+    high_loc = int(round((im.size - 1) * high_pct))
+
+    im_flat = im.flatten()
+    low_thr = im_flat[np.argpartition(im_flat, low_loc)[low_loc]]
+    high_thr = im_flat[np.argpartition(im_flat, high_loc)[high_loc]]
+    return mv.normalize_grayscale(np.clip(im, a_min=low_thr, a_max=high_thr))
