@@ -87,7 +87,7 @@ def imshow(imgs, num_cols=None, fig_name=None, titles='', save_path=None):
         titles (str or list[str]): sub-plot titles.
         save_path (str, optional): path to save the image.
     """
-    if not isinstance(imgs, collections.Sequence):
+    if not mv.isarrayinstance(imgs):
         imgs = [imgs]
     num_imgs = len(imgs)
 
