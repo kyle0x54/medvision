@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
-from shutil import rmtree
-
-from setuptools import find_packages, setup, Command
+from setuptools import find_packages, setup
 from setuptools.extension import Extension
+
 from Cython.Build import cythonize
 import numpy
 
@@ -21,20 +19,15 @@ VERSION = None
 
 
 REQUIRED = [
-    'colorlog',
     'cython',
     'matplotlib',
     'natsort',
     'numpy',
     'opencv-python',
+    'pillow',
     'pydicom',
     'scikit-learn',
-    'SimpleITK',
-    'tensorboardX',
-    'torch',
     'tqdm',
-    'visdom',
-    'yacs'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -54,42 +47,6 @@ if not VERSION:
         exec(f.read(), about)
 else:
     about['__version__'] = VERSION
-
-
-class UploadCommand(Command):
-    """ Support setup.py upload. """
-
-    description = 'Build and publish the package.'
-    user_options = []
-
-    @staticmethod
-    def status(s):
-        print('\033[1m{0}\033[0m'.format(s))
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        try:
-            self.status('Removing previous builds...')
-            rmtree(os.path.join(here, 'dist'))
-        except OSError:
-            pass
-
-        self.status('Building Source and Wheel (universal) distribution...')
-        os.system('{0} setup.py sdist bdist_wheel'.format(sys.executable))
-        self.status('Uploading the package to PyPI via Twine...')
-        os.system('twine upload dist/*')
-
-        self.status('Pushing git tags...')
-        os.system('git tag v{0}'.format(about['__version__']))
-        os.system('git push --tags')
-
-        sys.exit()
-
 
 extensions = [
     Extension(
@@ -123,9 +80,6 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
-    cmdclass={
-        'upload': UploadCommand,
-    },
     zip_safe=False,
     ext_modules=cythonize(extensions),
 )

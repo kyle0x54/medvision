@@ -21,15 +21,6 @@ class Color(Enum):
     black = (0, 0, 0)
 
 
-def _imshow_tight(img, title):
-    cmap = 'gray' if img.ndim == 2 else None
-    plt.imshow(img, cmap=cmap)
-    plt.axis('off')
-    plt.xlim([0, img.shape[1]])
-    plt.ylim([img.shape[0], 0])
-    plt.title(title)
-
-
 class Switcher:
     def __init__(self, ax, imgs):
         self.ax = ax
@@ -54,6 +45,15 @@ class Switcher:
             pass
 
 
+def _imshow_tight(img, title):
+    cmap = 'gray' if img.ndim == 2 else None
+    plt.imshow(img, cmap=cmap)
+    plt.axis('off')
+    plt.xlim([0, img.shape[1]])
+    plt.ylim([img.shape[0], 0])
+    plt.title(title)
+
+
 def _imshow_switcher(imgs, title=''):
     """ imshow with channel changer.
 
@@ -76,7 +76,14 @@ def _imshow_switcher(imgs, title=''):
     plt.show()
 
 
-def imshow(imgs, num_cols=None, fig_name=None, titles='', save_path=None):
+def imshow(
+    imgs,
+    num_cols=None,
+    fig_name=None,
+    titles='',
+    show=True,
+    save_path=None,
+):
     """ Show an image or multiple images in a single canvas.
 
     Args:
@@ -85,9 +92,10 @@ def imshow(imgs, num_cols=None, fig_name=None, titles='', save_path=None):
             If not given, this parameter is automatically determined.
         fig_name (str): name of the plot.
         titles (str or list[str]): sub-plot titles.
+        show (bool): True: show the image; False: save the image.
         save_path (str, optional): path to save the image.
     """
-    if not mv.isarrayinstance(imgs):
+    if not isinstance(imgs, collections.Sequence):
         imgs = [imgs]
     num_imgs = len(imgs)
 
@@ -107,25 +115,27 @@ def imshow(imgs, num_cols=None, fig_name=None, titles='', save_path=None):
         plt.subplot(num_rows, num_cols, i + 1)
         _imshow_tight(img, titles[i])
 
-    # mng = plt.get_current_fig_manager()
-    # mng.resize(*mng.window.maxsize())
-
     if save_path is not None:
         plt.savefig(save_path)
 
-    plt.show()
+    if show:
+        plt.show()
 
 
-def imshow_bboxes(img,
-                  bboxes,
-                  score_thr=0,
-                  colors=Color.green,
-                  top_k=-1,
-                  thickness=1,
-                  font_scale=0.5,
-                  show=True,
-                  title='',
-                  save_path=None):
+def imshow_bboxes(
+    img,
+    bboxes,
+    score_thr=0,
+    colors=Color.green,
+    top_k=-1,
+    thickness=1,
+    font_scale=0.5,
+    font_thickness=1,
+    font_color=Color.white,
+    title='',
+    show=True,
+    save_path=None
+):
     """ Draw bounding boxes on an image.
 
     To display detection result or compare detection results by different
@@ -140,8 +150,10 @@ def imshow_bboxes(img,
             Otherwise, plot all the bboxes.
         thickness (int): line thickness.
         font_scale (float): font scales of texts.
-        show (bool): True: show the image; False: save the image.
+        font_thickness (int): font thickness.
+        font_color (Color):  color of font.
         title (str): title of the plot.
+        show (bool): True: show the image; False: save the image.
         save_path (str, optional): path to save the image.
     """
     if isinstance(img, str):
@@ -183,7 +195,8 @@ def imshow_bboxes(img,
             if plot_prob:
                 label_text = '%.2f' % _bboxes[j, -1]
                 ((text_width, text_height), _) = cv2.getTextSize(
-                    label_text, cv2.FONT_HERSHEY_SIMPLEX, font_scale, thickness
+                    label_text, cv2.FONT_HERSHEY_SIMPLEX,
+                    font_scale, font_thickness
                 )
                 cv2.rectangle(
                     img_with_result,
@@ -195,8 +208,8 @@ def imshow_bboxes(img,
                     img_with_result, label_text,
                     (left_top[0], left_top[1] - int(0.3 * text_height)),
                     cv2.FONT_HERSHEY_SIMPLEX, font_scale,
-                    (255, 255, 255),
-                    thickness=thickness, lineType=cv2.LINE_AA
+                    font_color.value,
+                    thickness=font_thickness, lineType=cv2.LINE_AA
                 )
 
     if show:
@@ -207,7 +220,10 @@ def imshow_bboxes(img,
 
 
 if __name__ == '__main__':
-    im = cv2.imread('../../tests/data/pngs/Blue-Ogi.png', cv2.IMREAD_GRAYSCALE)
+    im = cv2.imread(
+        '../../tests/data/pngs/Blue-Ogi.png',
+        cv2.IMREAD_GRAYSCALE
+    )
     imshow(im, fig_name='show single image', titles='name')
 
     h, w = im.shape[:2]
