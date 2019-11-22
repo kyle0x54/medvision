@@ -162,50 +162,6 @@ def center_crop(img, crop_height, crop_width):
     return img[y1:y2, x1:x2, ...]
 
 
-# def scaling_crop_pad(src, scale_factor, shift_factor,
-#                      interpolation=cv2.INTER_LINEAR,
-#                      border_mode=cv2.BORDER_REFLECT_101,
-#                      pad_value=0):
-#     """ Rescale an image and do cropping or padding.
-
-#     Rescale an image according ot given scale factor. If scale factor > 1.0,
-#     the rescaled image is cropped with the same size as the input image.
-#     Otherwise, the rescaled image is padded to the size of the input image.
-
-#     Args:
-#         src (ndarray): input image.
-#         scale_factor (float): scaling factor.
-#         shift_factor (float): shift factor. It determines the
-#         interpolation (int): interpolation method (opencv).
-#         border_mode: border interpolation mode (opencv).
-#         pad_value: values to be padded if
-#             border_mode==cv2.BORDER_CONSTANT
-#     """
-#     dst = cv2.resize(src, None, fx=scale_factor, fy=scale_factor,
-#                      interpolation=interpolation)
-
-#     # resize image to original size with crop or pad
-#     diff_y = abs(dst.shape[0] - src.shape[0])
-#     diff_x = abs(dst.shape[1] - src.shape[1])
-
-#     top = int(diff_y * shift_factor)
-#     left = int(diff_x * shift_factor)
-#     bottom = diff_y - top
-#     right = diff_x - left
-
-#     if scale_factor >= 1.0:
-#         dst = dst[top:top+src.shape[0], left:left+src.shape[1], ...]
-#     else:
-#         if border_mode == cv2.BORDER_CONSTANT:
-#             dst = cv2.copyMakeBorder(src, top, bottom, left,
-#                                      right, border_mode, value=pad_value)
-#         else:
-#             dst = cv2.copyMakeBorder(src, top, bottom, left,
-#                                      right, border_mode)
-
-#     return dst
-
-
 def pad_to_square(src, border_mode=cv2.BORDER_REFLECT_101, pad_value=0):
     """ Pad an image to so that its height and width are the same.
 

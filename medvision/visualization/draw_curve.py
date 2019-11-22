@@ -1,14 +1,15 @@
+from typing import Sequence, Optional
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedFormatter
 import numpy as np
 import sklearn
 
 
-def draw_froc(average_fps,
-              sensitivity,
-              save_path=None,
-              bLogPlot=True,
-              **kwargs):
+def draw_froc_curve(average_fps,
+                    sensitivity,
+                    save_path=None,
+                    bLogPlot=True,
+                    **kwargs):
     """ Plot the FROC curve.
 
     Args:
@@ -47,8 +48,11 @@ def draw_froc(average_fps,
         plt.show()
 
 
-def save_roc_curve(roc_curve, save_path=None):
-    fpr, tpr, _ = roc_curve
+def draw_roc_curve(
+    fpr: Sequence[float],
+    tpr: Sequence[float],
+    save_path: Optional[str] = None
+):
     roc_auc = sklearn.metrics.auc(fpr, tpr)
     plt.figure()
     plt.plot(fpr, tpr, color='darkorange', lw=2,
@@ -62,15 +66,22 @@ def save_roc_curve(roc_curve, save_path=None):
     plt.yticks()
     plt.title('ROC Curve')
     plt.legend(loc="lower right")
+    plt.grid(b=True, which='both')
     if save_path is not None:
         plt.savefig(save_path)
     else:
         plt.show()
 
 
-def save_pr_curve(pr_curve, save_path=None):
-    precision, recall, _ = pr_curve
-    plt.plot(recall, precision, color='darkorange', lw=2)
+def draw_pr_curve(
+    precision: Sequence[float],
+    recall: Sequence[float],
+    save_path: Optional[str] = None
+):
+    pr_auc = sklearn.metrics.auc(precision, recall)
+    plt.figure()
+    plt.plot(recall, precision, color='darkorange', lw=2,
+             label='PR curve (auc = %0.2f)' % pr_auc)
     plt.xlim([-0.01, 1.01])
     plt.ylim([-0.01, 1.01])
     plt.xlabel('Recall')
@@ -78,6 +89,8 @@ def save_pr_curve(pr_curve, save_path=None):
     plt.xticks()
     plt.yticks()
     plt.title('PR Curve')
+    plt.legend(loc="lower right")
+    plt.grid(b=True, which='both')
     if save_path is not None:
         plt.savefig(save_path)
     else:

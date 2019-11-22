@@ -55,7 +55,33 @@ def normalize_rgb(img, mean, std):
     return (img - mean) / std
 
 
-def imadjust_grayscale(im, low_pct, high_pct):
+def denormalize_rgb(img, mean, std):
+    """ Inverse function of normalize_rgb().
+
+    Restore a normalized image to its original state.
+    """
+    img = (img * std) + mean
+    return img
+
+
+def imadjust_grayscale(
+    im: np.ndarray,
+    low_pct: float = 0.01,
+    high_pct: float = 0.99
+):
+    """ Increase contrast of a grayscale image.
+
+    This function maps the intensity values in I to new values in J such that
+    values between low_in and high_in map to values between 0 and 1.
+
+    Args:
+        im (np.ndarray): image to be enhanced.
+        low_pct (float): mean values.
+        high_pct (float): standard deviations.
+
+    Return:
+        (np.ndarray): the enhanced image.
+    """
     assert im.ndim == 2
     assert 0.0 <= low_pct < high_pct <= 1.0
 

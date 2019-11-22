@@ -1,5 +1,3 @@
-import numpy as np
-import SimpleITK as itk
 import pydicom
 
 
@@ -17,12 +15,7 @@ def dcmread(dicom_path, read_header=False):
         that represents a parsed DICOM file.
     """
     ds = pydicom.dcmread(dicom_path)
-    try:
-        img = ds.pixel_array
-    except Exception:
-        img_itk = itk.ReadImage(dicom_path)
-        img = itk.GetArrayFromImage(img_itk)
-        img = np.squeeze(img)
+    img = ds.pixel_array
 
     if read_header:
         return img, ds
