@@ -55,14 +55,12 @@ def _gen_rws_shape(bbox, label):
 
 def dsmd2rws_det(dsmd, dcm_dir, suffix='.json_AI', class2label=None, thr=0.3):
     """ Convert dsmd to rws bbox annotations.
-
     Args:
         dsmd (str or dsmd): file path of dsmd file or dsmd data.
         dcm_dir (str): dicom directory.
         suffix (str): suffix of output rws file, For example, ".json_EA".
         class2label (str or dict): class-to-label file or class2label dict.
         thr (float): threshold of confidence.
-
     N.B.
         dsmd key value is file title.
     """
@@ -90,12 +88,14 @@ def dsmd2rws_det(dsmd, dcm_dir, suffix='.json_AI', class2label=None, thr=0.3):
                     label2class[i] + "_{:.3f}".format(bbox[-1])
                 shape = _gen_rws_shape(bbox[:4], label)
                 shapes.append(shape)
-        if len(shape) == 0:
+        if len(shapes) == 0:
             continue
         data = dict(
             version='0.1.0',
             flags={},
             shapes=shapes,
+            lineColor=None,
+            fillColor=None,
             imagePath=mv.basename(dcm_infos[key][0]),
             imageData=None,
             imageHeight=dcm_infos[key][1],
