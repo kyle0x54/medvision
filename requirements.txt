@@ -6,4 +6,5 @@ opencv-python
 pillow
 pydicom
 scikit-learn
+SimpleITK
 tqdm

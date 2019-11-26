@@ -19,7 +19,12 @@ def _invert_if_needed(img, mode, mono):
         return img, False
 
 
-def dcmread_dr(dicom_path, mode=DrReadMode.MONOCHROME2, read_header=False):
+def dcmread_dr(
+    dicom_path,
+    mode=DrReadMode.MONOCHROME2,
+    read_header=False,
+    itk_handler_enabled=True
+):
     """ Read 2D digital radiography image data from the DICOM file.
 
     Args:
@@ -27,6 +32,9 @@ def dcmread_dr(dicom_path, mode=DrReadMode.MONOCHROME2, read_header=False):
         mode ('DrReadMode'): read mode, refer to 'DrReadMode'.
         read_header (bool): whether to return the dicom header together
             with the image array.
+        itk_handler_enabled (bool): whether to use SimpleITK to read the
+            dicom if pydicom fails. N.B. SimpleITK reader may cause
+            segmentation fault which cannot be caught in python code.
     Returns:
         (ndarray): dicom image array.
         (dict, optional): dicom metadata.
@@ -36,7 +44,11 @@ def dcmread_dr(dicom_path, mode=DrReadMode.MONOCHROME2, read_header=False):
         with ascending pixel values, whereas MONOCHROME2 ranges from dark
         to bright with ascending pixel values.
     """
-    img, ds = mv.dcmread(dicom_path, read_header=True)
+    img, ds = mv.dcmread(
+        dicom_path,
+        read_header=True,
+        itk_handler_enabled=itk_handler_enabled
+    )
 
     if img.ndim == 3:
         img = img[:, :, 0]

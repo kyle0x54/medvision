@@ -27,6 +27,7 @@ REQUIRED = [
     'pillow',
     'pydicom',
     'scikit-learn',
+    'SimpleITK',
     'tqdm',
 ]
 
