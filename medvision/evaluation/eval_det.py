@@ -1,5 +1,6 @@
-from collections import OrderedDict
+from collections import OrderedDict, Iterable
 import numpy as np
+from sklearn import metrics as skm
 from .compute_overlap import compute_overlap
 
 
@@ -82,7 +83,7 @@ def _to_list(dts, gts):
     return dts, gts
 
 
-def eval_det4binarycls(dts, gts, score_thr=0.05):
+def eval_det4binarycls(dts, gts, score_thrs):
     """ Evaluate a detector's classification capability.
 
     Only support 1-class detection. If (at least) 1 target is detected in
@@ -102,49 +103,62 @@ def eval_det4binarycls(dts, gts, score_thr=0.05):
         (dict): a dict containing classification metrics TP, FP, TN, FN,
         accuracy, recall, precision.
     """
+    if not isinstance(score_thrs, Iterable):
+        score_thrs = list(score_thrs)
+
     assert len(gts) == len(dts)
     dts, gts = _to_list(dts, gts)
 
     # compute detector's classification capability
-    tp, fp, tn, fn = 0, 0, 0, 0
-    for i in range(len(gts)):
-        assert len(gts[i]) == 1, 'only support 1-class detection'
-        assert len(dts[i]) == 1, 'only support 1-class detection'
-        gt = gts[i][0]
-        dt = dts[i][0]
+    results = {"thrs": {}}
+    for score_thr in score_thrs:
+        tp, fp, tn, fn = 0, 0, 0, 0
+        for i in range(len(gts)):
+            assert len(gts[i]) == 1, 'only support 1-class detection'
+            assert len(dts[i]) == 1, 'only support 1-class detection'
+            gt = gts[i][0]
+            dt = dts[i][0]
 
-        if len(dt) != 0:
-            has_dt = dt[:, 4].max() > score_thr
-        else:
-            has_dt = False
+            if len(dt) != 0:
+                has_dt = dt[:, 4].max() > score_thr
+            else:
+                has_dt = False
 
-        has_gt = (len(gt) != 0)
+            has_gt = (len(gt) != 0)
 
-        if has_dt and has_gt:
-            tp += 1
-        elif has_dt and not has_gt:
-            fp += 1
-        elif not has_dt and has_gt:
-            fn += 1
-        else:  # not has_dt and not has_gt:
-            tn += 1
+            if has_dt and has_gt:
+                tp += 1
+            elif has_dt and not has_gt:
+                fp += 1
+            elif not has_dt and has_gt:
+                fn += 1
+            else:  # not has_dt and not has_gt:
+                tn += 1
 
-    # build result
-    result = OrderedDict()
+        # build result
+        result = OrderedDict()
 
-    result['tp'] = tp
-    result['fp'] = fp
-    result['tn'] = tn
-    result['fn'] = fn
+        result['tp'] = tp
+        result['fp'] = fp
+        result['tn'] = tn
+        result['fn'] = fn
 
-    eps = np.finfo(np.float32).eps
-    result['accuracy'] = (tp + tn) / np.maximum(tp + fn + tn + fp, eps)
-    result['sensitivity'] = tp / np.maximum(tp + fn, eps)
-    result['specificity'] = tn / np.maximum(tn + fp, eps)
-    result['recall'] = result['sensitivity']
-    result['precision'] = tp / np.maximum(tp + fp, eps)
+        eps = np.finfo(np.float32).eps
+        result['accuracy'] = (tp + tn) / np.maximum(tp + fn + tn + fp, eps)
+        result['sensitivity'] = tp / np.maximum(tp + fn, eps)
+        result['specificity'] = tn / np.maximum(tn + fp, eps)
+        result['recall'] = result['sensitivity']
+        result['precision'] = tp / np.maximum(tp + fp, eps)
 
-    return result
+        results["thrs"][str(score_thr)] = result
+
+    # create roc curve
+    gt_labels = [(len(gt[0]) != 0) for gt in gts]
+    dt_scores = [dt[0][:, -1].max() if len(dt[0]) > 0 else 0 for dt in dts]
+    results['roc_curve'] = skm.roc_curve(gt_labels, dt_scores)
+    results['roc_auc'] = skm.roc_auc_score(gt_labels, dt_scores)
+
+    return results
 
 
 def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
