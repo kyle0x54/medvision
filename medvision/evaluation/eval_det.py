@@ -183,7 +183,7 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
             gt = gts[i][label]
             dt = dts[i][label]
             if len(dt) != 0:
-                dt = dt[np.argsort(-dt[:, 4])]
+                dt = dt[np.argsort(-dt[:, -1])]
             num_anns += len(gt)
             matched_anns = []
 
