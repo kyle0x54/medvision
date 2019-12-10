@@ -1,4 +1,5 @@
 from collections import OrderedDict, Iterable
+from natsort import natsorted
 import numpy as np
 from sklearn import metrics as skm
 from .compute_overlap import compute_overlap
@@ -64,21 +65,23 @@ def _compute_ap(rec, pre, use_voc07_metric=False):
         return _compute_ap_voc12(rec, pre)
 
 
-def _to_list(dts, gts):
-    """ Convert gt/dt from OrderedDict to list[list[ndarray]].
+def _standardize(dts, gts):
+    """ Convert gt/dt from dict to list[list[ndarray]] (if in dict format).
     Args:
-        dts (OrderedDict or list[list[ndarray]]): detected bounding boxes for
+        dts (dict or list[list[ndarray]]): detected bounding boxes for
             different labels in a set of images, each bbox is of shape (n, 5).
-        gts (OrderedDict or list[list[ndarray]]): ground truth bounding boxes
+        gts (dict or list[list[ndarray]]): ground truth bounding boxes
             for different labels in a set of images, each bbox is of
             shape (n, 4).
             gts[img_id][label_id] = bboxes (for a specific label in an image).
     """
-    if isinstance(dts, OrderedDict):
-        dts = [value for key, value in dts.items()]
+    assert len(gts) == len(dts), "dts and gts must have the same length"
 
-    if isinstance(gts, OrderedDict):
-        gts = [value for key, value in gts.items()]
+    if isinstance(dts, dict) and isinstance(gts, dict):
+        assert set(dts.keys()) == set(gts.keys()), \
+            "dts and gts must have the same key set"
+        dts = [value for _, value in natsorted(dts.items())]
+        gts = [value for _, value in natsorted(gts.items())]
 
     return dts, gts
 
@@ -107,7 +110,7 @@ def eval_det4binarycls(dts, gts, score_thrs):
         score_thrs = list(score_thrs)
 
     assert len(gts) == len(dts)
-    dts, gts = _to_list(dts, gts)
+    dts, gts = _standardize(dts, gts)
 
     # compute detector's classification capability
     results = {"thrs": {}}
@@ -161,27 +164,24 @@ def eval_det4binarycls(dts, gts, score_thrs):
     return results
 
 
-def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
+def eval_det(dts, gts, num_classes=1, iou_thr=0.5):
     """ Evaluate a given dataset by comparing DT with GT.
 
     Args:
-        dts (OrderedDict or list[list[ndarray]]): detected bounding boxes for
+        dts (dict or list[list[ndarray]]): detected bounding boxes for
             different labels in a set of images, each bbox is of shape (n, 5).
-        gts (OrderedDict or list[list[ndarray]]): ground truth bounding boxes
+        gts (dict or list[list[ndarray]]): ground truth bounding boxes
             for different labels in a set of images, each bbox is of
             shape (n, 4).
             gts[img_id][label_id] = bboxes (for a specific label in an image).
         num_classes (int): number of classes to detect.
         iou_thr (float): threshold to determine whether a detection is
             positive or negative.
-        score_thr (float): score confidence threshold to determine whether a
-            detection is valid.
 
     Returns:
         (OrderedDict): AP, number of GT bboxes, FROC curve for each label.
     """
-    assert len(gts) == len(dts)
-    dts, gts = _to_list(dts, gts)
+    dts, gts = _standardize(dts, gts)
     num_imgs = len(gts)
 
     results = OrderedDict()
@@ -196,20 +196,22 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5, score_thr=0.05):
         for i in range(num_imgs):
             gt = gts[i][label]
             dt = dts[i][label]
-            if len(dt) != 0:
-                dt = dt[np.argsort(-dt[:, -1])]
+            dt = dt[np.argsort(-dt[:, -1])]
             num_anns += len(gt)
             matched_anns = []
 
             for d in dt:
-                scores = np.append(scores, d[4])
+                scores = np.append(scores, d[-1])
 
                 if len(gt) == 0:
                     fps = np.append(fps, 1)
                     tps = np.append(tps, 0)
                     continue
 
-                overlaps = compute_overlap(np.expand_dims(d, axis=0), gt)
+                overlaps = compute_overlap(
+                    np.expand_dims(d, axis=0).astype(np.float32),
+                    gt.astype(np.float32)
+                )
                 matched_ann = np.argmax(overlaps, axis=1)
                 max_overlap = overlaps[0, matched_ann]
 
