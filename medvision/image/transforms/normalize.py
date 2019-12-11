@@ -16,7 +16,7 @@ def normalize_grayscale(src, to_float=True):
         (ndarray): intensity rescaled image.
     """
     assert src.ndim == 2
-    epsilon = np.finfo(np.float32).eps
+    epsilon = 0.00001
 
     if to_float:
         src = src.astype(np.float32)
