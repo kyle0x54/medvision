@@ -1,8 +1,8 @@
 import collections
 from enum import Enum, unique, auto
-from glob import glob as std_glob
 import hashlib
 import os
+from pathlib import Path
 import shutil
 from natsort import natsorted
 import medvision as mv
@@ -92,19 +92,19 @@ class GlobMode(Enum):
 
 def glob(root, pattern='*', mode=GlobMode.FILE, recursive=False):
     root = os.path.expanduser(root)
-    pattern = joinpath('**', pattern) if recursive else pattern
-    pathname = joinpath(root, pattern)
-
-    result = std_glob(pathname, recursive=recursive)
+    root = os.path.abspath(root)
+    root = Path(root)
+    paths = root.rglob(pattern) if recursive else root.glob(pattern)
+    paths = [str(entry) for entry in paths]
 
     if mode == GlobMode.FILE:
-        result = filter(isfile, result)
+        paths = filter(isfile, paths)
     elif mode == GlobMode.DIR:
-        result = filter(isdir, result)
+        paths = filter(isdir, paths)
     else:  # GlobMode.ALL
         pass
 
-    return natsorted(result)
+    return natsorted(paths)
 
 
 def compute_md5_str(file_path):
