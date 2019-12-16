@@ -56,7 +56,7 @@ def draw_roc_curve(
     roc_auc = sklearn.metrics.auc(fpr, tpr)
     plt.figure()
     plt.plot(fpr, tpr, color='darkorange', lw=2,
-             label='ROC curve (auc = %0.2f)' % roc_auc)
+             label='ROC curve (auc = %0.4f)' % roc_auc)
     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
     plt.xlim([-0.01, 1.01])
     plt.ylim([-0.01, 1.01])
@@ -81,7 +81,7 @@ def draw_pr_curve(
     pr_auc = sklearn.metrics.auc(precision, recall)
     plt.figure()
     plt.plot(recall, precision, color='darkorange', lw=2,
-             label='PR curve (auc = %0.2f)' % pr_auc)
+             label='PR curve (auc = %0.4f)' % pr_auc)
     plt.xlim([-0.01, 1.01])
     plt.ylim([-0.01, 1.01])
     plt.xlabel('Recall')
