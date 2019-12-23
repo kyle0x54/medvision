@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from .fileutil import (isdir, isfile, listdir,
                        joinpath, basename, abspath, splitext, parentdir,
                        filetitle,

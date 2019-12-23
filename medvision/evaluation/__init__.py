@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from .eval_det import eval_det, eval_det4binarycls
 
 
