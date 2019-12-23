@@ -3,8 +3,4 @@ from .fileutil import isdicom, isdicomdir
 from .io import dcmread, dcminfo
 
 
-__all__ = [
-    'DrReadMode', 'dcmread_dr',
-    'isdicom', 'isdicomdir',
-    'dcmread', 'dcminfo'
-]
+__all__ = [k for k in globals().keys() if not k.startswith("_")]
