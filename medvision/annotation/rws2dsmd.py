@@ -35,11 +35,11 @@ def rws2dsmd_bbox(
     dsmd = {}
     for filepath in filepaths:
         key = mv.filetitle(filepath)
+        dsmd[key] = [np.zeros((0, 4), dtype=np.float32)] * num_classes
         # to handle cases without annot when getting annot path from image path
         if not mv.isfile(filepath):
             continue
         shapes = mv.load_rws_bbox(filepath)['shapes']
-        dsmd[key] = [np.zeros((0, 4), dtype=np.float32)] * num_classes
         for classname, box in shapes:
             try:
                 label = class2label[classname]
