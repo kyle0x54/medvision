@@ -18,6 +18,34 @@ def make_dsmd(data):
         raise ValueError('dsmd only support dict type')
 
 
+def update_dsmd_keys(src, parent_dir=None, suffix='.dcm'):
+    """ Update dsmd keys to be the actual paths of data (image).
+
+    2 strategies are supported.
+    1. If dsmd keys are file title, update them to actual path of data.
+    2. If dsmd keys are actual path of data, update them to file title.
+
+    Args:
+        src (dsmd): dataset metadata instance.
+        parent_dir (None, str): .
+            If None is given, strategy 2 is used. Otherwise, this is the
+            parent directory of the actual data, and strategy 1 is used.
+        suffix (str): suffix of actual data.
+
+    Returns:
+        (dsmd): dsmd with keys updated.
+    """
+    dst = {}
+    for src_key in src.keys():
+        if parent_dir is not None:
+            dst_key = mv.joinpath(parent_dir, src_key + suffix)
+        else:
+            dst_key = mv.filetitle(src_key)
+        dst[dst_key] = src[src_key]
+
+    return make_dsmd(dst)
+
+
 def split_dsmd_file(dsmd_filepath,
                     datasplit=None,
                     shuffle=True,
