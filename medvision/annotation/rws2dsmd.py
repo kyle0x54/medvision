@@ -4,7 +4,7 @@ import medvision as mv
 
 def rws2dsmd_bbox(
     filepaths,
-    class2label=None,
+    class2label,
     suffix='.json',
     num_classes=None
 ):
@@ -19,7 +19,7 @@ def rws2dsmd_bbox(
         num_classes (int or None): if class2label is a callable, num_classes
             should be explicitly specified.
     N.B.
-        dsmd key value is file title.
+        Key values of dsmd are file titles.
     """
     if callable(class2label):
         assert num_classes is not None,\
@@ -40,31 +40,37 @@ def rws2dsmd_bbox(
         if not mv.isfile(filepath):
             continue
         shapes = mv.load_rws_bbox(filepath)['shapes']
-        for classname, box in shapes:
+        for instance in shapes:
             try:
-                label = class2label[classname]
+                label = class2label[instance['category']]
             except TypeError:
-                label = class2label(classname)
-            dsmd[key][label] = np.append(dsmd[key][label], [box], axis=0)
+                label = class2label(instance['category'])
+            dsmd[key][label] = np.append(
+                dsmd[key][label], [instance['bbox']], axis=0
+            )
     return mv.make_dsmd(dsmd)
 
 
 def dsmd2rws_bbox(
+    rws_dir,
     dsmd,
-    dcm_dir,
-    class2label=None,
+    class2label,
     suffix='.json_A1',
-    score_thresh=0.3
+    score_thresh=0.0,
+    dcm_dir=None
 ):
     """ Convert dsmd to rws bbox annotations.
     Args:
+        rws_dir (str): directory to store converted rws file.
         dsmd (str or dsmd): file path of dsmd file or dsmd data.
-        dcm_dir (str): dicom directory.
         class2label (str or dict): class-to-label file or class2label dict.
         suffix (str): suffix of output rws file, For example, ".json_EA".
         score_thresh (float): threshold of confidence.
+        dcm_dir (None or str): directory containing corresponding dicom files,
+            if None, it is the same with rws_dir.
     N.B.
-        dsmd key value is file title.
+        1. Key values of dsmd are file titles.
+        2. dicom file titles must be consistent with dsmd keys.
     """
     if isinstance(class2label, str):
         class2label = mv.load_c2l(class2label)
@@ -73,8 +79,10 @@ def dsmd2rws_bbox(
     if isinstance(dsmd, str):
         dsmd = mv.load_dsmd(dsmd, class2label, mode='det')
 
-    dcm_paths = mv.glob(dcm_dir, "*.dcm")
-    assert len(dcm_paths) == len(dsmd)
+    if dcm_dir is None:
+        dcm_dir = rws_dir
+    dcm_titles = [mv.filetitle(path) for path in mv.glob(dcm_dir, "*.dcm")]
+    assert set(dsmd.keys()) == set(dcm_titles)
 
     for key in dsmd.keys():
         shapes = []
@@ -84,20 +92,12 @@ def dsmd2rws_bbox(
                     continue
                 label = label2class[i] if len(bbox) == 4 else \
                     label2class[i] + "_{:.3f}".format(bbox[-1])
-                shapes.append((label, bbox[:4].tolist()))
+                shapes.append(
+                    {'category': label, 'bbox': bbox[:4].tolist()}
+                )
         if len(shapes) == 0:
             continue
 
-        rws_path = mv.joinpath(dcm_dir, key + suffix)
+        rws_path = mv.joinpath(rws_dir, key + suffix)
         ds = mv.dcminfo(mv.joinpath(dcm_dir, key + '.dcm'))
         mv.save_rws_bbox(rws_path, shapes, (ds.Rows, ds.Columns))
-
-
-if __name__ == '__main__':
-    dsmd = rws2dsmd_bbox(
-        ['0.json'],
-        lambda x: 0,
-        num_classes=1
-    )
-    dsmd2rws_bbox(dsmd, "dcm_dir", {"classname": 0})
-    print(dsmd)

@@ -3,22 +3,46 @@ import medvision as mv
 
 
 def get_rws_datainfo_path(dcm_path):
-    return mv.splitext(dcm_path)[0] + ".datainfo"
+    return mv.change_suffix(dcm_path, ".datainfo")
 
 
 def get_rws_annot_path(dcm_path):
-    return mv.splitext(dcm_path)[0] + ".json"
+    return mv.change_suffix(dcm_path, ".json")
 
 
 def get_rws_flag_path(dcm_path):
-    return mv.splitext(dcm_path)[0] + ".flag"
+    return mv.change_suffix(dcm_path, ".flag")
 
 
 def get_rws_text_path(dcm_path):
-    return mv.splitext(dcm_path)[0] + ".text"
+    return mv.change_suffix(dcm_path, ".text")
 
 
 def load_rws_contour(filepath):
+    """ Load rws file (in general contour format).
+
+    Args:
+        filepath (str): rws file path.
+
+    Returns:
+        rws object (dict), e.g.
+        {
+            'height': 256,
+            'width': 245,
+            'image_path': 'example.dcm',
+            'shapes':
+            [
+                {
+                    'category': 'cat',
+                    'points': [[12, 12], [34, 34], ...]
+                },
+                {
+                    'category': 'dog',
+                    'points': [[34, 34], [56, 56], ...]
+                },
+            ]
+        }
+    """
     with open(filepath, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
@@ -26,13 +50,10 @@ def load_rws_contour(filepath):
     image_path = mv.joinpath(mv.parentdir(filepath), data['imagePath'])
     height = data.get('imageHeight')
     width = data.get('imageWidth')
-    shapes = []
-    for s in data['shapes']:
-        shape = (
-            s['label'],
-            s['points'],
-        )
-        shapes.append(shape)
+    shapes = [
+        {'category': s['label'], 'points': s['points']}
+        for s in data['shapes']
+    ]
 
     return {
         'height': height,
@@ -43,31 +64,62 @@ def load_rws_contour(filepath):
 
 
 def load_rws_bbox(filepath):
-    rws_bboxes = load_rws_contour(filepath)
+    """ Load rws file (in bounding box format).
+
+    Args:
+        filepath (str): rws file path.
+
+    Returns:
+        rws object (dict), e.g.
+        {
+            'height': 256,
+            'width': 245,
+            'image_path': 'example.dcm',
+            'shapes':
+            [
+                {
+                    'category': 'cat',
+                    'bbox': [12, 12, 34, 34]
+                },
+                {
+                    'category': 'dog',
+                    'bbox': [34, 34, 56, 56]
+                },
+            ]
+        }
+
+    N.B. this function only support rectangle annotation.
+    """
+    rws = load_rws_contour(filepath)
 
     shapes = []
-    for label, points in rws_bboxes['shapes']:
+    for instance in rws['shapes']:
+        category, points = instance['category'], instance['points']
         assert len(points) == 2, 'only support rectangle annotation'
         xmin = min(points[0][0], points[1][0])
         ymin = min(points[0][1], points[1][1])
         xmax = max(points[0][0], points[1][0])
         ymax = max(points[0][1], points[1][1])
-        shape = (
-            label,
-            [xmin, ymin, xmax, ymax]
-        )
+        shape = {
+            'category': category,
+            'bbox': [xmin, ymin, xmax, ymax]
+        }
         shapes.append(shape)
 
-    rws_bboxes['shapes'] = shapes
+    rws['shapes'] = shapes
 
-    return rws_bboxes
+    return rws
 
 
-def gen_rws_shape_bbox(bbox, label):
+def _gen_rws_shape_bbox(bbox, label):
     flags = {}
     shape_type = 'rectangle'
+    line_color = (0, 255, 0, 128)
+    fill_color = (255, 0, 0, 128)
     return dict(
         label=label,
+        line_color=line_color,
+        fill_color=fill_color,
         points=[[float(bbox[0]), float(bbox[1])],
                 [float(bbox[2]), float(bbox[3])]],
         shape_type=shape_type,
@@ -81,10 +133,9 @@ def save_rws_bbox(
     image_shape,
     suffix=".json",
     score_thresh=0,
-    label_="auto"
+    fixed_label="auto"
 ):
-    """
-    Save bounding boxes into rws file.
+    """ Save bounding boxes into rws file.
 
     Args:
         filepath (str): rws file path.
@@ -96,32 +147,30 @@ def save_rws_bbox(
         score_thresh (float): probability threshold of bounding boxes.
             If probability score of a box is larger than the threshold,
             the box will be saved into rws file, otherwise not.
-        label_ (str): bounding box label (for single class object detection).
+        fixed_label (str): bounding box label (for 1 class object detection).
+            if "shapes" is a numpy.ndarray, or box list, this label is used.
     """
     assert len(shapes) != 0, "no bounding box for [%s]" % filepath
     assert suffix.startswith(".json"), "unsupported suffix %s" % suffix
 
     # if not default rws suffix, change suffix
     if suffix != ".json":
-        filepath = mv.joinpath(
-            mv.parentdir(filepath),
-            mv.filetitle(filepath) + suffix
-        )
+        filepath = mv.change_suffix(filepath, suffix)
 
     # for raw bounding boxes, convert to rws "shape" field format first.
     bboxes = shapes
     shapes = []
     for bbox in bboxes:
-        if len(bbox) == 2:  # rws "shape" field format
-            label, bbox = bbox
+        if isinstance(bbox, dict):  # rws "shape" field format
+            label, bbox = bbox['category'], bbox['bbox']
         elif len(bbox) == 5 and bbox[-1] < score_thresh:
             continue
         else:  # ndarray or box list
-            label, bbox = label_, bbox[:4]
-        shape = gen_rws_shape_bbox(bbox, label)
+            label, bbox = fixed_label, bbox[:4]
+        shape = _gen_rws_shape_bbox(bbox, label)
         shapes.append(shape)
 
-    # establish rws file content
+    # make rws file content
     data = dict(
         version='0.1.0',
         flags={},
@@ -137,19 +186,3 @@ def save_rws_bbox(
     # save rws file
     with open(filepath, 'w') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-
-
-if __name__ == '__main__':
-    rws_filepath = '0.json'
-    bboxes = load_rws_bbox(rws_filepath)
-    print(bboxes)
-    save_rws_bbox(
-        mv.joinpath(
-            mv.parentdir(rws_filepath),
-            mv.filetitle(rws_filepath) + '.json_A1'
-        ),
-        bboxes['shapes'],
-        (2947, 3000),
-        suffix='.json_A1',
-        label_='saved_box'
-    )

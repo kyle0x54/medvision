@@ -48,7 +48,7 @@ def rws2mask(rws_path, mask_path):
     mask = np.zeros(img_shape[:2], dtype=bool)
     shapes = rws_contour['shapes']
     for shape in shapes:
-        m = shape_to_mask(img_shape, shape[1])
+        m = shape_to_mask(img_shape, shape['points'])
         mask = np.bitwise_xor(mask, m)
     mask = mask.astype(np.uint8) * 255
 
