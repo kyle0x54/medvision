@@ -40,9 +40,9 @@ def _compute_ap_voc12(rec, pre):
 def _compute_froc(fps, rec, begin=0.125, end=2):
     # to average recall of fps within [begin, end]
     index = [i for i, fp in enumerate(list(fps)) if (begin <= fp <= end)]
-
+    if len(index) == 0:
+        return None
     froc_auc = np.sum(rec[index]) / float(len(index))
-
     return froc_auc
 
 
