@@ -69,7 +69,7 @@ def test_glob_dir():
 
     root = DATA_DIR
     filepaths = mv.glob(root, '*', mode=mv.GlobMode.DIR, recursive=True)
-    assert len(filepaths) == 8
+    assert len(filepaths) == 10
 
 
 def test_has_duplicated_files():

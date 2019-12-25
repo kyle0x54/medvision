@@ -1,0 +1,41 @@
+{
+  "version": "0.1.0",
+  "annotator": "developer",
+  "time": "周三 12月 25 12:26:45 2019",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "teeth",
+      "line_color": null,
+      "fill_color": null,
+      "points": [
+        [
+          93,
+          3
+        ],
+        [
+          170,
+          60
+        ]
+      ],
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "lineColor": [
+    0,
+    255,
+    0,
+    128
+  ],
+  "fillColor": [
+    255,
+    0,
+    0,
+    128
+  ],
+  "imagePath": "brain_001.dcm",
+  "imageData": null,
+  "imageHeight": 256,
+  "imageWidth": 256
+}
