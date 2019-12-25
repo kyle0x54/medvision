@@ -31,6 +31,10 @@ def filetitle(path):
     return os.path.splitext(os.path.basename(path))[0]
 
 
+def change_suffix(path, new_suffix):
+    return mv.splitext(path)[0] + new_suffix
+
+
 cp = shutil.copy
 rm = os.remove
 cptree = shutil.copytree

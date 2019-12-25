@@ -1,8 +1,8 @@
 # flake8: noqa
 
 from .fileutil import (isdir, isfile, listdir,
-                       joinpath, basename, abspath, splitext, parentdir,
-                       filetitle,
+                       joinpath, basename, abspath, splitext,
+                       parentdir, filetitle, change_suffix,
                        cp, rm, cptree, rmtree, move, symlink,
                        mkdirs, empty_dir,
                        non_overwrite_cp, copyfiles,
