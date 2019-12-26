@@ -9,7 +9,10 @@ DF_DIR = mv.joinpath(DATA_DIR, 'datafolder')
 DSMD_DF = mv.joinpath(DATA_DIR, 'texts', 'dsmd_datafolder.txt')
 CLS2LBL = mv.joinpath(DATA_DIR, 'texts', 'class2label.txt')
 DSMD_DET_GT = mv.joinpath(DATA_DIR, 'texts', 'dsmd_det_gt.csv')
+DSMD_DET_DT = mv.joinpath(DATA_DIR, 'texts', 'dsmd_det_dt.csv')
 DSMD_DET_C2L = mv.joinpath(DATA_DIR, 'texts', 'det_classes.csv')
+
+RWS_DIR = mv.joinpath(DATA_DIR, 'rws')
 
 
 def assert_equal_dsmds(a, b):
@@ -50,6 +53,24 @@ def test_update_dsmd_keys():
     assert '/test/000002.jpeg' in dst_dsmd
     dst_dsmd = mv.update_dsmd_keys(dst_dsmd, parent_dir=None)
     assert '000002' in dst_dsmd
+
+
+def test_merge_det_dsmds():
+    dsmd_dt = mv.load_det_dsmd(DSMD_DET_GT, DSMD_DET_C2L)
+    assert len(dsmd_dt) == 703
+    dst_dsmd = mv.merge_det_dsmds(dsmd_dt, dsmd_dt)
+    assert len(dst_dsmd) == 703
+
+    dsmd1 = mv.rws2dsmd_bbox(RWS_DIR, {'teeth': 0}, suffix='.json')
+    dsmd2 = mv.rws2dsmd_bbox(RWS_DIR, {'teeth': 0}, suffix='.json_A1')
+    dst_dsmd = mv.merge_det_dsmds(dsmd1, dsmd2)
+    assert len(dst_dsmd) == 1
+    assert len(dst_dsmd['brain_001']) == 1
+    assert len(dst_dsmd['brain_001'][0]) == 2
+    a1 = dst_dsmd['brain_001'][0][0]
+    a2 = dst_dsmd['brain_001'][0][1]
+    assert a1[0] in (90, 93)
+    assert a2[1] in (3, 5)
 
 
 def test_gen_cls_ds():

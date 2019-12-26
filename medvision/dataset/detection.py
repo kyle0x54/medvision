@@ -37,7 +37,7 @@ def load_det_dsmd(
 
     df = pd.read_csv(dsmd_path, header=None)
     assert df.shape[1] == 6 or df.shape[1] == 7, \
-        'Incorrect dsmd file format %s' % dsmd_path
+        "Incorrect dsmd file format %s" % dsmd_path
 
     data = {}
     for r in df.itertuples():
@@ -94,3 +94,30 @@ def save_det_dsmd(
 
     df = pd.DataFrame(data_list)
     df.to_csv(str(dsmd_path), header=False, index=False)
+
+
+def merge_det_dsmds(ref_dsmd, *dsmds):
+    """ Merge dsmds into one dsmd.
+
+    N.B. Overlapping boxes (even boxes with the same coordinates) are all kept.
+    """
+    filenames = set(ref_dsmd.keys())
+    assert len(filenames) > 0
+    for dsmd in dsmds:
+        assert set(dsmd.keys()) == filenames, "dsmds not match"
+
+    ref_filename = filenames.pop()
+    num_categories = len(ref_dsmd[ref_filename])
+    assert num_categories != 0
+    filenames.add(ref_filename)
+
+    res = {}
+    for filename in filenames:
+        res_instance = []
+        for category_id in range(num_categories):
+            instances = [dsmd[filename][category_id] for dsmd in dsmds] \
+                        + [ref_dsmd[filename][category_id]]
+            res_instance.append(np.vstack(instances))
+        res[filename] = res_instance
+
+    return res
