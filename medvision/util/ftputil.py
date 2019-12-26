@@ -15,13 +15,14 @@ class FTP:
     def login(self, user, passwd):
         try:
             self.ftp.login(user, passwd)
-            logging.info('已连接到： [%s]', self.host)
+            logging.info('Connection established: [%s]', self.host)
         except (socket.error, socket.gaierror):
-            logging.error('FTP登陆失败，请检查主机号、用户名、密码是否正确')
+            logging.error('FTP login failed, please check correctness of '
+                          'host machine ip, user name and password.')
             sys.exit(0)
 
     def logout(self):
-        logging.info('连接已断开： [%s]', self.host)
+        logging.info('Disconnected from server: [%s]', self.host)
         self.ftp.quit()
 
     def download_file(self, local_file, remote_file):
@@ -29,7 +30,7 @@ class FTP:
         logging.info(file_handler)
         self.ftp.retrbinary('RETR ' + remote_file, file_handler.write)
         file_handler.close()
-        logging.info('[%s] 下载完成', remote_file)
+        logging.info('[%s] File transfer successful.', remote_file)
         return True
 
     def is_ftp_dir(self, file_name):
