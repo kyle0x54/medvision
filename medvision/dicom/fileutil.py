@@ -1,14 +1,16 @@
+from pathlib import Path
+from typing import Union
 import medvision as mv
 
 
-def isdicom(path):
+def isdicom(path: Union[str, Path]):
     """ Judge whether a given file is a valid dicom.
 
     Args:
-        path(str): given file path.
+        path(str or Path): given file path.
 
     Returns:
-        (bool): True if given file path is a valid dicom, otherwise False.
+        (bool): True if given path is a valid dicom, otherwise False.
     """
     if not mv.isfile(path):
         return False
@@ -28,7 +30,7 @@ def isdicom(path):
         return True
 
 
-def isdicomdir(path):
+def isdicomdir(path: Union[str, Path]):
     """ Judge whether a given directory is a valid dicom directory.
 
     If given directory only contains dicoms (at least one dicom file),

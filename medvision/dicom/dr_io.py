@@ -1,4 +1,6 @@
 from enum import Enum, unique
+from pathlib import Path
+from typing import Union
 import pydicom
 import medvision as mv
 
@@ -20,15 +22,15 @@ def _invert_if_needed(img, mode, mono):
 
 
 def dcmread_dr(
-    dicom_path,
-    mode=DrReadMode.MONOCHROME2,
-    read_header=False,
-    itk_handler_enabled=True
+    path: Union[str, Path],
+    mode: DrReadMode = DrReadMode.MONOCHROME2,
+    read_header: bool = False,
+    itk_handler_enabled: bool = True
 ):
     """ Read 2D digital radiography image data from the DICOM file.
 
     Args:
-        dicom_path (str): path of the dicom file.
+        path (str or Path): path of the dicom file.
         mode ('DrReadMode'): read mode, refer to 'DrReadMode'.
         read_header (bool): whether to return the dicom header together
             with the image array.
@@ -45,7 +47,7 @@ def dcmread_dr(
         to bright with ascending pixel values.
     """
     img, ds = mv.dcmread(
-        dicom_path,
+        path,
         read_header=True,
         itk_handler_enabled=itk_handler_enabled
     )
