@@ -24,6 +24,7 @@ REQUIRED = [
     'natsort',
     'numpy',
     'opencv-python',
+    'pandas',
     'pillow',
     'pydicom',
     'scikit-learn',
