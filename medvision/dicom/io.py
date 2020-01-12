@@ -28,7 +28,7 @@ def dcmread(
         If itk_handler is enabled, segmentation fault (caused by SimpleITK
         reader) might happen which cannot be caught in python code.
     """
-    ds = pydicom.dcmread(str(path))
+    ds = pydicom.dcmread(str(path), force=True)
     if itk_handler_enabled:
         try:
             img = ds.pixel_array
@@ -57,5 +57,9 @@ def dcminfo(path: Union[str, Path]):
         (pydicom.dataset.FileDataset): an instance of FileDataset
         that represents a parsed DICOM file.
     """
-    ds = pydicom.dcmread(str(path))
+    ds = pydicom.dcmread(
+        str(path),
+        stop_before_pixels=True,
+        force=True
+    )
     return ds
