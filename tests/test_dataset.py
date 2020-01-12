@@ -50,7 +50,7 @@ def test_dsmd_io_det():
 def test_update_dsmd_keys():
     src_dsmd = mv.load_dsmd(DSMD_DET_GT, DSMD_DET_C2L, mode='det')
     dst_dsmd = mv.update_dsmd_keys(src_dsmd, parent_dir='/test', suffix='')
-    assert '/test/000002.jpeg' in dst_dsmd
+    assert mv.joinpath('/test', '000002.jpeg') in dst_dsmd
     dst_dsmd = mv.update_dsmd_keys(dst_dsmd, parent_dir=None)
     assert '000002' in dst_dsmd
 
