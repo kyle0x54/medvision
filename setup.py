@@ -3,10 +3,6 @@
 
 import os
 from setuptools import find_packages, setup
-from setuptools.extension import Extension
-
-from Cython.Build import cythonize
-import numpy
 
 
 NAME = 'medvision'
@@ -19,7 +15,6 @@ VERSION = None
 
 
 REQUIRED = [
-    'cython',
     'matplotlib',
     'natsort',
     'numpy',
@@ -50,14 +45,6 @@ if not VERSION:
 else:
     about['__version__'] = VERSION
 
-extensions = [
-    Extension(
-        'medvision.evaluation.compute_overlap',
-        ['medvision/evaluation/compute_overlap.pyx'],
-        include_dirs=[numpy.get_include()]),
-    ]
-
-
 setup(
     name=NAME,
     version=about['__version__'],
@@ -83,5 +70,4 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     zip_safe=False,
-    ext_modules=cythonize(extensions),
 )
