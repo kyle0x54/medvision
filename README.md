@@ -13,8 +13,6 @@
 *Install dependencies*
 
 ```shell
-$ conda install cython numpy
-$ conda install pydicom --channel conda-forge
 $ conda install -c conda-forge gdcm
 ```
 
@@ -24,7 +22,6 @@ $ conda install -c conda-forge gdcm
 $ git clone git@github.com:kyle0x54/medvision.git
 $ cd medvision
 $ pip install -r requirements.txt
-$ python setup.py build_ext --inplace
 $ pip install -e .
 ```
 
