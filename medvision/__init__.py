@@ -5,5 +5,6 @@ from .dataset import *
 from .dicom import *
 from .evaluation import *
 from .image import *
+from .network import *
 from .util import *
 from .visualization import *
