@@ -37,9 +37,9 @@ def download_url(
     tmp = fpath + ".tmp"  # download to a tmp file first, to be more atomic.
     try:
         if progress:
-            import tqdm
+            from tqdm import tqdm
 
-            def hook(t: tqdm.tqdm) -> Callable[[int, int, Optional[int]], None]:
+            def hook(t: tqdm) -> Callable[[int, int, Optional[int]], None]:
                 last_b = [0]
 
                 def inner(
@@ -52,9 +52,8 @@ def download_url(
 
                 return inner
 
-            with tqdm.tqdm(  # type: ignore
-                unit="B", unit_scale=True, miniters=1, desc=filename, leave=True
-            ) as t:
+            with tqdm(unit="B", unit_scale=True, miniters=1, desc=filename,
+                      leave=True) as t:
                 tmp, _ = request.urlretrieve(
                     url, filename=tmp, reporthook=hook(t)
                 )

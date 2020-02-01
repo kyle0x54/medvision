@@ -46,5 +46,3 @@ install_depend:
 	pip install flake8
 
 	sudo apt install cloc
-
-	python setup.py build_ext --inplace
