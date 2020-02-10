@@ -107,7 +107,7 @@ def eval_det4binarycls(dts, gts, score_thrs):
         accuracy, recall, precision.
     """
     if not isinstance(score_thrs, Iterable):
-        score_thrs = list(score_thrs)
+        score_thrs = [score_thrs]
 
     assert len(gts) == len(dts)
     dts, gts = _standardize(dts, gts)
