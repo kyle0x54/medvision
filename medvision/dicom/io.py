@@ -1,8 +1,12 @@
+import os
 from pathlib import Path
+import re
+import shutil
 from typing import Union
+import uuid
+import numpy as np
 import pydicom
 import SimpleITK as itk
-import numpy as np
 
 
 def dcmread(
@@ -63,3 +67,53 @@ def dcminfo(path: Union[str, Path]):
         force=True
     )
     return ds
+
+
+def _get_itk_metadata(reader):
+    """ Read metadata from a SimpleITK.SimpleITK.ImageFileReader object.
+
+    Args:
+        reader (obj): SimpleITK file reader.
+
+    Return:
+        (dict): dicom tag and value pairs {tag: value}.
+    """
+    metadata = {}
+    for tag in reader.GetMetaDataKeys():
+        value = reader.GetMetaData(tag)
+        metadata[tag] = value
+
+    return metadata
+
+
+def dcmread_itk(path: Union[str, Path], read_header: bool = False):
+    """ Read 2D image data and metadata from the DICOM file using SimpleITK.
+
+    Args:
+        dicom_path (str or Path): dicom file path.
+        read_header (bool): whether to return the dicom header together
+            with the image array.
+
+    Return:
+        (numpy.ndarray): dicom image array.
+        (dict): The metadata stored in dicom tag and value pairs {tag: value}.
+            For example, {'0008|0020': '20010316', '0018|0020': 'SE', ...}
+    """
+    # SimpleITK does not support path containing Chinese characters.
+    # This is a tentative solution for above issue.
+    if re.search("[\u4e00-\u9fff]", str(path)):
+        tmp_path = os.path.join(
+            os.path.expanduser("~"),
+            str(uuid.uuid1()) + ".dcm"
+        )
+        shutil.copyfile(path, tmp_path)
+        path = tmp_path
+
+    img_itk = itk.ReadImage(str(path))
+    img = itk.GetArrayFromImage(img_itk)
+    img = np.squeeze(img)
+    if read_header:
+        metadata = _get_itk_metadata(img_itk)
+        return img, metadata
+    else:
+        return img

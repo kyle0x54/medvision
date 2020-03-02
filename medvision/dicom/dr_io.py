@@ -77,3 +77,27 @@ def dcmread_dr(
         return img, ds
     else:
         return img
+
+
+def dcmread_dr_itk(
+    path: Union[str, Path],
+    mode: DrReadMode = DrReadMode.MONOCHROME2,
+):
+    """ See dcmread_dr() for more details, the only difference is this
+        function use SimpleITK for dicom parsing.
+    """
+    img, metadata = mv.dcmread_itk(
+        path,
+        read_header=True,
+    )
+
+    if img.ndim == 3:
+        img = img[:, :, 0]
+
+    # fetch monochrome value
+    monochrome_tag = '0028|0004'
+    assert monochrome_tag in metadata
+    mono = metadata[monochrome_tag].upper()
+    img, is_inverted = _invert_if_needed(img, mode, mono)
+
+    return img

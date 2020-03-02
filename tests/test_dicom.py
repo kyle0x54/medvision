@@ -95,3 +95,22 @@ def test_dcmread_dr():
                             mv.DrReadMode.UNCHANGED,
                             read_header=True)
     assert ds.PhotometricInterpretation.find('MONOCHROME2') != -1
+
+
+def test_dcmread_dr_itk():
+    img = mv.dcmread_dr(DCM_PATH)
+    img_itk = mv.dcmread_dr_itk(DCM_PATH)
+    assert img_itk.dtype == img.dtype
+    assert_image_equal(img, img_itk)
+
+    img = mv.dcmread_dr(DCM_PATH, mv.DrReadMode.UNCHANGED)
+    img_itk = mv.dcmread_dr_itk(DCM_PATH, mv.DrReadMode.UNCHANGED)
+    assert_image_equal(img, img_itk)
+
+    img = mv.dcmread_dr(DCM_PATH, mv.DrReadMode.MONOCHROME1)
+    img_itk = mv.dcmread_dr_itk(DCM_PATH, mv.DrReadMode.MONOCHROME1)
+    assert_image_equal(img, img_itk)
+
+    img = mv.dcmread_dr(DCM_PATH, mv.DrReadMode.MONOCHROME2)
+    img_itk = mv.dcmread_dr_itk(DCM_PATH, mv.DrReadMode.MONOCHROME2)
+    assert_image_equal(img, img_itk)
