@@ -18,31 +18,7 @@ def get_rws_text_path(dcm_path):
     return mv.change_suffix(dcm_path, ".text")
 
 
-def load_rws_contour(filepath):
-    """ Load rws file (in general contour format).
-
-    Args:
-        filepath (str): rws file path.
-
-    Returns:
-        rws object (dict), e.g.
-        {
-            'height': 256,
-            'width': 245,
-            'image_path': 'example.dcm',
-            'shapes':
-            [
-                {
-                    'category': 'cat',
-                    'points': [[12, 12], [34, 34], ...]
-                },
-                {
-                    'category': 'dog',
-                    'points': [[34, 34], [56, 56], ...]
-                },
-            ]
-        }
-    """
+def _load_rws_contour_single_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
@@ -63,11 +39,51 @@ def load_rws_contour(filepath):
     }
 
 
-def load_rws_bbox(filepath):
+def load_rws_contour(paths):
+    """ Load rws file (in general contour format).
+
+    Args:
+        paths (str or list): rws file path(s).
+
+    Returns:
+        rws object (dict), e.g.
+        {
+            'height': 256,
+            'width': 245,
+            'image_path': 'example.dcm',
+            'shapes':
+            [
+                {
+                    'category': 'cat',
+                    'points': [[12, 12], [34, 34], ...]
+                },
+                {
+                    'category': 'dog',
+                    'points': [[34, 34], [56, 56], ...]
+                },
+            ]
+        }
+    """
+    if not isinstance(paths, (tuple, list)):
+        return _load_rws_contour_single_file(paths)
+    else:
+        rws_objs = [_load_rws_contour_single_file(path) for path in paths]
+        assert len(rws_objs) > 0, 'Do not allow empty rws file path list'
+        result = rws_objs[0].copy()
+        for rws_obj in rws_objs[1:]:
+            for key in ['image_path', 'height', 'width']:
+                assert rws_objs[0][key] == rws_obj[key], \
+                    'rws files with inconsistent attribute %s [%s != %s]' % \
+                    (key, rws_objs[0][key], rws_obj[key])
+            result['shapes'].extend(rws_obj['shapes'])
+        return result
+
+
+def load_rws_bbox(paths):
     """ Load rws file (in bounding box format).
 
     Args:
-        filepath (str): rws file path.
+        paths (str or list): rws file path(s).
 
     Returns:
         rws object (dict), e.g.
@@ -90,7 +106,7 @@ def load_rws_bbox(filepath):
 
     N.B. this function only support rectangle annotation.
     """
-    rws = load_rws_contour(filepath)
+    rws = load_rws_contour(paths)
 
     shapes = []
     for instance in rws['shapes']:
