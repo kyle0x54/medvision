@@ -13,22 +13,28 @@ def _pad16(s, pad_ch='\0'):
 def encrypt(data, key, iv, save_path=None):
     """ Encrypt file or data.
 
-    data (boyes or str): Data or a file path.
-    key (str or bytes): The secret key to use in the symmetric cipher.
-    iv (str or bytes): The initialization vector to use for encryption or decryption.
-    save_path (str): The save path of encrypted data.
+    Args:
+        data (boyes or str): Data or a file path.
+        key (str or bytes): The secret key to use in the symmetric cipher.
+        iv (str or bytes): The initialization vector to use for encryption or
+            decryption.
+        save_path (str): The save path of encrypted data.
 
-    return (bytes): The encrypted data.
+    Returns:
+        (bytes): The encrypted data.
     """
     if isinstance(data, str):
         with open(data, 'rb') as f:
             data = f.read()
-    pad_ch = '\0'
-    key = _pad16(key, pad_ch)
-    iv = _pad16(iv, pad_ch)
-    data = _pad16(data, pad_ch)
+    length = str(len(data))
+    length = _pad16(length)
+
+    key = _pad16(key)
+    iv = _pad16(iv)
+    data = _pad16(data)
     cipher = AES.new(key, AES.MODE_CBC, iv)
     data = cipher.encrypt(data)
+    data = length + data
     if save_path:
         with open(save_path, 'wb') as f:
             f.write(data)
@@ -38,22 +44,27 @@ def encrypt(data, key, iv, save_path=None):
 def decrypt(data, key, iv, save_path=None):
     """ Decrypt file or data.
 
-    data (boyes or str): Data or a file path.
-    key (str or bytes): The secret key to use in the symmetric cipher.
-    iv (str or bytes): The initialization vector to use for encryption or decryption.
-    save_path (str): The save path of decrypted data.
+    Args:
+        data (boyes or str): Data or a file path.
+        key (str or bytes): The secret key to use in the symmetric cipher.
+        iv (str or bytes): The initialization vector to use for encryption or
+            decryption.
+        save_path (str): The save path of decrypted data.
 
-    return (bytes): The decrypted data.
+    Returns:
+        (bytes): The decrypted data.
     """
     if isinstance(data, str):
         with open(data, 'rb') as f:
             data = f.read()
     pad_ch = '\0'
-    key = _pad16(key, pad_ch)
-    iv = _pad16(iv, pad_ch)
+    length = int(data[:16].rstrip(pad_ch.encode('utf-8')).decode('utf-8'))
+    data = data[16:]
+    key = _pad16(key)
+    iv = _pad16(iv)
     cipher = AES.new(key, AES.MODE_CBC, iv)
     data = cipher.decrypt(data)
-    data = data.rstrip(pad_ch.encode('utf-8'))
+    data = data[:length]
     if save_path:
         with open(save_path, 'wb') as f:
             f.write(data)
@@ -63,12 +74,15 @@ def decrypt(data, key, iv, save_path=None):
 def decrypt_to_file_object(data, key, iv, save_path=None):
     """ Decrypt a file or data and convert to file object.
 
-    data (boyes or str): Data or a file path.
-    key (str or bytes): The secret key to use in the symmetric cipher.
-    iv (str or bytes): The initialization vector to use for encryption or decryption.
-    save_path (str): The save path of decrypted data.
+    Args:
+        data (boyes or str): Data or a file path.
+        key (str or bytes): The secret key to use in the symmetric cipher.
+        iv (str or bytes): The initialization vector to use for encryption or
+            decryption.
+        save_path (str): The save path of decrypted data.
 
-    return (file-like object): The decrypted data.
+    Returns:
+        (file-like object): The decrypted data.
     """
     data = decrypt(data, key, iv, save_path)
     return io.BytesIO(data)
