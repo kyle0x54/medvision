@@ -14,7 +14,7 @@ def rws2dsmd_bbox(
         filepaths (str or list): file paths of rws annotation files or
             directory containing rws annotation files.
         class2label (str, dict or callable): class-to-label file,
-            class2label dict or a callable.
+            class2label dict or a callable. If label < 0, ignore.
         suffix (str): suffix of rws file. e.g. ".json", ".json_A1"
         num_classes (int or None): if class2label is a callable, num_classes
             should be explicitly specified.
@@ -45,6 +45,8 @@ def rws2dsmd_bbox(
                 label = class2label[instance['category']]
             except TypeError:
                 label = class2label(instance['category'])
+            if label < 0:
+                continue
             dsmd[key][label] = np.append(
                 dsmd[key][label], [instance['bbox']], axis=0
             )
