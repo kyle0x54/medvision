@@ -11,7 +11,7 @@ from .fileutil import (isdir, isfile, listdir,
 from .multiprocessutil import tqdm_imap_unordered
 from .timer import Timer
 from .typeutil import isarrayinstance
-from .encryption import encrypt, decrypt
+from .encryption import encrypt, decrypt, decrypt_to_file_object
 
 
 __all__ = [k for k in globals().keys() if not k.startswith("_")]

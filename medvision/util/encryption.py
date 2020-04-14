@@ -11,12 +11,14 @@ def _pad16(s, pad_ch='\0'):
 
 
 def encrypt(data, key, iv, save_path=None):
-    """
-    encryption.
-    :param data:bytes(data) or str(a file path).
-    :param key: str or bytes.
-    :param iv: str or bytes.
-    :return: bytes.
+    """ Encrypt file or data.
+
+    data (boyes or str): Data or a file path.
+    key (str or bytes): The secret key to use in the symmetric cipher.
+    iv (str or bytes): The initialization vector to use for encryption or decryption.
+    save_path (str): The save path of encrypted data.
+
+    return (bytes): The encrypted data.
     """
     if isinstance(data, str):
         with open(data, 'rb') as f:
@@ -33,15 +35,15 @@ def encrypt(data, key, iv, save_path=None):
     return data
 
 
-def decrypt(data, key, iv,
-            save_path=None,
-            return_fileObj=True):
-    """
-    decryption.
-    :param data: bytes(data) or str(a file path).
-    :param key: str or bytes.
-    :param iv: str or bytes.
-    :return: a file-like object if return_fileObj is True, else bytes.
+def decrypt(data, key, iv, save_path=None):
+    """ Decrypt file or data.
+
+    data (boyes or str): Data or a file path.
+    key (str or bytes): The secret key to use in the symmetric cipher.
+    iv (str or bytes): The initialization vector to use for encryption or decryption.
+    save_path (str): The save path of decrypted data.
+
+    return (bytes): The decrypted data.
     """
     if isinstance(data, str):
         with open(data, 'rb') as f:
@@ -55,6 +57,18 @@ def decrypt(data, key, iv,
     if save_path:
         with open(save_path, 'wb') as f:
             f.write(data)
-    if return_fileObj:
-        data = io.BytesIO(data)
     return data
+
+
+def decrypt_to_file_object(data, key, iv, save_path=None):
+    """ Decrypt a file or data and convert to file object.
+
+    data (boyes or str): Data or a file path.
+    key (str or bytes): The secret key to use in the symmetric cipher.
+    iv (str or bytes): The initialization vector to use for encryption or decryption.
+    save_path (str): The save path of decrypted data.
+
+    return (file-like object): The decrypted data.
+    """
+    data = decrypt(data, key, iv, save_path)
+    return io.BytesIO(data)
