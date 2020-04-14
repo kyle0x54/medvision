@@ -21,6 +21,7 @@ REQUIRED = [
     'opencv-python',
     'pandas',
     'pillow',
+    'pycryptodome',
     'pydicom',
     'scikit-learn',
     'SimpleITK',
