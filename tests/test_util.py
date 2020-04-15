@@ -95,3 +95,18 @@ def test_has_duplicated_files():
     assert len(duplicated_files) == 2
 
     mv.rmtree(dst_dir)
+
+
+def test_encrypt_decrypt():
+    input = key = iv = b'testencryption'
+    output = b'14\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00e' \
+             b'\xd5?u\x18\x1d\xda;kB^\xef\x8c\xdc\xfa\x02'
+    assert mv.encrypt(input, key, iv) == output
+    assert mv.decrypt(output, key, iv) == input
+
+    src_path = mv.joinpath(DCM_DIR, 'brain_001.dcm')
+    with open(src_path, 'rb') as f:
+        data_origin = f.read()
+    data_encrypted = mv.encrypt(src_path, key, iv)
+    data_decrypted = mv.decrypt(data_encrypted, key, iv)
+    assert data_origin == data_decrypted
