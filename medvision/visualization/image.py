@@ -78,6 +78,28 @@ def _imshow_switcher(imgs, title=""):
     plt.show()
 
 
+def imshow_dynamic(imgs, title=""):
+    """ imshow with channel changer.
+
+    An enhanced version of 'imshow'. Images (stored in 'imgs') can be
+    switched by single clicking.
+
+    Args:
+        imgs (list[ndarray]): images to be displayed.
+        title (str): title of the plot.
+    """
+    fig, ax = plt.subplots(num=title)
+    fig.tight_layout()
+    ax.set_title(title)
+    ax.axis('off')
+    ref_img = imgs[0]
+    ax.set_xlim([0, ref_img.shape[1]])
+    ax.set_ylim([ref_img.shape[0], 0])
+    switcher = Switcher(ax, imgs)
+    fig.canvas.mpl_connect("button_press_event", switcher.on_press)
+    plt.show()
+
+
 def imshow(
     imgs,
     num_cols=None,
@@ -97,7 +119,7 @@ def imshow(
         show (bool): True: show the image; False: save the image.
         save_path (str, optional): path to save the image.
     """
-    if not isinstance(imgs, collections.Sequence):
+    if not isinstance(imgs, collections.abc.Sequence):
         imgs = [imgs]
     num_imgs = len(imgs)
 
