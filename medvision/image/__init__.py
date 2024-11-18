@@ -4,7 +4,7 @@ from .io import ImreadMode, imread, imwrite
 from .transforms import (
     center_crop,
     crop,
-    denormalize,
+    denormalize_image,
     gray2rgb,
     hflip,
     imadjust,

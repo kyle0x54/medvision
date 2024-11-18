@@ -25,7 +25,7 @@ def normalize_image(src: np.ndarray):
     return (src - min_val) / (max_val - min_val)
 
 
-def denormalize(
+def denormalize_image(
     img: np.ndarray,
     mean: float | list[float, float, float],
     std: float | list[float, float, float],
