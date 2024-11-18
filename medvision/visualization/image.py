@@ -79,7 +79,7 @@ def _imshow_switcher(imgs, title=""):
 
 
 def imshow_dynamic(imgs, title=""):
-    """ imshow with channel changer.
+    """imshow with channel changer.
 
     An enhanced version of 'imshow'. Images (stored in 'imgs') can be
     switched by single clicking.
@@ -91,7 +91,7 @@ def imshow_dynamic(imgs, title=""):
     fig, ax = plt.subplots(num=title)
     fig.tight_layout()
     ax.set_title(title)
-    ax.axis('off')
+    ax.axis("off")
     ref_img = imgs[0]
     ax.set_xlim([0, ref_img.shape[1]])
     ax.set_ylim([ref_img.shape[0], 0])

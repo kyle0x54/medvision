@@ -54,7 +54,7 @@ def imadjust(
         low_pct (float): Lower percentile (e.g., 0.01 for 1%) for intensity mapping.
         high_pct (float): Upper percentile (e.g., 0.99 for 99%) for intensity mapping.
         ma (np.ndarray or None): Optional mask array. If specified, only non-zero pixels
-            in the mask will be considered for intensity adjustment. 
+            in the mask will be considered for intensity adjustment.
 
     Return:
         (np.ndarray): the enhanced image.

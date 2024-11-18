@@ -1,10 +1,10 @@
 import datetime
 import os
+import platform
 import re
 import shutil
 import uuid
 from pathlib import Path
-import platform
 from typing import Union
 
 import numpy as np

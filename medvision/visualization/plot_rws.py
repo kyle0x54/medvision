@@ -1,13 +1,13 @@
+import math
 from collections import OrderedDict
 
 import cv2
-import math
 import numpy as np
 import SimpleITK as sitk
 
 import medvision as mv
 from medvision.annotation.rws import load_rws_contour
-from medvision.annotation.rws2mask import rws2multimasks, rws2mask
+from medvision.annotation.rws2mask import rws2mask, rws2multimasks
 
 
 def get_lut_value(data, ww, wc):
@@ -72,9 +72,9 @@ def mask_alpha_blend(
     image: np.ndarray,
     mask: np.ndarray,
     label2color: OrderedDict[int, tuple[int, int, int]],
-    alpha: float
+    alpha: float,
 ) -> None:
-    """ N.B. This is a inplace operation to image."""
+    """N.B. This is a inplace operation to image."""
     # Generate look up table to map mask intensity to predefined colors
     lut = gen_lut(label2color)
     maskRgb = cv2.applyColorMap(mask, lut)
@@ -88,10 +88,10 @@ def draw_contours(
     mask: np.ndarray,
     label2color: OrderedDict[int, tuple[int, int, int]],
 ):
-    """ N.B. This is a inplace operation to image."""
+    """N.B. This is a inplace operation to image."""
     for label in label2color.keys():
         bmask = (mask == label).astype(np.uint8)
-        contours, _ = cv2.findContours(bmask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(bmask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         cv2.drawContours(image, contours, -1, label2color[label], 3)
 
 
@@ -99,8 +99,8 @@ def plot_rws_multimask(
     dcm_path: str,
     rws_path: str,
     colormap: dict[str, tuple[int, int, int]],
-    mode: str = 'contour',  # 'mask'
-    alpha: float = 0.2, # N.B. only used in mask mode
+    mode: str = "contour",  # 'mask'
+    alpha: float = 0.2,  # N.B. only used in mask mode
 ):
     # Convert rws to mask
     rws_contour = load_rws_contour(rws_path)
@@ -112,10 +112,10 @@ def plot_rws_multimask(
 
     # Draw contours
     img_with_overlay = img_8uc3.copy()
-    if mode == 'contour':
+    if mode == "contour":
         for label, mask in zip(label2color.keys(), masks):
             draw_contours(img_with_overlay, mask, {label: label2color[label]})
-    elif mode == 'mask':
+    elif mode == "mask":
         for label, mask in zip(label2color.keys(), masks):
             mask_alpha_blend(img_with_overlay, mask, label2color, alpha)
     else:
@@ -128,8 +128,8 @@ def plot_rws(
     dcm_path: str,
     rws_path: str,
     colormap: dict[str, tuple[int, int, int]],
-    mode: str = 'contour',  # 'mask'
-    alpha: float = 0.2, # N.B. only used in mask mode
+    mode: str = "contour",  # 'mask'
+    alpha: float = 0.2,  # N.B. only used in mask mode
 ):
     # Convert rws to mask
     rws_contour = load_rws_contour(rws_path)
@@ -142,9 +142,9 @@ def plot_rws(
 
     # Draw contours
     img_with_overlay = img_8uc3.copy()
-    if mode == 'contour':
+    if mode == "contour":
         draw_contours(img_with_overlay, mask, label2color)
-    elif mode == 'mask':
+    elif mode == "mask":
         mask_alpha_blend(img_with_overlay, mask, label2color, alpha)
     else:
         raise ValueError(f"Wrong mode [{mode}], only support 'contour' and 'mask' ")
@@ -153,12 +153,16 @@ def plot_rws(
 
 
 def main():
-    dcm_path = '/home/liupengfei/tmp/1.3.12.2.1107.5.12.7.3294.30000014031300443610900000053/R_MLO.dcm'
-    rws_path = '/home/liupengfei/tmp/1.3.12.2.1107.5.12.7.3294.30000014031300443610900000053/R_MLO.json'
+    dcm_path = (
+        "/home/liupengfei/tmp/1.3.12.2.1107.5.12.7.3294.30000014031300443610900000053/R_MLO.dcm"
+    )
+    rws_path = (
+        "/home/liupengfei/tmp/1.3.12.2.1107.5.12.7.3294.30000014031300443610900000053/R_MLO.json"
+    )
     colormap = OrderedDict([("breast", (255, 0, 0)), ("2", (0, 255, 0))])
     # plot_rws_multimask(dcm_path, rws_path, colormap, mode='mask', alpha=0.4)
-    plot_rws(dcm_path, rws_path, colormap, mode='mask', alpha=0.4)
+    plot_rws(dcm_path, rws_path, colormap, mode="mask", alpha=0.4)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
