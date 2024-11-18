@@ -128,7 +128,7 @@ def test_pad_to_square(img):
     assert_image_equal(img, img_pad)
 
     img_crop = mv.crop(img, 32, 0, 64, 128)
-    img_pad = mv.pad_to_square(img_crop, cv2.BORDER_CONSTANT)
+    img_pad = mv.pad_to_square(img_crop, border_mode=cv2.BORDER_CONSTANT)
     roi = mv.crop(img_pad, 32, 0, 64, 128)
     assert_image_equal(img_crop, roi)
     img_pad[32:32+64, :] = 0
@@ -137,3 +137,11 @@ def test_pad_to_square(img):
     img_pad = mv.pad_to_square(img_crop)
     roi = mv.crop(img_pad, 32, 0, 64, 128)
     assert_image_equal(img_crop, roi)
+
+    img_pad_topleft = mv.pad_to_square(
+        img_crop, align_mode="topleft", border_mode=cv2.BORDER_CONSTANT, pad_value=0
+    )
+    assert img_pad_topleft[:img_crop.shape[0], :img_crop.shape[1]].max() == img_crop.max()  # 确保原图在左上角
+    assert img_pad_topleft[:img_crop.shape[0], :img_crop.shape[1]].min() == img_crop.min()
+    assert (img_pad_topleft[img_crop.shape[0]:, :] == 0).all()  # 确保底部填充值为 0
+    assert (img_pad_topleft[:, img_crop.shape[1]:] == 0).all()  # 确保右侧填充值为 0

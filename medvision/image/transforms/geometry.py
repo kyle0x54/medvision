@@ -160,7 +160,12 @@ def center_crop(img, crop_height, crop_width):
     return img[y1:y2, x1:x2, ...]
 
 
-def pad_to_square(src, border_mode=cv2.BORDER_REFLECT_101, pad_value=0):
+def pad_to_square(
+    src: np.ndarray,
+    align_mode: str = "center",  # "center" or "topleft"
+    border_mode: int = cv2.BORDER_REFLECT_101,
+    pad_value: int = 0,
+):
     """Pad an image to so that its height and width are the same.
 
     For example, an image with shape (3, 4) will be padded to (4, 4).
@@ -178,9 +183,9 @@ def pad_to_square(src, border_mode=cv2.BORDER_REFLECT_101, pad_value=0):
 
     sz = max(height, width)
 
-    top = abs(sz - height) // 2
+    top = abs(sz - height) // 2 if align_mode == "center" else 0
     bottom = abs(sz - height) - top
-    left = abs(sz - width) // 2
+    left = abs(sz - width) // 2 if align_mode == "center" else 0
     right = abs(sz - width) - left
 
     if border_mode == cv2.BORDER_CONSTANT:
