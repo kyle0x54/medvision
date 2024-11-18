@@ -1,8 +1,10 @@
+import datetime
 import os
 import re
 import shutil
 import uuid
 from pathlib import Path
+import platform
 from typing import Union
 
 import numpy as np
@@ -12,33 +14,21 @@ import SimpleITK as itk
 import medvision as mv
 
 
-def dcmread(path: Union[str, Path], read_header: bool = False, itk_handler_enabled: bool = True):
+def dcmread_pydicom(path: Union[str, Path], read_header: bool = False):
     """Read 2D image data from the DICOM file.
 
     Args:
         path (str or Path): path of the dicom file to be loaded.
         read_header (bool): whether to return the dicom header together
             with the image array.
-        itk_handler_enabled (bool): whether to use SimpleITK to read the dicom
-            if pydicom fails.
 
     Return:
         (ndarray): dicom image array.
         (pydicom.dataset.FileDataset): an instance of FileDataset
             that represents a parsed DICOM file.
-
-    N.B.
-        If itk_handler is enabled, segmentation fault (caused by SimpleITK
-        reader) might happen which cannot be caught in python code.
     """
     ds = pydicom.dcmread(str(path), force=True)
-    if itk_handler_enabled:
-        try:
-            img = ds.pixel_array
-        except Exception:
-            img = dcmread_itk(path)
-    else:
-        img = ds.pixel_array
+    img = ds.pixel_array
 
     if read_header:
         return img, ds
@@ -46,7 +36,7 @@ def dcmread(path: Union[str, Path], read_header: bool = False, itk_handler_enabl
         return img
 
 
-def dcminfo(path: Union[str, Path]):
+def dcminfo_pydicom(path: Union[str, Path]):
     """Read metadata (dicom tags) from DICOM file.
 
     Refer to pydicom.dcmread
@@ -80,7 +70,10 @@ def _get_itk_metadata(reader):
 
 
 def _get_itk_path(path: Union[str, Path]):
-    # SimpleITK does not support path containing Chinese characters.
+    if platform.system() != "Windows":
+        return path
+
+    # SimpleITK does not support path containing Chinese characters on Windows.
     # This is a tentative solution.
     if re.search("[\u4e00-\u9fff]", str(path)):
         medvision_dir = os.path.join(os.path.expanduser("~"), ".medvision")

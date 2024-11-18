@@ -45,11 +45,11 @@ def tag2list(tag_str):
 
 
 def test_dcmread():
-    img = mv.dcmread(DCM_PATH)
+    img = mv.dcmread_pydicom(DCM_PATH)
     assert img.dtype == np.int16
     assert img.shape == (256, 256)
 
-    img, info = mv.dcmread(DCM_PATH, read_header=True)
+    img, info = mv.dcmread_pydicom(DCM_PATH, read_header=True)
     assert img.dtype == np.int16
     assert img.shape == (256, 256)
     assert info.LargestImagePixelValue == 884
@@ -61,7 +61,7 @@ def test_dcmread():
 
 
 def test_dcminfo():
-    info = mv.dcminfo(DCM_PATH)
+    info = mv.dcminfo_pydicom(DCM_PATH)
     assert int(info.RescaleIntercept) == 0
     assert info.LargestImagePixelValue == 884
     assert info.PatientID == '123565'  # patient id
@@ -69,49 +69,3 @@ def test_dcminfo():
 
     # pixel spacing
     assert tag2list(info.PixelSpacing) == [0.859375, 0.859375]
-
-
-def test_dcmread_dr():
-    img = mv.dcmread_dr(DCM_PATH)
-    img_, ds = mv.dcmread(DCM_PATH, read_header=True)
-    assert_image_equal(img, img_)
-
-    img = mv.dcmread_dr(DCM_PATH, mv.DrReadMode.UNCHANGED)
-    img_, ds = mv.dcmread(DCM_PATH, read_header=True)
-    assert_image_equal(img, img_)
-
-    img = mv.dcmread_dr(DCM_PATH, mv.DrReadMode.MONOCHROME1)
-    img_, ds = mv.dcmread(DCM_PATH, read_header=True)
-    assert_image_equal(img, img_.max() - img_)
-
-    img, ds = mv.dcmread_dr(DCM_PATH,
-                            mv.DrReadMode.MONOCHROME1,
-                            read_header=True)
-    assert ds.PhotometricInterpretation.find('MONOCHROME1') != -1
-
-    img, ds = mv.dcmread_dr(DCM_PATH, read_header=True)
-    assert ds.PhotometricInterpretation.find('MONOCHROME2') != -1
-
-    img, ds = mv.dcmread_dr(DCM_PATH,
-                            mv.DrReadMode.UNCHANGED,
-                            read_header=True)
-    assert ds.PhotometricInterpretation.find('MONOCHROME2') != -1
-
-
-def test_dcmread_dr_itk():
-    img = mv.dcmread_dr(DCM_PATH)
-    img_itk = mv.dcmread_dr_itk(DCM_PATH)
-    assert img_itk.dtype == img.dtype
-    assert_image_equal(img, img_itk)
-
-    img = mv.dcmread_dr(DCM_PATH, mv.DrReadMode.UNCHANGED)
-    img_itk = mv.dcmread_dr_itk(DCM_PATH, mv.DrReadMode.UNCHANGED)
-    assert_image_equal(img, img_itk)
-
-    img = mv.dcmread_dr(DCM_PATH, mv.DrReadMode.MONOCHROME1)
-    img_itk = mv.dcmread_dr_itk(DCM_PATH, mv.DrReadMode.MONOCHROME1)
-    assert_image_equal(img, img_itk)
-
-    img = mv.dcmread_dr(DCM_PATH, mv.DrReadMode.MONOCHROME2)
-    img_itk = mv.dcmread_dr_itk(DCM_PATH, mv.DrReadMode.MONOCHROME2)
-    assert_image_equal(img, img_itk)

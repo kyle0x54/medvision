@@ -88,5 +88,5 @@ def dsmd2rws_bbox(rws_dir, dsmd, class2label, suffix=".json_A1", score_thresh=0.
             continue
 
         rws_path = mv.joinpath(rws_dir, key + suffix)
-        ds = mv.dcminfo(mv.joinpath(dcm_dir, key + ".dcm"))
+        ds = mv.dcminfo_pydicom(mv.joinpath(dcm_dir, key + ".dcm"))
         mv.save_rws_bbox(rws_path, shapes, (ds.Rows, ds.Columns))
