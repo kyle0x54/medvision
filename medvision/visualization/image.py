@@ -1,16 +1,18 @@
 import collections
-from enum import Enum, unique
 import math
+from enum import Enum, unique
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+
 import medvision as mv
 
 
 @unique
 class Color(Enum):
-    """ An enum that defines common colors.
-    """
+    """An enum that defines common colors."""
+
     red = (0, 0, 255)
     green = (0, 255, 0)
     blue = (255, 0, 0)
@@ -46,16 +48,16 @@ class Switcher:
 
 
 def _imshow_tight(img, title):
-    cmap = 'gray' if img.ndim == 2 else None
+    cmap = "gray" if img.ndim == 2 else None
     plt.imshow(img, cmap=cmap)
-    plt.axis('off')
+    plt.axis("off")
     plt.xlim([0, img.shape[1]])
     plt.ylim([img.shape[0], 0])
     plt.title(title)
 
 
-def _imshow_switcher(imgs, title=''):
-    """ imshow with channel changer.
+def _imshow_switcher(imgs, title=""):
+    """imshow with channel changer.
 
     An enhanced version of 'imshow'. Images (stored in 'imgs') can be
     switched by single clicking.
@@ -67,7 +69,7 @@ def _imshow_switcher(imgs, title=''):
     fig, ax = plt.subplots(num=title)
     fig.tight_layout()
     ax.set_title(title)
-    ax.axis('off')
+    ax.axis("off")
     ref_img = imgs[0]
     ax.set_xlim([0, ref_img.shape[1]])
     ax.set_ylim([ref_img.shape[0], 0])
@@ -80,11 +82,11 @@ def imshow(
     imgs,
     num_cols=None,
     fig_name=None,
-    titles='',
+    titles="",
     show=True,
     save_path=None,
 ):
-    """ Show an image or multiple images in a single canvas.
+    """Show an image or multiple images in a single canvas.
 
     Args:
         imgs (ndarray or tuple/list[ndarray]): images to be shown.
@@ -132,11 +134,11 @@ def imshow_bboxes(
     font_scale=0.5,
     font_thickness=1,
     font_color=Color.white,
-    title='',
+    title="",
     show=True,
-    save_path=None
+    save_path=None,
 ):
-    """ Draw bounding boxes on an image.
+    """Draw bounding boxes on an image.
 
     To display detection result or compare detection results by different
     algorithms.
@@ -188,28 +190,28 @@ def imshow_bboxes(
         for j in range(_top_k):
             left_top = (_bboxes_int[j, 0], _bboxes_int[j, 1])
             right_bottom = (_bboxes_int[j, 2], _bboxes_int[j, 3])
-            cv2.rectangle(
-                img_with_result, left_top, right_bottom,
-                colors[i].value, thickness
-            )
+            cv2.rectangle(img_with_result, left_top, right_bottom, colors[i].value, thickness)
             if plot_prob:
-                label_text = '%.2f' % _bboxes[j, -1]
+                label_text = "%.2f" % _bboxes[j, -1]
                 ((text_width, text_height), _) = cv2.getTextSize(
-                    label_text, cv2.FONT_HERSHEY_SIMPLEX,
-                    font_scale, font_thickness
+                    label_text, cv2.FONT_HERSHEY_SIMPLEX, font_scale, font_thickness
                 )
                 cv2.rectangle(
                     img_with_result,
                     (left_top[0], left_top[1] - int(1.3 * text_height)),
                     (left_top[0] + text_width, left_top[1]),
-                    colors[i].value, -1
+                    colors[i].value,
+                    -1,
                 )
                 cv2.putText(
-                    img_with_result, label_text,
+                    img_with_result,
+                    label_text,
                     (left_top[0], left_top[1] - int(0.3 * text_height)),
-                    cv2.FONT_HERSHEY_SIMPLEX, font_scale,
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    font_scale,
                     font_color.value,
-                    thickness=font_thickness, lineType=cv2.LINE_AA
+                    thickness=font_thickness,
+                    lineType=cv2.LINE_AA,
                 )
 
     if show:
@@ -219,19 +221,14 @@ def imshow_bboxes(
         mv.imwrite(save_path, img_with_result)
 
 
-if __name__ == '__main__':
-    im = cv2.imread(
-        '../../tests/data/pngs/Blue-Ogi.png',
-        cv2.IMREAD_GRAYSCALE
-    )
-    imshow(im, fig_name='show single image', titles='name')
+if __name__ == "__main__":
+    im = cv2.imread("../../tests/data/pngs/Blue-Ogi.png", cv2.IMREAD_GRAYSCALE)
+    imshow(im, fig_name="show single image", titles="name")
 
     h, w = im.shape[:2]
-    bbox = np.array([w // 3, h // 3, w * 2 // 3, h * 2 // 3,
-                     0.5]).reshape(-1, 5)
-    imshow_bboxes(im, bbox, score_thr=0.2, title='draw bounding boxes')
+    bbox = np.array([w // 3, h // 3, w * 2 // 3, h * 2 // 3, 0.5]).reshape(-1, 5)
+    imshow_bboxes(im, bbox, score_thr=0.2, title="draw bounding boxes")
 
-    im = cv2.imread('../../tests/data/pngs/Blue-Ogi.png', cv2.IMREAD_COLOR)
+    im = cv2.imread("../../tests/data/pngs/Blue-Ogi.png", cv2.IMREAD_COLOR)
     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-    imshow([im] * 5, fig_name='show multiple images',
-           titles=[str(i) for i in range(5)])
+    imshow([im] * 5, fig_name="show multiple images", titles=[str(i) for i in range(5)])

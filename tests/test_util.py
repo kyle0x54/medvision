@@ -1,7 +1,8 @@
 from contextlib import contextmanager
-import pytest
-import medvision as mv
 
+import pytest
+
+import medvision as mv
 
 DATA_DIR = mv.joinpath(mv.parentdir(__file__), 'data')
 DCM_DIR = mv.joinpath(DATA_DIR, 'dicoms')

@@ -1,9 +1,10 @@
 import math
+
 import cv2
 import numpy as np
-import medvision as mv
 import pytest
 
+import medvision as mv
 
 DATA_DIR = mv.joinpath(mv.parentdir(__file__), 'data')
 PNG_IMG_PATH = mv.joinpath(DATA_DIR, 'pngs', 'Blue-Ogi.png')

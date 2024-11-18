@@ -1,17 +1,18 @@
 import io
+
 from Crypto.Cipher import AES
 
 
-def _pad16(s, pad_ch='\0'):
+def _pad16(s, pad_ch="\0"):
     if isinstance(s, str):
-        s = s.encode('utf-8')
+        s = s.encode("utf-8")
     length = (16 - len(s) % 16) % 16
-    s += (pad_ch * length).encode('utf-8')
+    s += (pad_ch * length).encode("utf-8")
     return s
 
 
 def encrypt(data, key, iv, save_path=None):
-    """ Encrypt file or data.
+    """Encrypt file or data.
 
     Args:
         data (boyes or str): Data or a file path.
@@ -24,7 +25,7 @@ def encrypt(data, key, iv, save_path=None):
         (bytes): The encrypted data.
     """
     if isinstance(data, str):
-        with open(data, 'rb') as f:
+        with open(data, "rb") as f:
             data = f.read()
     length = str(len(data))
     length = _pad16(length)
@@ -36,13 +37,13 @@ def encrypt(data, key, iv, save_path=None):
     data = cipher.encrypt(data)
     data = length + data
     if save_path:
-        with open(save_path, 'wb') as f:
+        with open(save_path, "wb") as f:
             f.write(data)
     return data
 
 
 def decrypt(data, key, iv, save_path=None):
-    """ Decrypt file or data.
+    """Decrypt file or data.
 
     Args:
         data (boyes or str): Data or a file path.
@@ -55,10 +56,10 @@ def decrypt(data, key, iv, save_path=None):
         (bytes): The decrypted data.
     """
     if isinstance(data, str):
-        with open(data, 'rb') as f:
+        with open(data, "rb") as f:
             data = f.read()
-    pad_ch = '\0'
-    length = int(data[:16].rstrip(pad_ch.encode('utf-8')).decode('utf-8'))
+    pad_ch = "\0"
+    length = int(data[:16].rstrip(pad_ch.encode("utf-8")).decode("utf-8"))
     data = data[16:]
     key = _pad16(key)
     iv = _pad16(iv)
@@ -66,13 +67,13 @@ def decrypt(data, key, iv, save_path=None):
     data = cipher.decrypt(data)
     data = data[:length]
     if save_path:
-        with open(save_path, 'wb') as f:
+        with open(save_path, "wb") as f:
             f.write(data)
     return data
 
 
 def decrypt_to_file_object(data, key, iv, save_path=None):
-    """ Decrypt a file or data and convert to file object.
+    """Decrypt a file or data and convert to file object.
 
     Args:
         data (boyes or str): Data or a file path.

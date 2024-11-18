@@ -1,9 +1,11 @@
 from enum import Enum, unique
 from pathlib import Path
 from typing import Union
+
 import cv2
-import medvision as mv
 import numpy as np
+
+import medvision as mv
 
 
 @unique
@@ -13,11 +15,8 @@ class ImreadMode(Enum):
     UNCHANGED = cv2.IMREAD_UNCHANGED
 
 
-def imread(
-    file_path: Union[str, Path],
-    flag: ImreadMode = ImreadMode.RGB
-):
-    """ Read an image.
+def imread(file_path: Union[str, Path], flag: ImreadMode = ImreadMode.RGB):
+    """Read an image.
 
     Args:
         file_path (str or Path): image file path.
@@ -37,12 +36,8 @@ def imread(
     return img
 
 
-def imwrite(
-    file_path: Union[str, Path],
-    img: np.ndarray,
-    auto_mkdirs: bool = True
-):
-    """ Save image to specified file.
+def imwrite(file_path: Union[str, Path], img: np.ndarray, auto_mkdirs: bool = True):
+    """Save image to specified file.
 
     Args:
         file_path (str or Path): specified file path to save to.

@@ -1,9 +1,10 @@
 import numpy as np
+
 import medvision as mv
 
 
 def normalize_grayscale(src, to_float=True):
-    """ Rescale image intensity.
+    """Rescale image intensity.
 
     Rescale an grayscale image's intensity range to [0.0, 1.0].
 
@@ -29,7 +30,7 @@ def normalize_grayscale(src, to_float=True):
 
 
 def normalize_rgb(img, mean, std):
-    """ Normalize an image.
+    """Normalize an image.
 
     Subtract mean per channel and divide by std per channel. (support
     grayscale image and RGB image).
@@ -56,7 +57,7 @@ def normalize_rgb(img, mean, std):
 
 
 def denormalize_rgb(img, mean, std):
-    """ Inverse function of normalize_rgb().
+    """Inverse function of normalize_rgb().
 
     Restore a normalized image to its original state.
     """
@@ -64,12 +65,8 @@ def denormalize_rgb(img, mean, std):
     return img
 
 
-def imadjust_grayscale(
-    im: np.ndarray,
-    low_pct: float = 0.01,
-    high_pct: float = 0.99
-):
-    """ Increase contrast of a grayscale image.
+def imadjust_grayscale(im: np.ndarray, low_pct: float = 0.01, high_pct: float = 0.99):
+    """Increase contrast of a grayscale image.
 
     This function maps the intensity values in I to new values in J such that
     values between low_in and high_in map to values between 0 and 1.

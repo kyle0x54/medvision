@@ -1,12 +1,14 @@
-from collections import OrderedDict
 import random
-from natsort import natsorted
+from collections import OrderedDict
+
 import numpy as np
+from natsort import natsorted
+
 import medvision as mv
 
 
 def make_dsmd(data):
-    """ Make a dataset metadata.
+    """Make a dataset metadata.
 
     Args:
         data (dict): dataset metadata.
@@ -15,11 +17,11 @@ def make_dsmd(data):
         dsmd = OrderedDict(natsorted(data.items()))
         return dsmd
     else:
-        raise ValueError('dsmd only support dict type')
+        raise ValueError("dsmd only support dict type")
 
 
-def update_dsmd_keys(src, parent_dir=None, suffix='.dcm'):
-    """ Update dsmd keys to be the actual paths of data (image).
+def update_dsmd_keys(src, parent_dir=None, suffix=".dcm"):
+    """Update dsmd keys to be the actual paths of data (image).
 
     2 strategies are supported.
     1. If dsmd keys are file title, update them to actual path of data.
@@ -46,11 +48,8 @@ def update_dsmd_keys(src, parent_dir=None, suffix='.dcm'):
     return make_dsmd(dst)
 
 
-def split_dsmd_file(dsmd_filepath,
-                    datasplit=None,
-                    shuffle=True,
-                    suffix='.csv'):
-    """ Split a dataset medadata file into 3 parts.
+def split_dsmd_file(dsmd_filepath, datasplit=None, shuffle=True, suffix=".csv"):
+    """Split a dataset medadata file into 3 parts.
 
     Split a dataset metadata file into 'train.csv', 'val.csv' and 'test.csv'.
     And put them in the same directory with specified dsmd file.
@@ -66,7 +65,7 @@ def split_dsmd_file(dsmd_filepath,
         not be saved.
     """
     if datasplit is None:
-        datasplit = {'train': 0.9, 'val': 0.1}
+        datasplit = {"train": 0.9, "val": 0.1}
 
     dsmd_dir = mv.parentdir(dsmd_filepath)
 
@@ -103,7 +102,7 @@ def split_dsmd_file(dsmd_filepath,
 
 
 def match_dsmds(dt_src, gt_src, return_unmatched=False):
-    """ Match 2 dataset metadata (e.g. annotation and detection result)
+    """Match 2 dataset metadata (e.g. annotation and detection result)
 
     Args:
         dt_src (dsmd): a dataset metadata instance.

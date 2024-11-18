@@ -1,10 +1,7 @@
 # flake8: noqa
 
-from .colorspace import (rgb2gray, gray2rgb)
-from .geometry import (vflip, hflip, rot90, rotate, resize, rescale,
-                       crop, center_crop, pad_to_square)
-from .normalize import (
-    normalize_grayscale, normalize_rgb, denormalize_rgb, imadjust_grayscale
-)
+from .colorspace import gray2rgb, rgb2gray
+from .geometry import center_crop, crop, hflip, pad_to_square, rescale, resize, rot90, rotate, vflip
+from .normalize import denormalize_rgb, imadjust_grayscale, normalize_grayscale, normalize_rgb
 
 __all__ = [k for k in globals().keys() if not k.startswith("_")]

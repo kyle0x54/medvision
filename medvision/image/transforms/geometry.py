@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
+
 import medvision as mv
 
 
 def vflip(img):
-    """ Flip an image vertically.
+    """Flip an image vertically.
 
     Args:
         img (ndarray): image to be flipped.
@@ -16,7 +17,7 @@ def vflip(img):
 
 
 def hflip(img):
-    """ Flip an image horizontally.
+    """Flip an image horizontally.
 
     Args:
         img (ndarray): image to be flipped.
@@ -28,7 +29,7 @@ def hflip(img):
 
 
 def rot90(img, k):
-    """ Rotate 90 degrees.
+    """Rotate 90 degrees.
 
     Rotate an array by 90 degrees for k times. Rotation direction is
     anticlockwise.
@@ -43,9 +44,8 @@ def rot90(img, k):
     return np.ascontiguousarray(np.rot90(img, k))
 
 
-def rotate(src, angle, interpolation=cv2.INTER_LINEAR,
-           border_mode=cv2.BORDER_REFLECT_101):
-    """ Rotate an image by arbitrarily degrees.
+def rotate(src, angle, interpolation=cv2.INTER_LINEAR, border_mode=cv2.BORDER_REFLECT_101):
+    """Rotate an image by arbitrarily degrees.
 
     Perform arbitrary rotations on an image. The rotation center is the
     geometric center of the image. The shape of the image keeps unchanged
@@ -64,13 +64,12 @@ def rotate(src, angle, interpolation=cv2.INTER_LINEAR,
     height, width = src.shape[:2]
     center = ((width - 1) * 0.5, (height - 1) * 0.5)
     matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
-    dst = cv2.warpAffine(src, matrix, (width, height),
-                         flags=interpolation, borderMode=border_mode)
+    dst = cv2.warpAffine(src, matrix, (width, height), flags=interpolation, borderMode=border_mode)
     return dst
 
 
 def resize(img, height, width, interpolation=cv2.INTER_LINEAR):
-    """ Resize an image to the given size.
+    """Resize an image to the given size.
 
     Args:
         img (ndarray): the given image.
@@ -85,7 +84,7 @@ def resize(img, height, width, interpolation=cv2.INTER_LINEAR):
 
 
 def rescale(src, scale, return_scale=False, interpolation=cv2.INTER_LINEAR):
-    """ Resize image while keeping the aspect ratio.
+    """Resize image while keeping the aspect ratio.
 
     Args:
         src (ndarray): the input image.
@@ -112,8 +111,7 @@ def rescale(src, scale, return_scale=False, interpolation=cv2.INTER_LINEAR):
         assert len(scale) == 2
         assert scale[0] > 0 and scale[1] > 0
         max_long_edge, max_short_edge = max(scale), min(scale)
-        scale = min(max_long_edge / max(height, width),
-                    max_short_edge / min(height, width))
+        scale = min(max_long_edge / max(height, width), max_short_edge / min(height, width))
 
     # rescale the image
     dst_height, dst_width = round(height * scale), round(width * scale)
@@ -123,7 +121,7 @@ def rescale(src, scale, return_scale=False, interpolation=cv2.INTER_LINEAR):
 
 
 def crop(img, i, j, h, w):
-    """ Crop an image.
+    """Crop an image.
 
     Args:
         img (numpy.ndarray): image to be cropped.
@@ -135,11 +133,11 @@ def crop(img, i, j, h, w):
     Returns:
         (ndarray): the cropped image.
     """
-    return img[i:i+h, j:j+w, ...]
+    return img[i : i + h, j : j + w, ...]
 
 
 def center_crop(img, crop_height, crop_width):
-    """ Crop the central part of an image.
+    """Crop the central part of an image.
 
     Args:
         img (ndarray): image to be cropped.
@@ -149,6 +147,7 @@ def center_crop(img, crop_height, crop_width):
     Return:
         (ndarray): the cropped image.
     """
+
     def get_center_crop_coords(height, width, crop_height, crop_width):
         y1 = (height - crop_height) // 2
         y2 = y1 + crop_height
@@ -157,13 +156,12 @@ def center_crop(img, crop_height, crop_width):
         return x1, y1, x2, y2
 
     height, width = img.shape[:2]
-    x1, y1, x2, y2 = get_center_crop_coords(
-        height, width, crop_height, crop_width)
+    x1, y1, x2, y2 = get_center_crop_coords(height, width, crop_height, crop_width)
     return img[y1:y2, x1:x2, ...]
 
 
 def pad_to_square(src, border_mode=cv2.BORDER_REFLECT_101, pad_value=0):
-    """ Pad an image to so that its height and width are the same.
+    """Pad an image to so that its height and width are the same.
 
     For example, an image with shape (3, 4) will be padded to (4, 4).
 
@@ -186,8 +184,7 @@ def pad_to_square(src, border_mode=cv2.BORDER_REFLECT_101, pad_value=0):
     right = abs(sz - width) - left
 
     if border_mode == cv2.BORDER_CONSTANT:
-        dst = cv2.copyMakeBorder(src, top, bottom, left,
-                                 right, border_mode, value=pad_value)
+        dst = cv2.copyMakeBorder(src, top, bottom, left, right, border_mode, value=pad_value)
     else:
         dst = cv2.copyMakeBorder(src, top, bottom, left, right, border_mode)
 

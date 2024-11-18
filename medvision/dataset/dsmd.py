@@ -2,8 +2,8 @@ from .classification import load_cls_dsmd, save_cls_dsmd
 from .detection import load_det_dsmd, save_det_dsmd
 
 
-def load_dsmd(dsmd_path, class2label=None, mode='cls'):
-    """ Load dataset metadata.
+def load_dsmd(dsmd_path, class2label=None, mode="cls"):
+    """Load dataset metadata.
 
     Dataset Metadata is a key-value pairs describing a dataset.
     For example, a dataset metadata can be a dictionary looks like
@@ -70,16 +70,16 @@ def load_dsmd(dsmd_path, class2label=None, mode='cls'):
     Return:
         (OrderedDict): dataset metadata.
     """
-    if mode in ['cls', 'seg']:
+    if mode in ["cls", "seg"]:
         return load_cls_dsmd(dsmd_path)
-    elif mode == 'det':
+    elif mode == "det":
         return load_det_dsmd(dsmd_path, class2label)
     else:
-        raise ValueError('only support cls, seg, det modes')
+        raise ValueError("only support cls, seg, det modes")
 
 
-def save_dsmd(dsmd_path, data, class2label=None, auto_mkdirs=True, mode='cls'):
-    """ Save dataset metadata to specified file.
+def save_dsmd(dsmd_path, data, class2label=None, auto_mkdirs=True, mode="cls"):
+    """Save dataset metadata to specified file.
 
     Args:
         dsmd_path (str): file path to save dataset metadata.
@@ -89,16 +89,16 @@ def save_dsmd(dsmd_path, data, class2label=None, auto_mkdirs=True, mode='cls'):
             not exist, whether to create it automatically.
         mode (str): dataset mission, can be one of 'cls', 'seg', 'det'.
     """
-    if mode in ['cls', 'seg']:
+    if mode in ["cls", "seg"]:
         return save_cls_dsmd(dsmd_path, data, auto_mkdirs)
-    elif mode == 'det':
+    elif mode == "det":
         return save_det_dsmd(dsmd_path, data, class2label, auto_mkdirs)
     else:
-        raise ValueError('only support cls, seg, det modes')
+        raise ValueError("only support cls, seg, det modes")
 
 
 def load_c2l(c2l_path):
-    """ Load class-to-label mapping.
+    """Load class-to-label mapping.
 
     A class-to-label file defines the mapping from class_names to
     labels, which looks like (Note that the label value starts from 0)

@@ -1,21 +1,19 @@
 import os
-from pathlib import Path
 import re
 import shutil
-from typing import Union
 import uuid
-import medvision as mv
+from pathlib import Path
+from typing import Union
+
 import numpy as np
 import pydicom
 import SimpleITK as itk
 
+import medvision as mv
 
-def dcmread(
-    path: Union[str, Path],
-    read_header: bool = False,
-    itk_handler_enabled: bool = True
-):
-    """ Read 2D image data from the DICOM file.
+
+def dcmread(path: Union[str, Path], read_header: bool = False, itk_handler_enabled: bool = True):
+    """Read 2D image data from the DICOM file.
 
     Args:
         path (str or Path): path of the dicom file to be loaded.
@@ -49,7 +47,7 @@ def dcmread(
 
 
 def dcminfo(path: Union[str, Path]):
-    """ Read metadata (dicom tags) from DICOM file.
+    """Read metadata (dicom tags) from DICOM file.
 
     Refer to pydicom.dcmread
 
@@ -60,16 +58,12 @@ def dcminfo(path: Union[str, Path]):
         (pydicom.dataset.FileDataset): an instance of FileDataset
         that represents a parsed DICOM file.
     """
-    ds = pydicom.dcmread(
-        str(path),
-        stop_before_pixels=True,
-        force=True
-    )
+    ds = pydicom.dcmread(str(path), stop_before_pixels=True, force=True)
     return ds
 
 
 def _get_itk_metadata(reader):
-    """ Read metadata from a SimpleITK.SimpleITK.ImageFileReader object.
+    """Read metadata from a SimpleITK.SimpleITK.ImageFileReader object.
 
     Args:
         reader (obj): SimpleITK file reader.
@@ -99,7 +93,7 @@ def _get_itk_path(path: Union[str, Path]):
 
 
 def dcmread_itk(path: Union[str, Path], read_header: bool = False):
-    """ Read 2D image data and metadata from the DICOM file using SimpleITK.
+    """Read 2D image data and metadata from the DICOM file using SimpleITK.
 
     Args:
         dicom_path (str or Path): dicom file path.

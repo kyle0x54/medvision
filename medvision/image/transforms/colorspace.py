@@ -2,7 +2,7 @@ import cv2
 
 
 def rgb2gray(src):
-    """ Convert a RGB image to grayscale image.
+    """Convert a RGB image to grayscale image.
 
     Args:
         src (ndarray): the input image.
@@ -14,7 +14,7 @@ def rgb2gray(src):
 
 
 def gray2rgb(src):
-    """ Convert a grayscale image to RGB image.
+    """Convert a grayscale image to RGB image.
 
     Args:
         src (ndarray): the input image.

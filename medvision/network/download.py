@@ -5,11 +5,7 @@ from urllib import request
 
 
 def download_url(
-    url: str,
-    dst_dir: str,
-    *,
-    filename: Optional[str] = None,
-    progress: bool = True
+    url: str, dst_dir: str, *, filename: Optional[str] = None, progress: bool = True
 ) -> str:
     """
     Download a file from a given URL to a directory. If file exists, will not
@@ -42,9 +38,7 @@ def download_url(
             def hook(t: tqdm) -> Callable[[int, int, Optional[int]], None]:
                 last_b = [0]
 
-                def inner(
-                    b: int, bsize: int, tsize: Optional[int] = None
-                ) -> None:
+                def inner(b: int, bsize: int, tsize: Optional[int] = None) -> None:
                     if tsize is not None:
                         t.total = tsize
                     t.update((b - last_b[0]) * bsize)  # type: ignore
@@ -52,11 +46,8 @@ def download_url(
 
                 return inner
 
-            with tqdm(unit="B", unit_scale=True, miniters=1, desc=filename,
-                      leave=True) as t:
-                tmp, _ = request.urlretrieve(
-                    url, filename=tmp, reporthook=hook(t)
-                )
+            with tqdm(unit="B", unit_scale=True, miniters=1, desc=filename, leave=True) as t:
+                tmp, _ = request.urlretrieve(url, filename=tmp, reporthook=hook(t))
 
         else:
             tmp, _ = request.urlretrieve(url, filename=tmp)

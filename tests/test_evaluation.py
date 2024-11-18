@@ -1,6 +1,6 @@
 import numpy as np
-import medvision as mv
 
+import medvision as mv
 
 DATA_DIR = mv.joinpath(mv.parentdir(__file__), 'data')
 DSMD_DET_DT = mv.joinpath(DATA_DIR, 'texts', 'dsmd_det_dt.csv')

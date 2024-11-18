@@ -1,12 +1,13 @@
 import collections
-from enum import Enum, unique, auto
 import hashlib
 import os
-from pathlib import Path
 import shutil
-from natsort import natsorted
-import medvision as mv
+from enum import Enum, auto, unique
+from pathlib import Path
 
+from natsort import natsorted
+
+import medvision as mv
 
 isdir = os.path.isdir
 isfile = os.path.isfile
@@ -62,14 +63,13 @@ def empty_dir(path):
 
 def non_overwrite_cp(src, dst):
     if isfile(dst):
-        raise FileExistsError('target file {} already exists'.format(dst))
+        raise FileExistsError("target file {} already exists".format(dst))
 
     if isdir(dst):
         filename = basename(src)
         dst_filepath = joinpath(dst, filename)
         if isfile(dst_filepath):
-            raise FileExistsError(
-                'target file {} already exists'.format(dst_filepath))
+            raise FileExistsError("target file {} already exists".format(dst_filepath))
 
     return cp(src, dst)
 
@@ -94,7 +94,7 @@ class GlobMode(Enum):
     ALL = auto()
 
 
-def glob(root, pattern='*', mode=GlobMode.FILE, recursive=False):
+def glob(root, pattern="*", mode=GlobMode.FILE, recursive=False):
     root = os.path.expanduser(root)
     root = os.path.abspath(root)
     root = Path(root)
@@ -115,15 +115,15 @@ def compute_md5_str(file_path):
     if not mv.isfile(file_path):
         return None
 
-    with open(file_path, 'rb') as f:
+    with open(file_path, "rb") as f:
         m = hashlib.md5()
         m.update(f.read())
         md5_code = m.hexdigest()
         return str(md5_code).lower()
 
 
-def find_duplicated_files(data_dir, pattern='*'):
-    """ Find duplicated files in specified directory.
+def find_duplicated_files(data_dir, pattern="*"):
+    """Find duplicated files in specified directory.
 
     Args:
         data_dir (str): specified directory to be scanned.
@@ -139,8 +139,7 @@ def find_duplicated_files(data_dir, pattern='*'):
     duplicated_files = []
     for key, count in md5_counts.items():
         if count > 1:
-            candidates = tuple(filepaths[i] for
-                               i, x in enumerate(md5s) if x == key)
+            candidates = tuple(filepaths[i] for i, x in enumerate(md5s) if x == key)
             duplicated_files.append(candidates)
 
     return duplicated_files

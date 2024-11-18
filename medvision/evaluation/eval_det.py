@@ -1,18 +1,20 @@
-from collections import OrderedDict, Iterable
-from natsort import natsorted
+from collections import Iterable, OrderedDict
+
 import numpy as np
+from natsort import natsorted
 from sklearn import metrics as skm
+
 from .compute_overlap import compute_overlap
 
 
 def _compute_ap_voc07(rec, pre):
-    ap = 0.
-    for t in np.arange(0., 1.1, 0.1):
+    ap = 0.0
+    for t in np.arange(0.0, 1.1, 0.1):
         if np.sum(rec >= t) == 0:
             p = 0
         else:
             p = np.max(pre[rec >= t])
-        ap = ap + p / 11.
+        ap = ap + p / 11.0
 
     return ap
 
@@ -20,8 +22,8 @@ def _compute_ap_voc07(rec, pre):
 def _compute_ap_voc12(rec, pre):
     # correct AP calculation
     # first append sentinel values at the end
-    mrec = np.concatenate(([0.], rec, [1.]))
-    mpre = np.concatenate(([0.], pre, [0.]))
+    mrec = np.concatenate(([0.0], rec, [1.0]))
+    mpre = np.concatenate(([0.0], pre, [0.0]))
 
     # compute the precision envelope
     for i in range(mpre.size - 1, 0, -1):
@@ -47,7 +49,7 @@ def _compute_froc(fps, rec, begin=0.125, end=2):
 
 
 def _compute_ap(rec, pre, use_voc07_metric=False):
-    """ Compute the average precision, given the recall and precision curves.
+    """Compute the average precision, given the recall and precision curves.
 
     Code originally from https://github.com/rbgirshick/py-faster-rcnn.
 
@@ -66,7 +68,7 @@ def _compute_ap(rec, pre, use_voc07_metric=False):
 
 
 def _standardize(dts, gts):
-    """ Convert gt/dt from dict to list[list[ndarray]] (if in dict format).
+    """Convert gt/dt from dict to list[list[ndarray]] (if in dict format).
     Args:
         dts (dict or list[list[ndarray]]): detected bounding boxes for
             different labels in a set of images, each bbox is of shape (n, 5).
@@ -78,8 +80,7 @@ def _standardize(dts, gts):
     assert len(gts) == len(dts), "dts and gts must have the same length"
 
     if isinstance(dts, dict) and isinstance(gts, dict):
-        assert set(dts.keys()) == set(gts.keys()), \
-            "dts and gts must have the same key set"
+        assert set(dts.keys()) == set(gts.keys()), "dts and gts must have the same key set"
         dts = [value for _, value in natsorted(dts.items())]
         gts = [value for _, value in natsorted(gts.items())]
 
@@ -87,7 +88,7 @@ def _standardize(dts, gts):
 
 
 def eval_det4binarycls(dts, gts, score_thrs):
-    """ Evaluate a detector's classification capability.
+    """Evaluate a detector's classification capability.
 
     Only support 1-class detection. If (at least) 1 target is detected in
     an image, the image is considered to be 'positive'. Otherwise, the image
@@ -117,8 +118,8 @@ def eval_det4binarycls(dts, gts, score_thrs):
     for score_thr in score_thrs:
         tp, fp, tn, fn = 0, 0, 0, 0
         for i in range(len(gts)):
-            assert len(gts[i]) == 1, 'only support 1-class detection'
-            assert len(dts[i]) == 1, 'only support 1-class detection'
+            assert len(gts[i]) == 1, "only support 1-class detection"
+            assert len(dts[i]) == 1, "only support 1-class detection"
             gt = gts[i][0]
             dt = dts[i][0]
 
@@ -127,7 +128,7 @@ def eval_det4binarycls(dts, gts, score_thrs):
             else:
                 has_dt = False
 
-            has_gt = (len(gt) != 0)
+            has_gt = len(gt) != 0
 
             if has_dt and has_gt:
                 tp += 1
@@ -141,31 +142,31 @@ def eval_det4binarycls(dts, gts, score_thrs):
         # build result
         result = OrderedDict()
 
-        result['tp'] = tp
-        result['fp'] = fp
-        result['tn'] = tn
-        result['fn'] = fn
+        result["tp"] = tp
+        result["fp"] = fp
+        result["tn"] = tn
+        result["fn"] = fn
 
         eps = np.finfo(np.float32).eps
-        result['accuracy'] = (tp + tn) / np.maximum(tp + fn + tn + fp, eps)
-        result['sensitivity'] = tp / np.maximum(tp + fn, eps)
-        result['specificity'] = tn / np.maximum(tn + fp, eps)
-        result['recall'] = result['sensitivity']
-        result['precision'] = tp / np.maximum(tp + fp, eps)
+        result["accuracy"] = (tp + tn) / np.maximum(tp + fn + tn + fp, eps)
+        result["sensitivity"] = tp / np.maximum(tp + fn, eps)
+        result["specificity"] = tn / np.maximum(tn + fp, eps)
+        result["recall"] = result["sensitivity"]
+        result["precision"] = tp / np.maximum(tp + fp, eps)
 
         results["thrs"][str(score_thr)] = result
 
     # create roc curve
     gt_labels = [(len(gt[0]) != 0) for gt in gts]
     dt_scores = [dt[0][:, -1].max() if len(dt[0]) > 0 else 0 for dt in dts]
-    results['roc_curve'] = skm.roc_curve(gt_labels, dt_scores)
-    results['roc_auc'] = skm.roc_auc_score(gt_labels, dt_scores)
+    results["roc_curve"] = skm.roc_curve(gt_labels, dt_scores)
+    results["roc_auc"] = skm.roc_auc_score(gt_labels, dt_scores)
 
     return results
 
 
 def eval_det(dts, gts, num_classes=1, iou_thr=0.5):
-    """ Evaluate a given dataset by comparing DT with GT.
+    """Evaluate a given dataset by comparing DT with GT.
 
     Args:
         dts (dict or list[list[ndarray]]): detected bounding boxes for
@@ -209,14 +210,12 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5):
                     continue
 
                 overlaps = compute_overlap(
-                    np.expand_dims(d, axis=0).astype(np.float32),
-                    gt.astype(np.float32)
+                    np.expand_dims(d, axis=0).astype(np.float32), gt.astype(np.float32)
                 )
                 matched_ann = np.argmax(overlaps, axis=1)
                 max_overlap = overlaps[0, matched_ann]
 
-                if (max_overlap > iou_thr and
-                        matched_ann not in matched_anns):
+                if max_overlap > iou_thr and matched_ann not in matched_anns:
                     fps = np.append(fps, 0)
                     tps = np.append(tps, 1)
                     matched_anns.append(matched_ann)
@@ -227,9 +226,9 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5):
         # no annotations -> AP for this class is None
         if num_anns == 0:
             results[label] = OrderedDict()
-            results[label]['ap'] = None
-            results[label]['num_gt_bboxes'] = 0
-            results[label]['froc'] = None
+            results[label]["ap"] = None
+            results[label]["num_gt_bboxes"] = 0
+            results[label]["froc"] = None
             continue
 
         # sort by score
@@ -246,10 +245,10 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5):
 
         # compute AP, number of ground truth bboxes and FROC
         results[label] = OrderedDict()
-        results[label]['ap'] = _compute_ap(recall, precision)
-        results[label]['num_gt_bboxes'] = num_anns
-        results[label]['froc'] = fps / num_imgs, recall  # recall = sensitivity
-        results[label]['froc_auc'] = _compute_froc(fps / num_imgs, recall)
+        results[label]["ap"] = _compute_ap(recall, precision)
+        results[label]["num_gt_bboxes"] = num_anns
+        results[label]["froc"] = fps / num_imgs, recall  # recall = sensitivity
+        results[label]["froc_auc"] = _compute_froc(fps / num_imgs, recall)
 
         # find score of 0.5 fps and 1 fps.
         # TODO: move to project level code/script
@@ -259,9 +258,10 @@ def eval_det(dts, gts, num_classes=1, iou_thr=0.5):
         for i in range(len(scores) - 1):
             for n in fp_range:
                 if fps_per_image[i] < n <= fps_per_image[i + 1]:
-                    results[label]["pr"]["fp-" + str(n)[:3]] \
-                        = {"thr": scores[i],
-                           "recall": recall[i],
-                           "precision": precision[i]}
+                    results[label]["pr"]["fp-" + str(n)[:3]] = {
+                        "thr": scores[i],
+                        "recall": recall[i],
+                        "precision": precision[i],
+                    }
 
     return results

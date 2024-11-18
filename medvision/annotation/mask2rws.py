@@ -1,14 +1,16 @@
 import json
+
 import cv2
-import medvision as mv
 from tqdm import tqdm
+
+import medvision as mv
 
 
 def _gen_rws_shape(label, contour):
     line_color = (0, 255, 0, 128)
     fill_color = (255, 0, 0, 128)
     flags = {}
-    shape_type = 'polygon'
+    shape_type = "polygon"
 
     return dict(
         label=label,
@@ -16,35 +18,31 @@ def _gen_rws_shape(label, contour):
         fill_color=fill_color,
         points=[(float(p[0][0]), float(p[0][1])) for p in contour],
         shape_type=shape_type,
-        flags=flags
+        flags=flags,
     )
 
 
 def mask2rws(mask_path, rws_path, dcm_path=None):
     if isinstance(mask_path, str):
         mask = mv.imread(mask_path, mv.ImreadMode.GRAY)
-        dcm_path = mv.basename(mask_path).replace('.png', '.dcm')
+        dcm_path = mv.basename(mask_path).replace(".png", ".dcm")
     else:
         mask = mask_path
         assert dcm_path is not None
 
     if mask.max() == 0:
-        print('skip mask with no annotation regions: {}'.format(mask_path))
+        print("skip mask with no annotation regions: {}".format(mask_path))
         return
 
-    contours, _ = cv2.findContours(
-        mask,
-        cv2.RETR_TREE,
-        cv2.CHAIN_APPROX_SIMPLE
-    )
+    contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     shapes = []
     for contour in contours:
-        shape = _gen_rws_shape('auto', contour)
+        shape = _gen_rws_shape("auto", contour)
         shapes.append(shape)
 
     data = dict(
-        version='0.1.0',
+        version="0.1.0",
         flags={},
         shapes=shapes,
         lineColor=None,
@@ -55,12 +53,12 @@ def mask2rws(mask_path, rws_path, dcm_path=None):
         imageWidth=mask.shape[1],
     )
 
-    with open(rws_path, 'w') as f:
+    with open(rws_path, "w") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 def batch_mask2rws(mask_dir, rws_dir, **kwargs):
-    """ Convert mask format annotation to rws format.
+    """Convert mask format annotation to rws format.
 
     Args:
         mask_dir (str): mask files directory.
@@ -75,14 +73,14 @@ def batch_mask2rws(mask_dir, rws_dir, **kwargs):
     file_titles = [mv.splitext(fn)[0] for fn in mask_filenames]
 
     for file_title in tqdm(file_titles):
-        mask_path = mv.joinpath(mask_dir, file_title + '.png')
-        rws_path = mv.joinpath(rws_dir, file_title + '.json')
+        mask_path = mv.joinpath(mask_dir, file_title + ".png")
+        rws_path = mv.joinpath(rws_dir, file_title + ".json")
         mask2rws(mask_path, rws_path, **kwargs)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # TODO: move to unittest
-    mask_dir = '/home/huiying/.rws/masks'
-    rws_dir = '/home/huiying/.rws/rws_verification'
+    mask_dir = "/home/huiying/.rws/masks"
+    rws_dir = "/home/huiying/.rws/rws_verification"
 
     batch_mask2rws(mask_dir, rws_dir)

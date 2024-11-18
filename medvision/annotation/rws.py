@@ -1,4 +1,5 @@
 import json
+
 import medvision as mv
 
 
@@ -19,28 +20,25 @@ def get_rws_text_path(dcm_path):
 
 
 def _load_rws_contour_single_file(filepath):
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     # relative path from label file to relative path from cwd
-    image_path = mv.joinpath(mv.parentdir(filepath), data['imagePath'])
-    height = data.get('imageHeight')
-    width = data.get('imageWidth')
-    shapes = [
-        {'category': s['label'], 'points': s['points']}
-        for s in data['shapes']
-    ]
+    image_path = mv.joinpath(mv.parentdir(filepath), data["imagePath"])
+    height = data.get("imageHeight")
+    width = data.get("imageWidth")
+    shapes = [{"category": s["label"], "points": s["points"]} for s in data["shapes"]]
 
     return {
-        'height': height,
-        'width': width,
-        'image_path': image_path,
-        'shapes': shapes
+        "height": height,
+        "width": width,
+        "image_path": image_path,
+        "shapes": shapes,
     }
 
 
 def load_rws_contour(paths):
-    """ Load rws file (in general contour format).
+    """Load rws file (in general contour format).
 
     Args:
         paths (str or list): rws file path(s).
@@ -68,19 +66,23 @@ def load_rws_contour(paths):
         return _load_rws_contour_single_file(paths)
     else:
         rws_objs = [_load_rws_contour_single_file(path) for path in paths]
-        assert len(rws_objs) > 0, 'Do not allow empty rws file path list'
+        assert len(rws_objs) > 0, "Do not allow empty rws file path list"
         result = rws_objs[0].copy()
         for rws_obj in rws_objs[1:]:
-            for key in ['image_path', 'height', 'width']:
-                assert rws_objs[0][key] == rws_obj[key], \
-                    'rws files with inconsistent attribute %s [%s != %s]' % \
-                    (key, rws_objs[0][key], rws_obj[key])
-            result['shapes'].extend(rws_obj['shapes'])
+            for key in ["image_path", "height", "width"]:
+                assert (
+                    rws_objs[0][key] == rws_obj[key]
+                ), "rws files with inconsistent attribute %s [%s != %s]" % (
+                    key,
+                    rws_objs[0][key],
+                    rws_obj[key],
+                )
+            result["shapes"].extend(rws_obj["shapes"])
         return result
 
 
 def load_rws_bbox(paths):
-    """ Load rws file (in bounding box format).
+    """Load rws file (in bounding box format).
 
     Args:
         paths (str or list): rws file path(s).
@@ -109,49 +111,40 @@ def load_rws_bbox(paths):
     rws = load_rws_contour(paths)
 
     shapes = []
-    for instance in rws['shapes']:
-        category, points = instance['category'], instance['points']
-        assert len(points) == 2, 'only support rectangle annotation'
+    for instance in rws["shapes"]:
+        category, points = instance["category"], instance["points"]
+        assert len(points) == 2, "only support rectangle annotation"
         xmin = min(points[0][0], points[1][0])
         ymin = min(points[0][1], points[1][1])
         xmax = max(points[0][0], points[1][0])
         ymax = max(points[0][1], points[1][1])
-        shape = {
-            'category': category,
-            'bbox': [xmin, ymin, xmax, ymax]
-        }
+        shape = {"category": category, "bbox": [xmin, ymin, xmax, ymax]}
         shapes.append(shape)
 
-    rws['shapes'] = shapes
+    rws["shapes"] = shapes
 
     return rws
 
 
 def _gen_rws_shape_bbox(bbox, label):
     flags = {}
-    shape_type = 'rectangle'
+    shape_type = "rectangle"
     line_color = (0, 255, 0, 128)
     fill_color = (255, 0, 0, 128)
     return dict(
         label=label,
         line_color=line_color,
         fill_color=fill_color,
-        points=[[float(bbox[0]), float(bbox[1])],
-                [float(bbox[2]), float(bbox[3])]],
+        points=[[float(bbox[0]), float(bbox[1])], [float(bbox[2]), float(bbox[3])]],
         shape_type=shape_type,
-        flags=flags
+        flags=flags,
     )
 
 
 def save_rws_bbox(
-    filepath,
-    shapes,
-    image_shape,
-    suffix=".json",
-    score_thresh=0,
-    fixed_label="auto"
+    filepath, shapes, image_shape, suffix=".json", score_thresh=0, fixed_label="auto"
 ):
-    """ Save bounding boxes into rws file.
+    """Save bounding boxes into rws file.
 
     Args:
         filepath (str): rws file path.
@@ -178,7 +171,7 @@ def save_rws_bbox(
     shapes = []
     for bbox in bboxes:
         if isinstance(bbox, dict):  # rws "shape" field format
-            label, bbox = bbox['category'], bbox['bbox']
+            label, bbox = bbox["category"], bbox["bbox"]
         elif len(bbox) == 5 and bbox[-1] < score_thresh:
             continue
         else:  # ndarray or box list
@@ -188,7 +181,7 @@ def save_rws_bbox(
 
     # make rws file content
     data = dict(
-        version='0.1.0',
+        version="0.1.0",
         flags={},
         shapes=shapes,
         lineColor=None,
@@ -200,5 +193,5 @@ def save_rws_bbox(
     )
 
     # save rws file
-    with open(filepath, 'w') as f:
+    with open(filepath, "w") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)

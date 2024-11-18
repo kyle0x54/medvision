@@ -1,15 +1,14 @@
 from pathlib import Path
-from typing import Union, Dict, List
-import medvision as mv
+from typing import Dict, List, Union
+
 import numpy as np
 import pandas as pd
 
+import medvision as mv
 
-def load_det_dsmd(
-    dsmd_path: Union[str, Path],
-    class2label: Union[str, Dict[str, int]]
-):
-    """ load detection dataset metadata.
+
+def load_det_dsmd(dsmd_path: Union[str, Path], class2label: Union[str, Dict[str, int]]):
+    """load detection dataset metadata.
 
     Args:
         dsmd_path (str or Path): dataset metadata file path.
@@ -31,13 +30,13 @@ def load_det_dsmd(
     """
     if isinstance(class2label, str):
         class2label = mv.load_c2l(class2label)
-    assert min(class2label.values()) == 0, \
-        "label should start from 0, but got %d" % min(class2label.values())
+    assert min(class2label.values()) == 0, "label should start from 0, but got %d" % min(
+        class2label.values()
+    )
     num_classes = len(class2label)
 
     df = pd.read_csv(dsmd_path, header=None)
-    assert df.shape[1] == 6 or df.shape[1] == 7, \
-        "Incorrect dsmd file format %s" % dsmd_path
+    assert df.shape[1] == 6 or df.shape[1] == 7, "Incorrect dsmd file format %s" % dsmd_path
 
     data = {}
     for r in df.itertuples():
@@ -48,11 +47,9 @@ def load_det_dsmd(
             data[filename] = [empty_box] * num_classes
 
         if not pd.isnull(r[2]):
-            box = r[2: -1]
+            box = r[2:-1]
             category_id = class2label[r[-1]]
-            data[filename][category_id] = np.append(
-                data[filename][category_id], [box], axis=0
-            )
+            data[filename][category_id] = np.append(data[filename][category_id], [box], axis=0)
 
     return mv.make_dsmd(data)
 
@@ -61,9 +58,9 @@ def save_det_dsmd(
     dsmd_path: Union[str, Path],
     data: Dict[str, List[np.ndarray]],
     class2label: Union[str, Dict[str, int]],
-    auto_mkdirs: bool = True
+    auto_mkdirs: bool = True,
 ):
-    """ Save dataset metadata to specified file.
+    """Save dataset metadata to specified file.
 
     Args:
         dsmd_path (str or Path): file path to save dataset metadata.
@@ -97,7 +94,7 @@ def save_det_dsmd(
 
 
 def merge_det_dsmds(ref_dsmd, *dsmds):
-    """ Merge dsmds into one dsmd.
+    """Merge dsmds into one dsmd.
 
     N.B. Overlapping boxes (even boxes with the same coordinates) are all kept.
     """
@@ -115,8 +112,9 @@ def merge_det_dsmds(ref_dsmd, *dsmds):
     for filename in filenames:
         res_instance = []
         for category_id in range(num_categories):
-            instances = [dsmd[filename][category_id] for dsmd in dsmds] \
-                        + [ref_dsmd[filename][category_id]]
+            instances = [dsmd[filename][category_id] for dsmd in dsmds] + [
+                ref_dsmd[filename][category_id]
+            ]
             res_instance.append(np.vstack(instances))
         res[filename] = res_instance
 

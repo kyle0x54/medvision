@@ -1,12 +1,13 @@
 import ast
+
 import medvision as mv
 
 
 def load_cls_dsmd(dsmd_path):
     data = {}
-    with open(dsmd_path, 'r') as fd:
+    with open(dsmd_path, "r") as fd:
         for line in fd:
-            key, value = line.strip().split(',', 1)
+            key, value = line.strip().split(",", 1)
             try:  # try to interpret annotation as int or list[int].
                 value = ast.literal_eval(value.strip())
             except (SyntaxError, ValueError):
@@ -21,17 +22,16 @@ def save_cls_dsmd(dsmd_path, data, auto_mkdirs=True):
         mv.mkdirs(mv.parentdir(dsmd_path))
 
     dsmd = mv.make_dsmd(data)
-    with open(dsmd_path, 'w') as fd:
+    with open(dsmd_path, "w") as fd:
         for key, value in dsmd.items():
             if mv.isarrayinstance(value):  # handle multi-label case
-                value = ','.join([str(entry) for entry in value])
-            line = '%s,%s\n' % (str(key), str(value))
+                value = ",".join([str(entry) for entry in value])
+            line = "%s,%s\n" % (str(key), str(value))
             fd.write(line)
 
 
-def gen_cls_dsmd_file_from_datafolder(
-        root_dir, c2l_path, dsmd_path, classnames=None):
-    """ Generate classification dataset metadata file from DataFolder for
+def gen_cls_dsmd_file_from_datafolder(root_dir, c2l_path, dsmd_path, classnames=None):
+    """Generate classification dataset metadata file from DataFolder for
     specified classes.
 
     DataFolder is a directory structure for image classification problems.
@@ -77,17 +77,15 @@ def gen_cls_dsmd_file_from_datafolder(
         filenames = mv.listdir(class_dir)
         for filename in filenames:
             if filename in dsmd:
-                raise FileExistsError(
-                    'filename {} already exists'.format(filename))
+                raise FileExistsError("filename {} already exists".format(filename))
             dsmd[filename] = label
 
     mv.save_dsmd(c2l_path, class2label)
     mv.save_dsmd(dsmd_path, dsmd)
 
 
-def gen_cls_ds_from_datafolder(
-        in_dir, out_dir, auto_mkdirs=True, classnames=None):
-    """ Generate classification dataset from DataFolder.
+def gen_cls_ds_from_datafolder(in_dir, out_dir, auto_mkdirs=True, classnames=None):
+    """Generate classification dataset from DataFolder.
 
     This function will make a copy of each image in the DataFolder to the
     specified directory. Original DataFolder is left unchanged.

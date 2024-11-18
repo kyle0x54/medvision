@@ -1,6 +1,6 @@
 import pytest
-import medvision as mv
 
+import medvision as mv
 
 DATA_DIR = mv.joinpath(mv.parentdir(__file__), 'data')
 DSMD_CLS_SL = mv.joinpath(DATA_DIR, 'texts', 'dsmd_cls_single_label.txt')

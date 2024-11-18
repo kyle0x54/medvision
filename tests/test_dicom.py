@@ -1,8 +1,9 @@
 import math
+
 import numpy as np
 import pytest
-import medvision as mv
 
+import medvision as mv
 
 DATA_DIR = mv.joinpath(mv.parentdir(__file__), 'data')
 DCM_PATH = mv.joinpath(DATA_DIR, 'dicoms', 'brain_001.dcm')
