@@ -33,7 +33,7 @@ def test_copyfiles():
 
     src_paths = ['brain_001.dcm', 'brain_002.dcm']
     mv.copyfiles(src_paths, dst_dir, DCM_DIR)
-    assert len(mv.listdir(dst_dir)) == 2
+    assert len(mv.listdir_natsorted(dst_dir)) == 2
 
     with pytest.raises(FileExistsError):
         mv.non_overwrite_cp(mv.joinpath(DCM_DIR, src_paths[0]), dst_dir)
@@ -46,7 +46,7 @@ def test_copyfiles():
 
     mv.empty_dir(dst_dir)
     assert mv.isdir(dst_dir)
-    assert len(mv.listdir(dst_dir)) == 0
+    assert len(mv.listdir_natsorted(dst_dir)) == 0
     mv.rmtree(dst_dir)
 
 
@@ -60,7 +60,7 @@ def test_glob_file():
     assert len(filepaths) == 0
 
     filepaths = mv.glob(PNG_DIR, mode=mv.GlobMode.FILE, recursive=False)
-    assert len(filepaths) == len(mv.listdir(PNG_DIR))
+    assert len(filepaths) == len(mv.listdir_natsorted(PNG_DIR))
 
 
 def test_glob_dir():

@@ -68,7 +68,7 @@ def batch_mask2rws(mask_dir, rws_dir, **kwargs):
     e.g. 123.dcm, 123.png
     """
     mv.mkdirs(rws_dir)
-    mask_filenames = mv.listdir(mask_dir)
+    mask_filenames = mv.listdir_natsorted(mask_dir)
 
     file_titles = [mv.splitext(fn)[0] for fn in mask_filenames]
 

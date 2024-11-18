@@ -89,7 +89,7 @@ def test_gen_cls_ds():
 
     mv.empty_dir(tmp_dir)
     mv.gen_cls_ds_from_datafolder(DF_DIR, tmp_dir)
-    assert len(mv.listdir(tmp_dir)) == 8
+    assert len(mv.listdir_natsorted(tmp_dir)) == 8
 
     mv.rmtree(tmp_dir)
 

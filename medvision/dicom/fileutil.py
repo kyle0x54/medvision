@@ -47,7 +47,7 @@ def isdicomdir(path: Union[str, Path]):
     if not mv.isdir(path):
         return False
 
-    for file_name in mv.listdir(path):
+    for file_name in mv.listdir_natsorted(path):
         file_path = mv.joinpath(path, file_name)
         if not isdicom(file_path):
             return False

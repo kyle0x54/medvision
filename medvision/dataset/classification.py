@@ -64,7 +64,7 @@ def gen_cls_dsmd_file_from_datafolder(root_dir, c2l_path, dsmd_path, classnames=
     assert mv.isdir(root_dir)
 
     if classnames is None:
-        classnames = mv.listdir(root_dir)
+        classnames = mv.listdir_natsorted(root_dir)
 
     class2label = {}
     dsmd = {}
@@ -74,7 +74,7 @@ def gen_cls_dsmd_file_from_datafolder(root_dir, c2l_path, dsmd_path, classnames=
 
         class_dir = mv.joinpath(root_dir, classname)
         assert mv.isdir(class_dir)
-        filenames = mv.listdir(class_dir)
+        filenames = mv.listdir_natsorted(class_dir)
         for filename in filenames:
             if filename in dsmd:
                 raise FileExistsError("filename {} already exists".format(filename))
@@ -113,10 +113,10 @@ def gen_cls_ds_from_datafolder(in_dir, out_dir, auto_mkdirs=True, classnames=Non
     mv.empty_dir(out_dir)
 
     if classnames is None:
-        classnames = mv.listdir(in_dir)
+        classnames = mv.listdir_natsorted(in_dir)
 
     for classname in classnames:
         class_dir = mv.joinpath(in_dir, classname)
         assert mv.isdir(class_dir)
-        filenames = mv.listdir(class_dir)
+        filenames = mv.listdir_natsorted(class_dir)
         mv.copyfiles(filenames, out_dir, class_dir, non_overwrite=True)

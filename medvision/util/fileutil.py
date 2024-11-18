@@ -13,7 +13,7 @@ isdir = os.path.isdir
 isfile = os.path.isfile
 
 
-def listdir(path):
+def listdir_natsorted(path):
     return natsorted(os.listdir(path))
 
 
