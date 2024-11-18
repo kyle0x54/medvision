@@ -1,4 +1,5 @@
-from collections import Iterable, OrderedDict
+from collections.abc import Iterable
+from collections import OrderedDict
 
 import numpy as np
 from natsort import natsorted
@@ -101,8 +102,8 @@ def eval_det4binarycls(dts, gts, score_thrs):
             for different labels in a set of images, each bbox is of
             shape (n, 4).
             gts[img_id][label_id] = bboxes (for a specific label in an image).
-        score_thr (float): score confidence threshold to determine whether a
-            detection is valid.
+        score_thrs (float or Iterable): confidence threshold to determine 
+            whether a detection is valid.
     Returns:
         (dict): a dict containing classification metrics TP, FP, TN, FN,
         accuracy, recall, precision.
