@@ -20,7 +20,7 @@ def assert_image_equal(a, b):
 
 
 def test_normalize_grayscale():
-    im_std = mv.normalize_grayscale(IM_GRAY)
+    im_std = mv.normalize_image(IM_GRAY)
     assert math.isclose(im_std.max(), 1.0)
     assert math.isclose(im_std.min(), 0.0)
 
