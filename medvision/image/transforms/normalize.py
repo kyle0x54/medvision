@@ -65,9 +65,10 @@ def imadjust(
     if ma is not None:
         assert ma.shape == im.shape, "Mask shape must match image shape."
 
-    low_loc = int(round((im.size - 1) * low_pct))
-    high_loc = int(round((im.size - 1) * high_pct))
     im_flat = im.flatten() if ma is None else im[ma != 0]
+
+    low_loc = int(round((im_flat.size - 1) * low_pct))
+    high_loc = int(round((im_flat.size - 1) * high_pct))
     low_thr = im_flat[np.argpartition(im_flat, low_loc)[low_loc]]
     high_thr = im_flat[np.argpartition(im_flat, high_loc)[high_loc]]
     return normalize_image(np.clip(im, a_min=low_thr, a_max=high_thr))
